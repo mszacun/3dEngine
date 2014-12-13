@@ -18,3 +18,8 @@ add_executable (UT tests/TestTests.cpp tests/PointTests.cpp tests/SceneTests.cpp
     tests/MatrixTests)
 target_link_libraries(UT ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} pthread GrafikaZad3Lib)
 add_test(ut, UT)
+
+add_executable(BENCHMARK tests/Benchmark.cpp)
+target_link_libraries(BENCHMARK GrafikaZad3Lib)
+add_test(benchmark, BENCHMARK)
+
