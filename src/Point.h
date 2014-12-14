@@ -1,16 +1,29 @@
 #ifndef POINT_H
 #define POINT_H
 
-struct Point
+#include "Matrix.h"
+
+class Point
 {
-    int x_;
-    int y_;
-    int z_;
 
-    Point(int x, int y, int z): x_(x), y_(y), z_(z)
-    {
-    }
+    public:
+        Point(double x, double y, double z): x_(x), y_(y), z_(z)
+        {
+        }
 
+        double GetX() const { return x_; }
+        double GetY() const { return y_; }
+        double GetZ() const { return z_; }
+
+        Point Transform(const Matrix& transformationMatrix) const;
+
+    private:
+        double x_;
+        double y_;
+        double z_;
+
+        static Matrix pointMatrix;
+        static Matrix transformedPointMatrix;
 };
 
 #endif

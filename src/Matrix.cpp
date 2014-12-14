@@ -27,6 +27,13 @@ Matrix::~Matrix()
     delete[] matrix_;
 }
 
+Matrix::Matrix(Matrix&& other): width_(other.width_), height_(other.height_)
+{
+    matrix_ = other.matrix_;
+
+    other.matrix_ = nullptr;
+}
+
 Matrix::Matrix(const Matrix& other): width_(0), height_(0)
 {
 }
@@ -34,6 +41,11 @@ Matrix::Matrix(const Matrix& other): width_(0), height_(0)
 double Matrix::GetElement(const int& row, const int& col) const
 {
     return matrix_[row * width_ + col];
+}
+
+void Matrix::SetElement(const int& row, const int& col, const double& val)
+{
+    matrix_[row * width_ + col] = val;
 }
 
 bool Matrix::operator==(const Matrix& right)
@@ -73,4 +85,57 @@ void Matrix::Multiply(const Matrix& left, const Matrix& right, Matrix& result)
          }
      }
  }
+
+Matrix Matrix::CreateScaleMatrix(double xFactor, double yFactor, double zFactor)
+{
+    std::vector<std::vector<double>> matrixData { { xFactor, 0, 0, 0 },
+                                                  { 0, yFactor, 0, 0 },
+                                                  { 0, 0, zFactor, 0 },
+                                                  { 0, 0, 0, 1} };
+
+    return Matrix(matrixData);
+}
+
+Matrix Matrix::CreateTranslationMatrix(double xMove, double yMove, double zMove)
+{
+    std::vector<std::vector<double>> matrixData { { 1, 0, 0, xMove },
+                                                  { 0, 1, 0, yMove },
+                                                  { 0, 0, 1, zMove },
+                                                  { 0, 0, 0, 1} };
+
+    return Matrix(matrixData);
+}
+
+Matrix Matrix::CreateXAxisRotationMatrix(double angleInDegrees)
+{
+    double radians = angleInDegrees * M_PI / 180;
+    std::vector<std::vector<double>> matrixData { { 1, 0, 0, 0 },
+                                                  { 0, cos(radians), -sin(radians), 0 },
+                                                  { 0, sin(radians), cos(radians), 0 },
+                                                  { 0, 0, 0, 1} };
+
+    return Matrix(matrixData);
+}
+
+Matrix Matrix::CreateYAxisRotationMatrix(double angleInDegrees)
+{
+    double radians = angleInDegrees * M_PI / 180;
+    std::vector<std::vector<double>> matrixData { { cos(radians), 0, sin(radians), 0 },
+                                                  { 0, 1, 0, 0 },
+                                                  { -sin(radians), 0, cos(radians), 0 },
+                                                  { 0, 0, 0, 1} };
+
+    return Matrix(matrixData);
+}
+
+Matrix Matrix::CreateZAxisRotationMatrix(double angleInDegrees)
+{
+    double radians = angleInDegrees * M_PI / 180;
+    std::vector<std::vector<double>> matrixData { { cos(radians), -sin(radians), 0, 0 },
+                                                  { sin(radians), cos(radians), 0, 0 },
+                                                  { 0, 0, 1, 0 },
+                                                  { 0, 0, 0, 1} };
+
+    return Matrix(matrixData);
+}
 
