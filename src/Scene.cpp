@@ -1,5 +1,10 @@
 #include "Scene.h"
 
+void Scene2D::AddTriangle(const Triangle2D& triangle)
+{
+    triangles_.push_back(triangle);
+}
+
 Scene3D::Scene3D() : observatorPosition_(0, 0, 0)
 {
 }
@@ -19,3 +24,28 @@ void Scene3D::SetObserverPosition(const Point& newPosition)
 {
     observatorPosition_ = newPosition;
 }
+
+Scene2D Scene3D::GetPerspectiveProjection() const
+{
+    Scene2D result;
+
+    for (const Triangle3D& t : triangles_)
+        result.AddTriangle(ProjectTrianglePerspectively(t));
+
+    return result;
+}
+
+void Scene3D::Transform(const Matrix& transformationMatrix)
+{
+    for (Point& p : points_)
+        p = p.Transform(transformationMatrix);
+}
+
+Triangle2D Scene3D::ProjectTrianglePerspectively(const Triangle3D& triangle) const
+{
+    Matrix transformationMatrix = Matrix::CreateProjectMatrix(-observatorPosition_.GetZ());
+
+     return Triangle2D(points_[triangle.GetP1()].Transform(transformationMatrix),
+         points_[triangle.GetP2()].Transform(transformationMatrix),
+         points_[triangle.GetP3()].Transform(transformationMatrix));
+  }

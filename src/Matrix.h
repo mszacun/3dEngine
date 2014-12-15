@@ -28,6 +28,7 @@ class Matrix
         static Matrix CreateXAxisRotationMatrix(double angleInDegrees);
         static Matrix CreateYAxisRotationMatrix(double angleInDegrees);
         static Matrix CreateZAxisRotationMatrix(double angleInDegrees);
+        static Matrix CreateProjectMatrix(double zDistance);
 
     private:
         double* matrix_;

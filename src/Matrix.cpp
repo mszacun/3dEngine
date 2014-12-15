@@ -139,3 +139,13 @@ Matrix Matrix::CreateZAxisRotationMatrix(double angleInDegrees)
     return Matrix(matrixData);
 }
 
+Matrix Matrix::CreateProjectMatrix(double zDistance)
+{
+    std::vector<std::vector<double>> matrixData { { 1, 0, 0, 0 },
+                                                  { 0, 1, 0, 0 },
+                                                  { 0, 0, 0, 0 },
+                                                  { 0, 0, 1 / zDistance, 1} };
+
+    return Matrix(matrixData);
+}
+

@@ -3,33 +3,35 @@
 #include <QPushButton>
 #include <QPixmap>
 #include <QPainter>
-#include <sys/time.h>
-#include <functional>
+
+#include "Scene.h"
+#include "Matrix.h"
 
 const int HEIGHT = 1080;
 const int WIDTH = 1080;
-void BenchmarkQPixmap();
-
-long long Benchmark(const std::function<void()>& f)
-{
-    struct timeval start, end;
-    gettimeofday(&start, NULL);
-
-    f();
-
-    gettimeofday(&end, NULL);
-    return (end.tv_sec * (unsigned int)1e6 +   end.tv_usec) -
-         (start.tv_sec * (unsigned int)1e6 + start.tv_usec);
-}
-
 
 int main(int argc, char** argv)
 {
 
         QApplication app (argc, argv);
 
-        for (int i = 0; i < 10; i++)
-            std::cout << Benchmark(BenchmarkQPixmap) << std::endl;
+        Scene3D scene;
+
+        scene.AddPoint(0, 0, 0);
+        scene.AddPoint(5, 0, 0);
+        scene.AddPoint(5, 0, 5);
+
+        scene.AddTriangle(0, 1, 2);
+
+        scene.Transform(Matrix::CreateTranslationMatrix(10, 10, 10));
+        scene.Transform(Matrix::CreateScaleMatrix(2, 2, 2));
+
+        scene.SetObserverPosition(Point(0, 0, -7));
+        Scene2D s2 = scene.GetPerspectiveProjection();
+        std::cout << "P1: " << s2.triangles_[0].p1_.GetX() << " " << s2.triangles_[0].p1_.GetY() << std::endl;
+        std::cout << "P2: " << s2.triangles_[0].p2_.GetX() << " " << s2.triangles_[0].p2_.GetY() << std::endl;
+        std::cout << "P3: " << s2.triangles_[0].p3_.GetX() << " " << s2.triangles_[0].p3_.GetY() << std::endl;
+
         QPushButton button ("Hello world !");
         button.show();
 
@@ -37,12 +39,3 @@ int main(int argc, char** argv)
         return app.exec();
 }
 
-void BenchmarkQPixmap()
-{
-    QPixmap pixmap(WIDTH, HEIGHT);
-    QPainter painter(&pixmap);
-
-    for (int x = 0; x < WIDTH; x++)
-        for (int y = 0; y < HEIGHT; y++)
-            painter.drawPoint(x,y);
-}
