@@ -8,11 +8,13 @@ include_directories(${GTEST_INCLUDE_DIRS})
 enable_testing()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -ggdb")
+set(MOC_REQUIRED_HEADERS src/View.h)
+QT4_WRAP_CPP(HEADERS_MOCED ${MOC_REQUIRED_HEADERS})
 
 add_library(GrafikaZad3Lib src/Scene.cpp src/Triangle.cpp src/Matrix.cpp
     src/Point.cpp)
 
-add_executable (GrafikaZad3 src/main.cpp)
+add_executable (GrafikaZad3 src/main.cpp src/View.cpp ${HEADERS_MOCED})
 target_link_libraries(GrafikaZad3 ${QT_LIBRARIES} GrafikaZad3Lib)
 
 add_executable (UT tests/TestTests.cpp tests/PointTests.cpp tests/SceneTests.cpp

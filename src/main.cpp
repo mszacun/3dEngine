@@ -1,11 +1,10 @@
 #include <iostream>
 #include <QApplication>
-#include <QPushButton>
-#include <QPixmap>
-#include <QPainter>
+#include <QtGui>
 
 #include "Scene.h"
 #include "Matrix.h"
+#include "View.h"
 
 const int HEIGHT = 1080;
 const int WIDTH = 1080;
@@ -18,8 +17,8 @@ int main(int argc, char** argv)
         Scene3D scene;
 
         scene.AddPoint(0, 0, 0);
-        scene.AddPoint(5, 0, 0);
-        scene.AddPoint(5, 0, 5);
+        scene.AddPoint(10, 0, 0);
+        scene.AddPoint(10, 0, 10);
 
         scene.AddTriangle(0, 1, 2);
 
@@ -32,8 +31,17 @@ int main(int argc, char** argv)
         std::cout << "P2: " << s2.triangles_[0].p2_.GetX() << " " << s2.triangles_[0].p2_.GetY() << std::endl;
         std::cout << "P3: " << s2.triangles_[0].p3_.GetX() << " " << s2.triangles_[0].p3_.GetY() << std::endl;
 
-        QPushButton button ("Hello world !");
-        button.show();
+        QWidget window;
+        window.resize(500, 500);
+        window.show();
+
+        View* view = new View;       
+        view->SetScene(s2);
+
+        QLayout* layout = new QVBoxLayout;
+        layout->addWidget(view);
+
+        window.setLayout(layout);
 
 
         return app.exec();
