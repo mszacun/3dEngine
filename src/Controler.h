@@ -1,19 +1,23 @@
 #ifndef CONTROLER_H
 #define CONTROLER_H
 
-#include "View.h"
+#include <memory>
+
 #include "Scene.h"
+
+class View;
+typedef std::weak_ptr<View> ViewWeakPtr;
 
 class Controler
 {
     public:
         Controler(const Scene3D& scene);
-        void SetView(ViewPtr view);
+        void SetView(ViewWeakPtr view);
 
         Scene2D GetPerspectiveProjection() const;
 
     private:
-        ViewPtr view_;
+        ViewWeakPtr view_;
         Scene3D scene_;
 };
 
