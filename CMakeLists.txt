@@ -14,7 +14,7 @@ QT4_WRAP_CPP(HEADERS_MOCED ${MOC_REQUIRED_HEADERS})
 add_library(GrafikaZad3Lib src/Scene.cpp src/Triangle.cpp src/Matrix.cpp
     src/Point.cpp)
 
-add_executable (GrafikaZad3 src/main.cpp src/View.cpp ${HEADERS_MOCED})
+add_executable (GrafikaZad3 src/main.cpp src/View.cpp src/Controler.cpp ${HEADERS_MOCED})
 target_link_libraries(GrafikaZad3 ${QT_LIBRARIES} GrafikaZad3Lib)
 
 add_executable (UT tests/TestTests.cpp tests/PointTests.cpp tests/SceneTests.cpp

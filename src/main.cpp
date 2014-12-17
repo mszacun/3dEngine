@@ -5,6 +5,7 @@
 #include "Scene.h"
 #include "Matrix.h"
 #include "View.h"
+#include "Controler.h"
 
 const int HEIGHT = 1080;
 const int WIDTH = 1080;
@@ -25,21 +26,19 @@ int main(int argc, char** argv)
         scene.Transform(Matrix::CreateTranslationMatrix(10, 10, 10));
         scene.Transform(Matrix::CreateScaleMatrix(2, 2, 2));
 
-        scene.SetObserverPosition(Point(0, 0, -7));
-        Scene2D s2 = scene.GetPerspectiveProjection();
-        std::cout << "P1: " << s2.triangles_[0].p1_.GetX() << " " << s2.triangles_[0].p1_.GetY() << std::endl;
-        std::cout << "P2: " << s2.triangles_[0].p2_.GetX() << " " << s2.triangles_[0].p2_.GetY() << std::endl;
-        std::cout << "P3: " << s2.triangles_[0].p3_.GetX() << " " << s2.triangles_[0].p3_.GetY() << std::endl;
-
         QWidget window;
         window.resize(500, 500);
         window.show();
 
-        View* view = new View;       
-        view->SetScene(s2);
+        ViewPtr view = std::make_shared<View>();
+        ControlerPtr controler = std::make_shared<Controler>(scene);
+
+        view->SetControler(controler);
+        controler->SetView(view);
+
 
         QLayout* layout = new QVBoxLayout;
-        layout->addWidget(view);
+        layout->addWidget(view.get());
 
         window.setLayout(layout);
 
