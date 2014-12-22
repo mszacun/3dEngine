@@ -17,14 +17,16 @@ int main(int argc, char** argv)
 
         Scene3D scene;
 
-        scene.AddPoint(0, 0, 0);
-        scene.AddPoint(10, 0, 0);
-        scene.AddPoint(10, 0, 10);
+        scene.AddPoint(1, 1, 1);
+        scene.AddPoint(-1, 1, 1);
+        scene.AddPoint(1, -1, 1);
+        scene.AddPoint(-1, -1, 1);
 
-        scene.AddTriangle(0, 1, 2);
+        scene.AddTriangle(1, 0, 2);
+        scene.AddTriangle(1, 2, 3);
 
-        scene.Transform(Matrix::CreateTranslationMatrix(10, 10, 10));
-        scene.Transform(Matrix::CreateScaleMatrix(2, 2, 2));
+        scene.Transform(Matrix::CreateTranslationMatrix(3, 3, 0));
+        scene.Transform(Matrix::CreateScaleMatrix(20, 20, 70));
 
         QWidget window;
         window.resize(500, 500);
