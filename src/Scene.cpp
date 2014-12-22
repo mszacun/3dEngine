@@ -28,9 +28,10 @@ void Scene3D::SetObserverPosition(const Point& newPosition)
 Scene2D Scene3D::GetPerspectiveProjection() const
 {
     Scene2D result;
+    Matrix transformationMatrix = Matrix::CreateProjectMatrix(-observatorPosition_.GetZ());
 
     for (const Triangle3D& t : triangles_)
-        result.AddTriangle(ProjectTrianglePerspectively(t));
+        result.AddTriangle(ProjectTrianglePerspectively(t, transformationMatrix));
 
     return result;
 }
@@ -41,10 +42,9 @@ void Scene3D::Transform(const Matrix& transformationMatrix)
         p = p.Transform(transformationMatrix);
 }
 
-Triangle2D Scene3D::ProjectTrianglePerspectively(const Triangle3D& triangle) const
+Triangle2D Scene3D::ProjectTrianglePerspectively(const Triangle3D& triangle,
+        const Matrix& transformationMatrix) const
 {
-    Matrix transformationMatrix = Matrix::CreateProjectMatrix(-observatorPosition_.GetZ());
-
      return Triangle2D(points_[triangle.GetP1()].Transform(transformationMatrix),
          points_[triangle.GetP2()].Transform(transformationMatrix),
          points_[triangle.GetP3()].Transform(transformationMatrix));

@@ -34,7 +34,8 @@ class Scene3D
 
         Point observatorPosition_;
 
-        Triangle2D ProjectTrianglePerspectively(const Triangle3D& triangle) const;
+        Triangle2D ProjectTrianglePerspectively(const Triangle3D& triangle,
+                const Matrix& transformationMatrix) const;
 
 };
 
