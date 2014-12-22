@@ -10,3 +10,7 @@ Triangle2D::Triangle2D(const Point& p1, const Point& p2, const Point& p3) :
 {
 }
 
+bool Triangle2D::operator==(const Triangle2D right) const
+{
+    return p1_ == right.p1_ && p2_ == right.p2_ && p3_ == right.p3_;
+}

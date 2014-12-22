@@ -26,6 +26,8 @@ struct Triangle2D
     Point p3_;
 
     Triangle2D(const Point& p1, const Point& p2, const Point& p3);
+
+    bool operator==(const Triangle2D right) const;
 };
 
 #endif

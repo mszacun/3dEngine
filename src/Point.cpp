@@ -17,3 +17,10 @@ Point Point::Transform(const Matrix& transformationMatrix) const
         transformedPointMatrix.GetElement(1, 0) / w,
         transformedPointMatrix.GetElement(2, 0) / w);
 }
+
+bool Point::operator==(const Point& right) const
+{
+    return std::abs(x_ - right.x_) <= EPSILON && 
+        std::abs(y_ - right.y_) <= EPSILON && 
+        std::abs(z_ - right.z_) <= EPSILON;
+}

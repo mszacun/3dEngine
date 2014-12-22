@@ -1,7 +1,10 @@
 #ifndef POINT_H
 #define POINT_H
 
+#define EPSILON 0.0001
+
 #include "Matrix.h"
+#include <cmath>
 
 class Point
 {
@@ -16,6 +19,8 @@ class Point
         double GetZ() const { return z_; }
 
         Point Transform(const Matrix& transformationMatrix) const;
+
+        bool operator==( const Point& right) const;
 
     private:
         double x_;

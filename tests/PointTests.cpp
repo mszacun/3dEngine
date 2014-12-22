@@ -68,3 +68,10 @@ TEST(PointTests, ShouldRotatePointAroundZAxis){
     EXPECT_DOUBLE_EQ(0.5 + sqrt(3), result.GetY());
     EXPECT_DOUBLE_EQ(3, result.GetZ());
 }
+
+TEST(PointTests, PointsShouldBeEqualWhenEpsilonIsMet){
+    Point p(1, 2, 3);
+    Point p2(1.0000001, 2.000003, 3.00002);
+
+    EXPECT_TRUE(p == p2);
+}
