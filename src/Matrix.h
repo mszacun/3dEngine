@@ -5,6 +5,7 @@
 #include <cstring>
 #include <cmath>
 #include <iostream>
+#include <armadillo>
 
 class Matrix
 {
@@ -17,6 +18,9 @@ class Matrix
 
         double GetElement(const int& row, const int& col) const;
         void SetElement(const int& row, const int& col, const double& val);
+
+        int GetWidth() const { return matrix_.n_cols; }
+        int GetHeight() const { return matrix_.n_rows; }
 
         bool operator==(const Matrix& right);
         Matrix operator*(double number) const;
@@ -38,9 +42,7 @@ class Matrix
         static Matrix CreateProjectMatrix(double zDistance);
 
     private:
-        double* matrix_;
-        const unsigned int width_;
-        const unsigned int height_;
+        arma::mat matrix_;
 
         Matrix(const Matrix& other);
         double Det() const;
