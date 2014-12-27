@@ -18,6 +18,9 @@ class Matrix
         void SetElement(const int& row, const int& col, const double& val);
 
         bool operator==(const Matrix& right);
+        Matrix operator*(double number) const;
+
+        Matrix Invert3x3Matrix() const;
 
         static void Multiply(const Matrix& m1, const Matrix& m2, Matrix& result);
 
@@ -36,6 +39,7 @@ class Matrix
         const unsigned int height_;
 
         Matrix(const Matrix& other);
+        double Det() const;
 };
 
 #endif

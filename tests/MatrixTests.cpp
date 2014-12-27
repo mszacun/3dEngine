@@ -50,3 +50,15 @@ TEST(MatrixTests, ShouldMultipleTwoMatrixes){
     EXPECT_TRUE(expectedResult == result);
 }
 
+TEST(MatrixTests, ShouldInvertMatrix)
+{
+    vector<vector<double>> matrixData { { 1, 2, 3 }, { 0, 1, 4 }, { 5, 6, 0 } };
+    vector<vector<double>> expectedData{ { -24, 18, 5 }, { 20, -15, -4 }, { -5, 4, 1 } };
+
+    Matrix original(matrixData);
+    Matrix expectedInverted(expectedData);
+
+    Matrix invertedMatrix = original.Invert3x3Matrix();
+
+    EXPECT_TRUE(expectedInverted ==  invertedMatrix);
+}
