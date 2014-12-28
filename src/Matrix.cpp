@@ -97,6 +97,17 @@ Matrix Matrix::operator*(double number) const
     return result;
 }
 
+Matrix Matrix::operator-(const Matrix& right) const
+{
+    Matrix result(width_, height_);
+
+    for (unsigned int row = 0; row < height_; row++)
+        for (unsigned int col = 0; col < width_; col++)
+            result.SetElement(row, col, GetElement(row, col) - right.GetElement(row, col));
+
+    return result;
+}
+
 Matrix Matrix::Invert3x3Matrix() const
 {
     double det = Det();
@@ -119,6 +130,17 @@ Matrix Matrix::Invert3x3Matrix() const
     };
     Matrix semiInverted(matrixData);
     return semiInverted * (1 / det);
+}
+
+void Matrix::Print() const
+{
+    std::cout.width(3);
+    for (int i = 0; i < height_; i++)
+    {
+        for (int j = 0; j < width_; j++)
+            std::cout << GetElement(i, j);
+        std::cout << std::endl;
+    }
 }
 
 double Matrix::Det() const

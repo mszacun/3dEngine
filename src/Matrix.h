@@ -4,6 +4,7 @@
 #include <vector>
 #include <cstring>
 #include <cmath>
+#include <iostream>
 
 class Matrix
 {
@@ -19,8 +20,11 @@ class Matrix
 
         bool operator==(const Matrix& right);
         Matrix operator*(double number) const;
+        Matrix operator-(const Matrix& right) const;
 
         Matrix Invert3x3Matrix() const;
+
+        void Print() const;
 
         static void Multiply(const Matrix& m1, const Matrix& m2, Matrix& result);
 

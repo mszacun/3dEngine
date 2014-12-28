@@ -50,6 +50,30 @@ TEST(MatrixTests, ShouldMultipleTwoMatrixes){
     EXPECT_TRUE(expectedResult == result);
 }
 
+TEST(MatrixTests, ShouldSubtractTwoMatrixes){
+    vector<vector<double>> m1Data {
+                            { 1, 2, 3 },
+                            { 4, 5, 6 },
+                            { 7, 8, 9 }
+                          };
+    vector<vector<double>> m2Data {
+                            { 2, 5, 8 },
+                            { 1, -2, 0 },
+                            { 4, 0, -3 }
+                          };
+    vector<vector<double>> resultData {
+                                        { -1, -3, -5 },
+                                        { 3, 7, 6 },
+                                        { 3, 8, 12 }
+                                      };
+    Matrix m1(m1Data);
+    Matrix m2(m2Data);
+    Matrix expectedResult(resultData);
+    Matrix result = m1 - m2;
+
+    EXPECT_TRUE(expectedResult == result);
+}
+
 TEST(MatrixTests, ShouldInvertMatrix)
 {
     vector<vector<double>> matrixData { { 1, 2, 3 }, { 0, 1, 4 }, { 5, 6, 0 } };
