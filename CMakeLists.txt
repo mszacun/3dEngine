@@ -12,13 +12,13 @@ set(MOC_REQUIRED_HEADERS src/View.h)
 QT4_WRAP_CPP(HEADERS_MOCED ${MOC_REQUIRED_HEADERS})
 
 add_library(GrafikaZad3Lib src/Scene.cpp src/Triangle.cpp src/Matrix.cpp
-    src/Point.cpp src/Interpolator.cpp)
+    src/Point.cpp src/Interpolator.cpp src/Vector.cpp)
 
 add_executable (GrafikaZad3 src/main.cpp src/View.cpp src/Controler.cpp ${HEADERS_MOCED})
 target_link_libraries(GrafikaZad3 ${QT_LIBRARIES} GrafikaZad3Lib)
 
 add_executable (UT tests/TestTests.cpp tests/PointTests.cpp tests/SceneTests.cpp
-    tests/MatrixTests tests/InterpolatorTests.cpp)
+    tests/MatrixTests tests/InterpolatorTests.cpp tests/VectorTests.cpp)
 target_link_libraries(UT ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} pthread GrafikaZad3Lib)
 add_test(ut, UT)
 
