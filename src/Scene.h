@@ -20,7 +20,12 @@ class Scene3D
         Scene3D();
 
         void AddPoint(const int& x, const int& y, const int& z);
+        void AddPoint(const Point& p);
         void AddTriangle(const int& p1, const int& p2, const int& p3);
+        void AddTriangle(const Triangle3D& triangle);
+
+        std::vector<Point> GetPoints() const { return points_; }
+        std::vector<Triangle3D> GetTriangles() const { return triangles_; }
 
         void SetObserverPosition(const Point& newPosition);
 

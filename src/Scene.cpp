@@ -14,9 +14,19 @@ void Scene3D::AddPoint(const int& x, const int& y, const int& z)
     points_.push_back(Point(x, y, z));
 }
 
+void Scene3D::AddPoint(const Point& p)
+{
+    points_.push_back(p);
+}
+
 void Scene3D::AddTriangle(const int& p1, const int& p2, const int& p3)
 {
     Triangle3D triangle(p1, p2, p3);
+    triangles_.push_back(triangle);
+}
+
+void Scene3D::AddTriangle(const Triangle3D& triangle)
+{
     triangles_.push_back(triangle);
 }
 

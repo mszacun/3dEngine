@@ -13,6 +13,8 @@ class Triangle3D
         unsigned int GetP2() const { return p2_; }
         unsigned int GetP3() const { return p3_; }
 
+        bool operator==(const Triangle3D& right) const;
+
     private:
         unsigned int p1_;
         unsigned int p2_;
