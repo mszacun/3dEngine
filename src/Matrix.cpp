@@ -21,6 +21,11 @@ Matrix::Matrix(const std::vector<std::vector<double>>& matrix):
             matrix_(i, j) = matrix[i][j];
 }
 
+Matrix::Matrix(const arma::mat& matrix)
+{
+    matrix_ = matrix;
+}
+
 Matrix::~Matrix()
 {
 }
@@ -67,13 +72,7 @@ void Matrix::Multiply(const Matrix& left, const Matrix& right, Matrix& result)
 
 Matrix Matrix::operator*(double number) const
 {
-    Matrix result(width_, height_);
-
-    for (unsigned int row = 0; row < height_; row++)
-        for (unsigned int col = 0; col < width_; col++)
-            result.SetElement(row, col, GetElement(row, col) * number);
-
-    return result;
+    return Matrix(matrix_ * number);
 }
 
 Matrix Matrix::operator-(const Matrix& right) const
@@ -89,26 +88,7 @@ Matrix Matrix::operator-(const Matrix& right) const
 
 Matrix Matrix::Invert3x3Matrix() const
 {
-    double det = Det();
-    std::vector<std::vector<double>> matrixData  {
-        {
-            GetElement(1, 1) * GetElement(2, 2) - GetElement(1, 2) * GetElement(2, 1),
-            GetElement(0, 2) * GetElement(2, 1) - GetElement(0, 1) * GetElement(2, 2),
-            GetElement(0, 1) * GetElement(1, 2) - GetElement(0, 2) * GetElement(1, 1)
-        },
-        {
-            GetElement(1, 2) * GetElement(2, 0) - GetElement(1, 0) * GetElement(2, 2),
-            GetElement(0, 0) * GetElement(2, 2) - GetElement(0, 2) * GetElement(2, 0),
-            GetElement(0, 2) * GetElement(1, 0) - GetElement(0, 0) * GetElement(1, 2)
-        },
-        {
-            GetElement(1, 0) * GetElement(2, 1) - GetElement(1, 1) * GetElement(2, 0),
-            GetElement(0, 1) * GetElement(2, 0) - GetElement(0, 0) * GetElement(2, 1),
-            GetElement(0, 0) * GetElement(1, 1) - GetElement(0, 1) * GetElement(1, 0)
-        }
-    };
-    Matrix semiInverted(matrixData);
-    return semiInverted * (1 / det);
+    return Matrix(matrix_.i());
 }
 
 void Matrix::Print() const

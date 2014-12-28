@@ -12,6 +12,7 @@ class Matrix
     public:
         Matrix(const int& n);
         Matrix(const int& width, const int& height);
+        Matrix(const arma::mat& matrix);
         Matrix(const std::vector<std::vector<double>>& matrix);
         Matrix(Matrix&& other);
         ~Matrix();
