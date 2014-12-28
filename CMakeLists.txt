@@ -24,7 +24,7 @@ target_link_libraries(GrafikaZad3 ${QT_LIBRARIES} ${ARMADILLO_LIBRARIES}
     ${LAPACK_LIBRARIES} ${BLAS_LIBRARIES} GrafikaZad3Lib)
 add_executable (UT tests/TestTests.cpp tests/PointTests.cpp tests/SceneTests.cpp
     tests/MatrixTests tests/InterpolatorTests.cpp tests/VectorTests.cpp
-    test/ObjDeserializerTests.cpp)
+    tests/ObjDeserializerTests.cpp)
 target_link_libraries(UT ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES}
     ${ARMADILLO_LIBRARIES} ${LAPACK_LIBRARIES} ${BLAS_LIBRARIES} 
     ${QT_LIBRARIES} pthread GrafikaZad3Lib)
