@@ -77,13 +77,7 @@ Matrix Matrix::operator*(double number) const
 
 Matrix Matrix::operator-(const Matrix& right) const
 {
-    Matrix result(width_, height_);
-
-    for (unsigned int row = 0; row < height_; row++)
-        for (unsigned int col = 0; col < width_; col++)
-            result.SetElement(row, col, GetElement(row, col) - right.GetElement(row, col));
-
-    return result;
+    return Matrix(matrix_ - right.matrix_);
 }
 
 Matrix Matrix::Invert3x3Matrix() const
@@ -93,9 +87,9 @@ Matrix Matrix::Invert3x3Matrix() const
 
 void Matrix::Print() const
 {
-    for (unsigned int i = 0; i < height_; i++)
+    for (int i = 0; i < GetHeight(); i++)
     {
-        for (unsigned int j = 0; j < width_; j++)
+        for (int j = 0; j < GetWidth(); j++)
         {
             std::cout.width(7);
             std::cout << GetElement(i, j);
