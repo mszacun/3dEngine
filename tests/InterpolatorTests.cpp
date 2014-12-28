@@ -28,3 +28,21 @@ TEST(InterpolatorTests, ShouldConvertCoordinatesToBarycentric2){
     EXPECT_NEAR(barycentric.l2, 0.5, 0.0001);
     EXPECT_NEAR(barycentric.l3, 0.0, 0.0001);
 }
+
+TEST(InterpolatorTests, ShouldInterpolateNumbers){
+    Point p1(-7, 5, 3);
+    int p1Value = 10;
+
+    Point p2(3, 2, 3);
+    int p2Value = 2;
+
+    Point p3(-2, -2, 3);
+    int p3Value = -20;
+
+    Point interpolatedPoint(-1, 0, 3);
+    Triangle3DInterpolator<double> interpolator(p1, p1Value, p2, p2Value, p3, p3Value);
+
+    double interpolatedValue = interpolator.Interpolate(interpolatedPoint);
+
+    EXPECT_NEAR(interpolatedValue, -9.928, 0.001);
+}
