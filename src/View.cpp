@@ -42,6 +42,61 @@ void View::paintEvent(QPaintEvent* event)
     DrawTriangle(Point(100, 100, 0), Point(0, 100, 0), Point(100, 200, 0), p, painter);
 }
 
+void SortVertices(const Point& p1, const Point& p2, const Point& p3,
+        Point& left, Point& center, Point& right)
+{
+    if (p1.GetX() < p2.GetX())
+    {
+        if (p1.GetX() < p3.GetX())
+        {
+            left = p1;
+            if (p3.GetX() < p2.GetX())
+            {
+                center = p3;
+                right = p2;
+            }
+            else
+            {
+                center = p2;
+                right = p3;
+            }
+        }
+        else
+        {
+            left = p3;
+            center = p1;
+            right = p2;
+        }
+    }
+    else
+    {
+        if (p2.GetX() < p3.GetX())
+        {
+            left = p2;
+            if (p3.GetX() < p1.GetX())
+            {
+                center = p3;
+                right = p1;
+            }
+            else
+            {
+                center = p1;
+                right = p3;
+            }
+        }
+        else
+        {
+            left = p3;
+            center = p2;
+            right = p1;
+        }
+    }
+    if (center.GetY() == left.GetY())
+        std::swap(center, right);
+    if (center.GetY() == right.GetY())
+        std::swap(center, left);
+}
+
 void DrawTriangle2(const Point& p1, const Point& p2, const Point& p3, QColor& color, QPainter& painter)
 {
     // inv: p2 and p3 are on the same line, p1 is peak of triangle
@@ -68,28 +123,28 @@ void View::DrawTriangle(const Point& p1, const Point& p2, const Point& p3, QColo
     // inv: p2 is on the left of p3
     QColor c1("black");
     QColor c2("yellow");
-    Point left = p2.GetX() < p3.GetX() ? p2 : p3;
-    Point right = p2.GetX() >= p3.GetX() ? p2 : p3;
+    Point left, right, center;
+    SortVertices(p1, p2, p3, left, center, right);
     if (left.GetY() == right.GetY())
-        DrawTriangle2(p1, left, right, color, painter);
+        DrawTriangle2(center, left, right, color, painter);
     else
     {
         if (left.GetY() < right.GetY())
         {
             double y = left.GetY();
-            double betay = (y - right.GetY()) / (p1.GetY() - right.GetY());
-            double xr = betay * p1.GetX() + (1 - betay) * right.GetX();
+            double betay = (y - right.GetY()) / (center.GetY() - right.GetY());
+            double xr = betay * center.GetX() + (1 - betay) * right.GetX();
 
-            DrawTriangle2(p1, left, Point(xr, left.GetY(), 0), c1, painter);
+            DrawTriangle2(center, left, Point(xr, left.GetY(), 0), c1, painter);
             DrawTriangle2(right, left, Point(xr, left.GetY(), 0), c2, painter);
         }
         else
         {
             double y = right.GetY();
-            double betay = (y - left.GetY()) / (p1.GetY() - left.GetY());
-            double xl = betay * p1.GetX() + (1 - betay) * left.GetX();
+            double betay = (y - left.GetY()) / (center.GetY() - left.GetY());
+            double xl = betay * center.GetX() + (1 - betay) * left.GetX();
 
-            DrawTriangle2(p1, Point(xl, right.GetY(), 0), right, c1, painter);
+            DrawTriangle2(center, Point(xl, right.GetY(), 0), right, c1, painter);
             DrawTriangle2(left, Point(xl, right.GetY(), 0), right, c2, painter);
         }
     }

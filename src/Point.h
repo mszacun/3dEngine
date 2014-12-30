@@ -10,6 +10,7 @@ class Point
 {
 
     public:
+        Point() : Point(0, 0, 0) {}
         Point(double x, double y, double z): x_(x), y_(y), z_(z)
         {
         }
