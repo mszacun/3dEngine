@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QPainter>
 #include <memory>
+#include <cassert>
 
 #include "Scene.h"
 
@@ -29,6 +30,8 @@ class View : public QWidget
     private:
         Scene2D scene_;
         ControlerPtr controler_;
+
+        void DrawTriangle(const Point& p1, const Point& p2, const Point& p3, QColor& color, QPainter& painter);
 
 };
 
