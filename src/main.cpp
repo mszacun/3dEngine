@@ -26,7 +26,7 @@ int main(int argc, char** argv)
         scene.AddTriangle(1, 2, 3);
 
         scene.Transform(Matrix::CreateTranslationMatrix(3, 3, 0));
-        scene.Transform(Matrix::CreateScaleMatrix(20, 20, 70));
+        scene.Transform(Matrix::CreateScaleMatrix(20, 20, 7));
 
         QWidget window;
         window.resize(500, 500);

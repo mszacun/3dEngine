@@ -11,6 +11,10 @@ class Vector
 
         Vector operator+(const Vector& right) const;
         Vector operator*(double scalar) const;
+        Vector operator-() const;
+        Vector Cross(const Vector& right) const;
+        Vector Normalize() const;
+        double Length() const;
 
         bool operator==(const Vector& right) const;
 

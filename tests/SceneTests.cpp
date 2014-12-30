@@ -1,18 +1,6 @@
 #include <gtest/gtest.h>
 #include "../src/Scene.h"
 
-TEST(SceneTests, ShouldAddPoint){
-    Scene3D s;
-
-    s.AddPoint(3, 5, 10);
-}
-
-TEST(SceneTests, ShouldAddTriangle){
-    Scene3D s;
-
-    s.AddTriangle(3, 5, 10);
-}
-
 // test based on output, transforms plane into plane, doesnt deform it
 TEST(SceneTests, ShouldTransformPerspectively){
     Scene3D scene;
@@ -75,3 +63,22 @@ TEST(SceneTests, ShouldTransformFartherPointsSmaller){
     EXPECT_TRUE(expectedProjectedTriangle1 == perspectiveProjection.triangles_[0]);
     EXPECT_TRUE(expectedProjectedTriangle2 == perspectiveProjection.triangles_[1]);
 }
+
+TEST(SceneTests, ShouldCalculateTriangleNormalVector)
+{
+    Point p1(-1, 0, 5);
+    Point p2(2, -4, 8);
+    Point p3(5, 0, 0);
+    Scene3D scene;
+    Triangle3D triangle(0, 1, 2);
+    Vector expectedNormal(-4*sqrt(5.0/413.0), -33/sqrt(2065), -24/sqrt(2065));
+
+    scene.AddPoint(p1);
+    scene.AddPoint(p2);
+    scene.AddPoint(p3);
+
+    Vector calculatedNormal = scene.CalculateNormal(triangle);
+
+    EXPECT_TRUE(calculatedNormal == expectedNormal || -calculatedNormal == expectedNormal);
+}
+

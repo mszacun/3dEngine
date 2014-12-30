@@ -37,3 +37,20 @@ TEST(VectorTests, ShouldMultiplyVectorTimesScalar){
 
     EXPECT_TRUE(v * scalar == expectedVector);
 }
+
+TEST(VectorTests, ShouldCalculateCrossProduct)
+{
+    Vector v1(3, -3, 1);
+    Vector v2(4, 9, 2);
+    Vector expectedCrossProduct(-15, -2, 39);
+
+    EXPECT_TRUE(v1.Cross(v2) == expectedCrossProduct);
+}
+
+TEST(VectorTests, ShouldCalculateVectorLength)
+{
+    Vector v(1, 2, 3);
+
+    EXPECT_NEAR(3.742, v.Length(), 0.001);
+}
+

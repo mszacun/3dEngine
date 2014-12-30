@@ -22,13 +22,23 @@ void Scene3D::AddPoint(const Point& p)
 void Scene3D::AddTriangle(const int& p1, const int& p2, const int& p3)
 {
     Triangle3D triangle(p1, p2, p3);
-    triangles_.push_back(triangle);
+    AddTriangle(triangle);
 }
 
 void Scene3D::AddTriangle(const Triangle3D& triangle)
 {
     triangles_.push_back(triangle);
+    trianglesNormals_.push_back(CalculateNormal(triangle));
 }
+
+Vector Scene3D::CalculateNormal(const Triangle3D& triangle) const
+{
+    Vector v1(points_[triangle.GetP2()], points_[triangle.GetP1()]);
+    Vector v2(points_[triangle.GetP2()], points_[triangle.GetP3()]);
+
+    return v1.Cross(v2).Normalize();
+}
+
 
 void Scene3D::SetObserverPosition(const Point& newPosition)
 {

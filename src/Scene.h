@@ -5,6 +5,7 @@
 #include <unordered_set>
 
 #include "Point.h"
+#include "Vector.h"
 #include "Triangle.h"
 
 class Scene2D
@@ -27,6 +28,8 @@ class Scene3D
         std::vector<Point> GetPoints() const { return points_; }
         std::vector<Triangle3D> GetTriangles() const { return triangles_; }
 
+        Vector CalculateNormal(const Triangle3D& triangle) const;
+
         void SetObserverPosition(const Point& newPosition);
 
         Scene2D GetPerspectiveProjection() const;
@@ -36,6 +39,7 @@ class Scene3D
     private:
         std::vector<Point> points_;
         std::vector<Triangle3D> triangles_;
+        std::vector<Vector> trianglesNormals_;
 
         Point observatorPosition_;
 
