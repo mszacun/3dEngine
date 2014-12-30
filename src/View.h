@@ -31,8 +31,6 @@ class View : public QWidget
         Scene2D scene_;
         ControlerPtr controler_;
 
-        void DrawTriangle(const Point& p1, const Point& p2, const Point& p3, QColor& color, QPainter& painter);
-
 };
 
 typedef std::shared_ptr<View> ViewPtr;

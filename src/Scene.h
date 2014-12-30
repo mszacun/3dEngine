@@ -3,6 +3,8 @@
 
 #include <vector>
 #include <unordered_set>
+#include <QWidget>
+#include <QPainter>
 
 #include "Point.h"
 #include "Vector.h"
@@ -35,6 +37,7 @@ class Scene3D
         void SetObserverPosition(const Point& newPosition);
 
         Scene2D GetPerspectiveProjection() const;
+        QImage RenederPerspectiveProjection() const;
 
         void Transform(const Matrix& transformationMatrix);
 

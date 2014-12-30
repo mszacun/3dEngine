@@ -15,6 +15,7 @@ class Controler
         void SetView(ViewWeakPtr view);
 
         Scene2D GetPerspectiveProjection() const;
+        QImage GetRenderedPerspectiveView() const;
 
     private:
         ViewWeakPtr view_;
