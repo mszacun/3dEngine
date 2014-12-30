@@ -33,12 +33,33 @@ void Scene3D::AddTriangle(const Triangle3D& triangle)
 
 Vector Scene3D::CalculateNormal(const Triangle3D& triangle) const
 {
-    Vector v1(points_[triangle.GetP2()], points_[triangle.GetP1()]);
+    Vector v1(points_[triangle.GetP1()], points_[triangle.GetP2()]);
     Vector v2(points_[triangle.GetP2()], points_[triangle.GetP3()]);
 
     return v1.Cross(v2).Normalize();
 }
 
+Vector Scene3D::CalculatePointNormal(int pointNumber) const
+{
+    Vector sum(0, 0, 0);
+
+    for (int i = 0; i < triangles_.size(); i++)
+    {
+        if (triangles_[i].GetP1() == pointNumber ||
+                triangles_[i].GetP2() == pointNumber ||
+                triangles_[i].GetP3() == pointNumber)
+            sum = sum + trianglesNormals_[i];
+    }
+
+    return sum.Normalize();
+}
+
+void Scene3D::RecalculateNormals()
+{
+    pointsNormals_.clear();
+    for (int i = 0; i < points_.size(); i++)
+        pointsNormals_.push_back(CalculatePointNormal(i));
+}
 
 void Scene3D::SetObserverPosition(const Point& newPosition)
 {

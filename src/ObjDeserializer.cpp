@@ -15,6 +15,8 @@ Scene3D ObjDeserializer::ParseFile(const std::string& filename) const
     }
 
     file.close();
+
+    result.RecalculateNormals();
     return result;
 }
 
