@@ -37,5 +37,5 @@ Triangle3D ObjDeserializer::ParseTriangle(const std::string& triangleInfo) const
 
     stream >> f >> p1 >> p2 >> p3;
 
-    return Triangle3D(std::stoi(p1), std::stoi(p2), std::stoi(p3));
+    return Triangle3D(std::stoi(p1) - 1, std::stoi(p2) - 1, std::stoi(p3) - 1);
 }

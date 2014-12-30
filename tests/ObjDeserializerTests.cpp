@@ -39,9 +39,10 @@ TEST(ObjDeserializerTests, ShouldParseTriangleInfo)
     Triangle3D deserialized = deserializer.ParseTriangle(triangleInfo);
 
 
-    EXPECT_EQ(1, deserialized.GetP1());
-    EXPECT_EQ(2, deserialized.GetP2());
-    EXPECT_EQ(3, deserialized.GetP3());
+    // in obj file vertices are 1-base, we need them 0-based
+    EXPECT_EQ(0, deserialized.GetP1());
+    EXPECT_EQ(1, deserialized.GetP2());
+    EXPECT_EQ(2, deserialized.GetP3());
 }
 
 TEST(ObjDeserializerTests, ShouldParseObjFile)
@@ -57,8 +58,8 @@ TEST(ObjDeserializerTests, ShouldParseObjFile)
     };
     std::vector<Triangle3D> expectedTriangles
     {
-        Triangle3D(2, 1, 3),
-        Triangle3D(2, 3, 4)
+        Triangle3D(1, 0, 2),
+        Triangle3D(1, 2, 3)
     };
 
     Scene3D deserializedScene = deserializer.ParseFile(testObjFilePath);
