@@ -40,11 +40,11 @@ Vector Scene3D::CalculateNormal(const Triangle3D& triangle) const
     return v1.Cross(v2).Normalize();
 }
 
-Vector Scene3D::CalculatePointNormal(int pointNumber) const
+Vector Scene3D::CalculatePointNormal(unsigned int pointNumber) const
 {
     Vector sum(0, 0, 0);
 
-    for (int i = 0; i < triangles_.size(); i++)
+    for (unsigned int i = 0; i < triangles_.size(); i++)
     {
         if (triangles_[i].GetP1() == pointNumber ||
                 triangles_[i].GetP2() == pointNumber ||
@@ -58,7 +58,7 @@ Vector Scene3D::CalculatePointNormal(int pointNumber) const
 void Scene3D::RecalculateNormals()
 {
     pointsNormals_.clear();
-    for (int i = 0; i < points_.size(); i++)
+    for (unsigned int i = 0; i < points_.size(); i++)
         pointsNormals_.push_back(CalculatePointNormal(i));
 }
 

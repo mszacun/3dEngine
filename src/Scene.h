@@ -31,7 +31,7 @@ class Scene3D
         std::vector<Triangle3D> GetTriangles() const { return triangles_; }
 
         Vector CalculateNormal(const Triangle3D& triangle) const;
-        Vector CalculatePointNormal(int pointNumber) const;
+        Vector CalculatePointNormal(unsigned int pointNumber) const;
         void RecalculateNormals();
 
         void SetObserverPosition(const Point& newPosition);
