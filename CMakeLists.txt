@@ -12,7 +12,8 @@ set(MOC_REQUIRED_HEADERS src/View.h)
 QT4_WRAP_CPP(HEADERS_MOCED ${MOC_REQUIRED_HEADERS})
 
 add_library(GrafikaZad3Lib src/Scene.cpp src/Triangle.cpp src/Matrix.cpp
-    src/Point.cpp src/Interpolator.cpp src/Vector.cpp src/ObjDeserializer.cpp)
+    src/Point.cpp src/Interpolator.cpp src/Vector.cpp src/ObjDeserializer.cpp
+    src/FlatShader.cpp)
 
 add_executable (GrafikaZad3 src/main.cpp src/View.cpp src/Controler.cpp ${HEADERS_MOCED})
 target_link_libraries(GrafikaZad3 ${QT_LIBRARIES} GrafikaZad3Lib)

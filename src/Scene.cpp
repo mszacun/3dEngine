@@ -67,6 +67,16 @@ void Scene3D::SetObserverPosition(const Point& newPosition)
     observatorPosition_ = newPosition;
 }
 
+void Scene3D::SetLightPosition(const Point& newPosition)
+{
+    lightPosition_ = newPosition;
+}
+
+void Scene3D::SetLightColor(const QColor& color)
+{
+    lightColor_ = color;
+}
+
 Scene2D Scene3D::GetPerspectiveProjection() const
 {
     Scene2D result;
@@ -133,12 +143,11 @@ void SortVertices(const Point& p1, const Point& p2, const Point& p3,
         std::swap(center, left);
 }
 
-void DrawTriangleWithXParellGround(const Point& p1, const Point& p2, const Point& p3, QColor& color, QPainter& painter)
+void DrawTriangleWithXParellGround(const Point& p1, const Point& p2, const Point& p3, QPainter& painter, FlatShader& shader)
 {
     // inv: p2 and p3 are on the same line, p1 is peak of triangle
     assert(p2.GetY() == p3.GetY());
 
-    painter.setPen(color);
     double ystart = p1.GetY();
     double yend = p2.GetY();
     int direction = ystart < yend ? 1 : -1;
@@ -149,20 +158,21 @@ void DrawTriangleWithXParellGround(const Point& p1, const Point& p2, const Point
         double xr = betay * p1.GetX() + (1 - betay) * p3.GetX();
 
         for (int x = (int) xl; x < xr; x++)
+        {
+            painter.setPen(shader.GetColorForPixel(Point(x, y, 0)));
             painter.drawPoint(x, y);
+        }
 
     }
 }
 
-void DrawTriangle(const Point& p1, const Point& p2, const Point& p3, QColor& color, QPainter& painter)
+void DrawTriangle(const Point& p1, const Point& p2, const Point& p3, QPainter& painter, FlatShader& shader)
 {
     // inv: p2 is on the left of p3
-    QColor c1("black");
-    QColor c2("yellow");
     Point left, right, center;
     SortVertices(p1, p2, p3, left, center, right);
     if (left.GetY() == right.GetY())
-        DrawTriangleWithXParellGround(center, left, right, color, painter);
+        DrawTriangleWithXParellGround(center, left, right, painter, shader);
     else
     {
         if (left.GetY() < right.GetY())
@@ -171,8 +181,8 @@ void DrawTriangle(const Point& p1, const Point& p2, const Point& p3, QColor& col
             double betay = (y - right.GetY()) / (center.GetY() - right.GetY());
             double xr = betay * center.GetX() + (1 - betay) * right.GetX();
 
-            DrawTriangleWithXParellGround(center, left, Point(xr, left.GetY(), 0), c1, painter);
-            DrawTriangleWithXParellGround(right, left, Point(xr, left.GetY(), 0), c2, painter);
+            DrawTriangleWithXParellGround(center, left, Point(xr, left.GetY(), 0), painter, shader);
+            DrawTriangleWithXParellGround(right, left, Point(xr, left.GetY(), 0), painter, shader);
         }
         else
         {
@@ -180,8 +190,8 @@ void DrawTriangle(const Point& p1, const Point& p2, const Point& p3, QColor& col
             double betay = (y - left.GetY()) / (center.GetY() - left.GetY());
             double xl = betay * center.GetX() + (1 - betay) * left.GetX();
 
-            DrawTriangleWithXParellGround(center, Point(xl, right.GetY(), 0), right, c1, painter);
-            DrawTriangleWithXParellGround(left, Point(xl, right.GetY(), 0), right, c2, painter);
+            DrawTriangleWithXParellGround(center, Point(xl, right.GetY(), 0), right, painter, shader);
+            DrawTriangleWithXParellGround(left, Point(xl, right.GetY(), 0), right, painter, shader);
         }
     }
 
@@ -197,10 +207,28 @@ QImage Scene3D::RenederPerspectiveProjection() const
 
     Matrix transformationMatrix = Matrix::CreateProjectMatrix(-observatorPosition_.GetZ());
 
-    for (const Triangle3D& t : triangles_)
+    for (int i = 0; i < triangles_.size(); i++)
     {
+        const Triangle3D t = triangles_[i];
         Triangle2D t2 = ProjectTrianglePerspectively(t, transformationMatrix);
-        DrawTriangle(t2.p1_, t2.p2_, t2.p3_, c, painter);
+        TriangleShadingInfo shadingInfo;
+
+        shadingInfo.p1 = points_[t.GetP1()];
+        shadingInfo.p2 = points_[t.GetP2()];
+        shadingInfo.p3 = points_[t.GetP3()];
+
+        shadingInfo.p1Normal = pointsNormals_[t.GetP1()];
+        shadingInfo.p2Normal = pointsNormals_[t.GetP2()];
+        shadingInfo.p3Normal = pointsNormals_[t.GetP3()];
+
+        shadingInfo.triangleNormal = trianglesNormals_[i];
+
+        shadingInfo.observatorPosition = observatorPosition_;
+        shadingInfo.lightPosition = lightPosition_;
+        shadingInfo.lightColor = lightColor_;
+
+        FlatShader shader(shadingInfo);
+        DrawTriangle(t2.p1_, t2.p2_, t2.p3_, painter, shader);
     }
     
 

@@ -1,5 +1,9 @@
 #include "Vector.h"
 
+Vector::Vector() : Vector(0, 0, 0)
+{
+}
+
 Vector::Vector(double x, double y, double z): x_(x), y_(y), z_(z)
 {
 }
@@ -44,6 +48,15 @@ Vector Vector::Normalize() const
 double Vector::Length() const
 {
     return std::sqrt(x_ * x_ + y_ * y_ + z_ * z_);
+}
+
+double Vector::Dot(const Vector& right) const
+{
+    assert(Length() == 1);
+    assert(right.Length() == 1);
+
+
+    return x_ * right.x_ + y_ * right.y_ + z_ * right.z_;
 }
 
 bool Vector::operator==(const Vector& right) const

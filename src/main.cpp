@@ -28,6 +28,9 @@ int main(int argc, char** argv)
         scene.Transform(Matrix::CreateTranslationMatrix(3, 3, 0));
         scene.Transform(Matrix::CreateScaleMatrix(20, 20, 7));
 
+        scene.RecalculateNormals();
+        scene.SetLightColor(QColor("white"));
+
         QWidget window;
         window.resize(500, 500);
         window.show();

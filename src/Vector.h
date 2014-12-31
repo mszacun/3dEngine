@@ -2,10 +2,12 @@
 #define VECTOR_H
 
 #include "Point.h"
+#include <cassert>
 
 class Vector
 {
     public:
+        Vector();
         Vector(double x, double y, double z);
         Vector(const Point& start, const Point& end);
 
@@ -15,6 +17,7 @@ class Vector
         Vector Cross(const Vector& right) const;
         Vector Normalize() const;
         double Length() const;
+        double Dot(const Vector& right) const;
 
         bool operator==(const Vector& right) const;
 

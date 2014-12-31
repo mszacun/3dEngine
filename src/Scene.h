@@ -9,6 +9,7 @@
 #include "Point.h"
 #include "Vector.h"
 #include "Triangle.h"
+#include "FlatShader.h"
 
 class Scene2D
 {
@@ -35,6 +36,8 @@ class Scene3D
         void RecalculateNormals();
 
         void SetObserverPosition(const Point& newPosition);
+        void SetLightPosition(const Point& newPosition);
+        void SetLightColor(const QColor& color);
 
         Scene2D GetPerspectiveProjection() const;
         QImage RenederPerspectiveProjection() const;
@@ -48,6 +51,8 @@ class Scene3D
         std::vector<Vector> pointsNormals_;
 
         Point observatorPosition_;
+        Point lightPosition_;
+        QColor lightColor_;
 
         Triangle2D ProjectTrianglePerspectively(const Triangle3D& triangle,
                 const Matrix& transformationMatrix) const;
