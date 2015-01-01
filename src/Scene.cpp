@@ -26,10 +26,10 @@ void Scene3D::AddTriangle(const int& p1, const int& p2, const int& p3)
     AddTriangle(triangle);
 }
 
-void Scene3D::AddTriangle(const Triangle3D& triangle)
+void Scene3D::AddTriangle(Triangle3D& triangle)
 {
+    triangle.SetNormal(CalculateNormal(triangle));
     triangles_.push_back(triangle);
-    trianglesNormals_.push_back(CalculateNormal(triangle));
 }
 
 Vector Scene3D::CalculateNormal(const Triangle3D& triangle) const
@@ -44,12 +44,11 @@ Vector Scene3D::CalculatePointNormal(unsigned int pointNumber) const
 {
     Vector sum(0, 0, 0);
 
-    for (unsigned int i = 0; i < triangles_.size(); i++)
+    for (const Triangle3D& t : triangles_)
     {
-        if (triangles_[i].GetP1() == pointNumber ||
-                triangles_[i].GetP2() == pointNumber ||
-                triangles_[i].GetP3() == pointNumber)
-            sum = sum + trianglesNormals_[i];
+        if (t.GetP1() == pointNumber || t.GetP2() == pointNumber ||
+                t.GetP3() == pointNumber)
+            sum = sum + t.GetNormal();
     }
 
     return sum.Normalize();
@@ -217,10 +216,8 @@ QImage Scene3D::RenederPerspectiveProjection() const
     std::cout << "Transformation matrix: " << std::endl;
     transformationMatrix.Print();
 
-    for (int i = 0; i < triangles_.size(); i++)
+    for (const Triangle3D& t : triangles_)
     {
-        std::cout << "Rendering triangle #" << i << std::endl;
-        const Triangle3D t = triangles_[i];
         Triangle2D t2 = ProjectTrianglePerspectively(t, transformationMatrix);
         PrintProjectInfo(t, t2);
         TriangleShadingInfo shadingInfo;
@@ -233,7 +230,7 @@ QImage Scene3D::RenederPerspectiveProjection() const
         shadingInfo.p2Normal = pointsNormals_[t.GetP2()];
         shadingInfo.p3Normal = pointsNormals_[t.GetP3()];
 
-        shadingInfo.triangleNormal = trianglesNormals_[i];
+        shadingInfo.triangleNormal = t.GetNormal();
 
         shadingInfo.observatorPosition = observatorPosition_;
         shadingInfo.lightPosition = lightPosition_;
@@ -242,7 +239,6 @@ QImage Scene3D::RenederPerspectiveProjection() const
         FlatShader shader(shadingInfo);
         DrawTriangle(t2.p1_, t2.p2_, t2.p3_, painter, shader);
     }
-    
 
     return result;
 }

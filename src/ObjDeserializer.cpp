@@ -11,7 +11,10 @@ Scene3D ObjDeserializer::ParseFile(const std::string& filename) const
         if (line[0] == 'v')
             result.AddPoint(ParseVertex(line));
         if (line[0] == 'f')
-            result.AddTriangle(ParseTriangle(line));
+        {
+            Triangle3D parsedTriangle = ParseTriangle(line);
+            result.AddTriangle(parsedTriangle);
+        }
     }
 
     file.close();
