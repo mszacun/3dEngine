@@ -1,5 +1,6 @@
 #include "View.h"
 #include "Controler.h"
+#include <chrono>
 
 void View::SetScene(const Scene2D& scene)
 {
@@ -23,13 +24,17 @@ void View::SetControler(ControlerPtr controler)
 
 void View::paintEvent(QPaintEvent* event)
 {
+    auto start = std::chrono::steady_clock::now();
     QPainter painter(this);
-
-    QColor c("chartreuse");
-    QColor p("red");
 
     QImage i = controler_->GetRenderedPerspectiveView();
     painter.drawImage(200, 200, i);
+    auto end = std::chrono::steady_clock::now();
+
+
+    auto dur = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+    std::cout << "Drawing frame: " << dur << std::endl;
+    std::cout << "FPS: " << 1000.0 / dur << std::endl;
 }
 
 
