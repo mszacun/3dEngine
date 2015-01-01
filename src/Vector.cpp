@@ -52,9 +52,8 @@ double Vector::Length() const
 
 double Vector::Dot(const Vector& right) const
 {
-    assert(Length() == 1);
-    assert(right.Length() == 1);
-
+    assert(std::abs(Length() - 1) < EPSILON);
+    assert(std::abs(right.Length() - 1) < EPSILON);
 
     return x_ * right.x_ + y_ * right.y_ + z_ * right.z_;
 }

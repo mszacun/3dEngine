@@ -137,10 +137,11 @@ void SortVertices(const Point& p1, const Point& p2, const Point& p3,
             right = p1;
         }
     }
-    if (center.GetY() == left.GetY())
-        std::swap(center, right);
-    if (center.GetY() == right.GetY())
-        std::swap(center, left);
+}
+
+double CalculateDeltaY(double y, double ystart, double yend)
+{
+    return (ystart == yend) ? 1 : (y - yend) / (ystart - yend);
 }
 
 void DrawTriangleWithXParellGround(const Point& p1, const Point& p2, const Point& p3, QPainter& painter, FlatShader& shader)
@@ -148,12 +149,13 @@ void DrawTriangleWithXParellGround(const Point& p1, const Point& p2, const Point
     // inv: p2 and p3 are on the same line, p1 is peak of triangle
     assert(p2.GetY() == p3.GetY());
 
-    double ystart = p1.GetY();
-    double yend = p2.GetY();
+    // in case of problems try changing to double
+    int ystart = (int) p1.GetY();
+    int yend = (int) p2.GetY();
     int direction = ystart < yend ? 1 : -1;
-    for (int y = (int) ystart; y != yend + direction; y += direction)
+    for (int y = ystart; y != yend + direction; y += direction)
     {
-        double betay = (y - yend) / (ystart - yend);
+        double betay = CalculateDeltaY(y, ystart, yend);
         double xl = betay * p1.GetX() + (1 - betay) * p2.GetX();
         double xr = betay * p1.GetX() + (1 - betay) * p3.GetX();
 
@@ -178,7 +180,7 @@ void DrawTriangle(const Point& p1, const Point& p2, const Point& p3, QPainter& p
         if (left.GetY() < right.GetY())
         {
             double y = left.GetY();
-            double betay = (y - right.GetY()) / (center.GetY() - right.GetY());
+            double betay = CalculateDeltaY(y, center.GetY(), right.GetY());
             double xr = betay * center.GetX() + (1 - betay) * right.GetX();
 
             DrawTriangleWithXParellGround(center, left, Point(xr, left.GetY(), 0), painter, shader);
@@ -187,7 +189,7 @@ void DrawTriangle(const Point& p1, const Point& p2, const Point& p3, QPainter& p
         else
         {
             double y = right.GetY();
-            double betay = (y - left.GetY()) / (center.GetY() - left.GetY());
+            double betay = CalculateDeltaY(y, center.GetY(), left.GetY());
             double xl = betay * center.GetX() + (1 - betay) * left.GetX();
 
             DrawTriangleWithXParellGround(center, Point(xl, right.GetY(), 0), right, painter, shader);
@@ -195,6 +197,12 @@ void DrawTriangle(const Point& p1, const Point& p2, const Point& p3, QPainter& p
         }
     }
 
+}
+
+void Scene3D::PrintProjectInfo(const Triangle3D& t, const Triangle2D& t2) const
+{
+    std::cout << "Projectiing trinagle" << std::endl;
+    std::cout << points_[t.GetP1()] << " -> " << t2.p1_ << std::endl;
 }
 
 QImage Scene3D::RenederPerspectiveProjection() const
@@ -206,11 +214,15 @@ QImage Scene3D::RenederPerspectiveProjection() const
     QColor c("blue");
 
     Matrix transformationMatrix = Matrix::CreateProjectMatrix(-observatorPosition_.GetZ());
+    std::cout << "Transformation matrix: " << std::endl;
+    transformationMatrix.Print();
 
     for (int i = 0; i < triangles_.size(); i++)
     {
+        std::cout << "Rendering triangle #" << i << std::endl;
         const Triangle3D t = triangles_[i];
         Triangle2D t2 = ProjectTrianglePerspectively(t, transformationMatrix);
+        PrintProjectInfo(t, t2);
         TriangleShadingInfo shadingInfo;
 
         shadingInfo.p1 = points_[t.GetP1()];

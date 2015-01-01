@@ -2,7 +2,7 @@
 
 Controler::Controler(const Scene3D& scene) : scene_(scene)
 {
-    scene_.SetObserverPosition(Point(0, 0, -7));
+    scene_.SetObserverPosition(Point(0, 0, -5));
     scene_.SetLightPosition(Point(30, 50, 0));
 }
 

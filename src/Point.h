@@ -22,6 +22,7 @@ class Point
         Point Transform(const Matrix& transformationMatrix) const;
 
         bool operator==( const Point& right) const;
+        friend std::ostream& operator<< (std::ostream& out, const Point& p);
 
     private:
         double x_;

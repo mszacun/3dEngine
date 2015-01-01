@@ -3,6 +3,12 @@
 Matrix Point::pointMatrix(1, 4);
 Matrix Point::transformedPointMatrix(1, 4);
 
+std::ostream& operator<< (std::ostream& out, const Point& p)
+{
+    out << "(" << p.x_ << ", " << p.y_ << ", " << p.z_ << ")";
+    return out;
+}
+
 Point Point::Transform(const Matrix& transformationMatrix) const
 {
     pointMatrix.SetElement(0, 0, x_);

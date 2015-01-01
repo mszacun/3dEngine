@@ -134,11 +134,13 @@ Matrix Matrix::Invert3x3Matrix() const
 
 void Matrix::Print() const
 {
-    std::cout.width(3);
     for (unsigned int i = 0; i < height_; i++)
     {
         for (unsigned int j = 0; j < width_; j++)
+        {
+            std::cout.width(7);
             std::cout << GetElement(i, j);
+        }
         std::cout << std::endl;
     }
 }

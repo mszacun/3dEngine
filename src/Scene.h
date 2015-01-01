@@ -56,6 +56,7 @@ class Scene3D
 
         Triangle2D ProjectTrianglePerspectively(const Triangle3D& triangle,
                 const Matrix& transformationMatrix) const;
+        void PrintProjectInfo(const Triangle3D& t, const Triangle2D& t2) const;
 
 };
 
