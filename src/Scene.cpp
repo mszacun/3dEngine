@@ -10,12 +10,14 @@ void Scene2D::AddTriangle(const Triangle2D& triangle)
     triangles_.push_back(triangle);
 }
 
-Scene3D::Scene3D() : observatorPosition_(0, 0, 0)
+Scene3D::Scene3D() : observatorPosition_(0, 0, 0), observedPoint_(0, 0, 0),
+    upDirection_(0, 1, 0)
 {
     zBuffer_ = new double*[ZBUFFER_HEIGHT];
 
     for (int i = 0; i < ZBUFFER_HEIGHT; i++)
         zBuffer_[i] = new double[ZBUFFER_WIDTH];
+
 }
 
 Scene3D::~Scene3D()
@@ -220,19 +222,24 @@ void Scene3D::PrintProjectInfo(const Triangle3D& t, const Triangle2D& t2) const
     std::cout << points_[t.GetP1()] << " -> " << t2.p1_ << std::endl;
 }
 
-QImage Scene3D::RenederPerspectiveProjection()
+QImage Scene3D::RenederPerspectiveProjection(int width, int height)
 {
-    QImage result(200, 200, QImage::Format_ARGB32);
+    QImage result(width, height, QImage::Format_ARGB32);
     QPainter painter(&result);
 
     painter.fillRect(0, 0, 200, 200, QColor("white"));
     ClearZBuffer(zBuffer_);
 
-    Matrix transformationMatrix = Matrix::CreateProjectMatrix(-observatorPosition_.GetZ());
+//    Matrix transformationMatrix = Matrix::CreateProjectMatrix(-observatorPosition_.GetZ());
+    Matrix viewMatrix = Matrix::CreateViewMatrix(observatorPosition_, observedPoint_, Vector(0, 1, 0));
+    Matrix projectionMatrix = Matrix::CreatePerspectiveProjectionMatrix(0.78, 1, 0.01, 1.0);
+    Matrix transformationMatrix(4,4);
+    Matrix::Multiply(viewMatrix, projectionMatrix, transformationMatrix);
+
     std::cout << "Transformation matrix: " << std::endl;
     transformationMatrix.Print();
 
-    for (const Triangle3D& t : triangles_)
+/*    for (const Triangle3D& t : triangles_)
     {
         Triangle2D t2 = ProjectTrianglePerspectively(t, transformationMatrix);
         PrintProjectInfo(t, t2);
@@ -254,6 +261,14 @@ QImage Scene3D::RenederPerspectiveProjection()
 
         FlatShader shader(shadingInfo);
         DrawTriangle(t2.p1_, t2.p2_, t2.p3_, painter, shader);
+    }*/
+    for (const Point& p : points_)
+    {
+        Point transformed = p.Transform(transformationMatrix);
+        double x = transformed.GetX() * width + width / 2;
+        double y = transformed.GetY() * height + height / 2;
+        painter.setBrush(QColor("gold"));
+        painter.drawEllipse((int) x, (int) y, 5, 5);
     }
 
     return result;

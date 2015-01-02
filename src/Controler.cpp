@@ -2,7 +2,7 @@
 
 Controler::Controler(const Scene3D& scene) : scene_(scene)
 {
-    scene_.SetObserverPosition(Point(0, 0, -5));
+    scene_.SetObserverPosition(Point(0, 0, -10));
     scene_.SetLightPosition(Point(30, 50, 0));
 }
 
@@ -18,5 +18,5 @@ Scene2D Controler::GetPerspectiveProjection() const
 
 QImage Controler::GetRenderedPerspectiveView()
 {
-    return scene_.RenederPerspectiveProjection();
+    return scene_.RenederPerspectiveProjection(200, 200);
 }

@@ -1,4 +1,6 @@
 #include "Matrix.h"
+#include "Vector.h"
+#include "Point.h"
 
 bool DoubleEquals(double d1, double d2)
 {
@@ -12,6 +14,8 @@ Matrix::Matrix(const int& n): Matrix(n, n)
 Matrix::Matrix(const int& width, const int& height): width_(width), height_(height)
 {
     matrix_ = new double[width * height];
+    for (unsigned int i = 0; i < width_ * height_; i++)
+        matrix_[i] = 0;
 }
 
 Matrix::Matrix(const std::vector<std::vector<double>>& matrix):
@@ -159,6 +163,19 @@ double Matrix::Det() const
     return det;
 }
 
+Matrix Matrix::CreateIdentityMatrix(int size)
+{
+    Matrix result(size, size);
+
+    for (int i = 0; i < size; i++)
+    {
+        result.SetElement(i, i, 1);
+    }
+
+    return result;
+}
+
+
 Matrix Matrix::CreateScaleMatrix(double xFactor, double yFactor, double zFactor)
 {
     std::vector<std::vector<double>> matrixData { { xFactor, 0, 0, 0 },
@@ -222,3 +239,58 @@ Matrix Matrix::CreateProjectMatrix(double zDistance)
     return Matrix(matrixData);
 }
 
+Matrix Matrix::CreatePerspectiveProjectionMatrix(double viewAngleRad,
+        double aspect, double znear, double zfar)
+{
+    Matrix result(4, 4);
+    double yScale = 1.0 / std::tan(viewAngleRad * 0.5);
+    double xScale = yScale / aspect;
+
+    double halfWidth = znear / xScale;
+    double halfHeight = znear / yScale;
+    double left = -halfWidth;
+    double right = halfWidth;
+    double bottom = -halfHeight;
+    double top = halfHeight;
+
+    double zRange = zfar / (zfar - znear);
+
+    result.SetElement(0, 0, 2 * znear / (right - left));
+    result.SetElement(1, 1, 2 * znear / (top - bottom));
+    result.SetElement(2, 0, -(left + right) / (left - right));
+    result.SetElement(2, 1, -(top + bottom) / (bottom - top));
+    result.SetElement(2, 2, -zRange);
+    result.SetElement(2, 3, -1);
+    result.SetElement(3, 2, -znear * zRange);
+
+    return result;
+}
+
+Matrix Matrix::CreateViewMatrix(const Point& cameraPosition,
+        const Vector& observedPoint, const Vector& upDirection)
+{
+    Vector cameraVector(cameraPosition, Point(0, 0, 0));
+    Vector zAxis = (observedPoint - cameraVector).Normalize();
+    Vector xAxis = upDirection.Cross(zAxis).Normalize();
+    Vector yAxis = zAxis.Cross(xAxis).Normalize();
+
+    Matrix result = Matrix::CreateIdentityMatrix(4);
+
+    result.SetElement(0, 0, xAxis.GetX());
+    result.SetElement(0, 1, xAxis.GetY());
+    result.SetElement(0, 2, xAxis.GetZ());
+
+    result.SetElement(1, 0, yAxis.GetX());
+    result.SetElement(1, 1, yAxis.GetY());
+    result.SetElement(1, 2, yAxis.GetZ());
+
+    result.SetElement(2, 0, zAxis.GetX());
+    result.SetElement(2, 1, zAxis.GetY());
+    result.SetElement(2, 2, zAxis.GetZ());
+
+    result.SetElement(3, 0, -xAxis.Dot(cameraVector));
+    result.SetElement(3, 1, -yAxis.Dot(cameraVector));
+    result.SetElement(3, 2, -zAxis.Dot(cameraVector));
+
+    return result;
+}

@@ -6,6 +6,9 @@
 #include <cmath>
 #include <iostream>
 
+class Point;
+class Vector;
+
 class Matrix
 {
     public:
@@ -28,6 +31,7 @@ class Matrix
 
         static void Multiply(const Matrix& m1, const Matrix& m2, Matrix& result);
 
+        static Matrix CreateIdentityMatrix(int size);
         static Matrix CreateScaleMatrix(double xFactor, double yFactor,
             double zFactor);
         static Matrix CreateTranslationMatrix(double xMove, double yMove,
@@ -36,6 +40,11 @@ class Matrix
         static Matrix CreateYAxisRotationMatrix(double angleInDegrees);
         static Matrix CreateZAxisRotationMatrix(double angleInDegrees);
         static Matrix CreateProjectMatrix(double zDistance);
+
+        static Matrix CreatePerspectiveProjectionMatrix(double viewAngleRad,
+            double aspect, double znear, double zfar);
+        static Matrix CreateViewMatrix(const Point& cameraPosition,
+            const Vector& observedPoint, const Vector& upDirection);
 
     private:
         double* matrix_;

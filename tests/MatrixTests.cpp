@@ -1,5 +1,7 @@
 #include <gtest/gtest.h>
 #include "../src/Matrix.h"
+#include "../src/Vector.h"
+#include "../src/Point.h"
 
 using std::vector;
 
@@ -85,4 +87,54 @@ TEST(MatrixTests, ShouldInvertMatrix)
     Matrix invertedMatrix = original.Invert3x3Matrix();
 
     EXPECT_TRUE(expectedInverted ==  invertedMatrix);
+}
+
+TEST(MatrixTests, ShouldCalculatePerspectiveProjectionMatrix)
+{
+    Matrix projectionMatrix = Matrix::CreatePerspectiveProjectionMatrix(0.78, 1, 0.01, 1.0);
+
+    EXPECT_NEAR(2.432765, projectionMatrix.GetElement(0, 0), 0.000001);
+    EXPECT_NEAR(0, projectionMatrix.GetElement(0, 1), 0.000001);
+    EXPECT_NEAR(0, projectionMatrix.GetElement(0, 2), 0.000001);
+    EXPECT_NEAR(0, projectionMatrix.GetElement(0, 3), 0.000001);
+
+    EXPECT_NEAR(0, projectionMatrix.GetElement(1, 0), 0.000001);
+    EXPECT_NEAR(2.432765, projectionMatrix.GetElement(1, 1), 0.000001);
+    EXPECT_NEAR(0, projectionMatrix.GetElement(1, 2), 0.000001);
+    EXPECT_NEAR(0, projectionMatrix.GetElement(1, 3), 0.000001);
+
+    EXPECT_NEAR(0, projectionMatrix.GetElement(2, 0), 0.000001);
+    EXPECT_NEAR(0, projectionMatrix.GetElement(2, 1), 0.000001);
+    EXPECT_NEAR(-1.010101, projectionMatrix.GetElement(2, 2), 0.000001);
+    EXPECT_NEAR(-1, projectionMatrix.GetElement(2, 3), 0.000001);
+
+    EXPECT_NEAR(0, projectionMatrix.GetElement(3, 0), 0.000001);
+    EXPECT_NEAR(0, projectionMatrix.GetElement(3, 1), 0.000001);
+    EXPECT_NEAR(-0.01010101, projectionMatrix.GetElement(3, 2), 0.000001);
+    EXPECT_NEAR(0, projectionMatrix.GetElement(3, 3), 0.000001);
+}
+
+TEST(MatrixTests, ShouldCalculateViewMatrix)
+{
+    Matrix viewMatrix = Matrix::CreateViewMatrix(Point(0, 0, -10), Vector(0, 0, 0), Vector(0, 1, 0));
+
+    EXPECT_NEAR(-1, viewMatrix.GetElement(0, 0), 0.000001);
+    EXPECT_NEAR(0, viewMatrix.GetElement(0, 1), 0.000001);
+    EXPECT_NEAR(0, viewMatrix.GetElement(0, 2), 0.000001);
+    EXPECT_NEAR(0, viewMatrix.GetElement(0, 3), 0.000001);
+
+    EXPECT_NEAR(0, viewMatrix.GetElement(1, 0), 0.000001);
+    EXPECT_NEAR(1, viewMatrix.GetElement(1, 1), 0.000001);
+    EXPECT_NEAR(0, viewMatrix.GetElement(1, 2), 0.000001);
+    EXPECT_NEAR(0, viewMatrix.GetElement(1, 3), 0.000001);
+
+    EXPECT_NEAR(0, viewMatrix.GetElement(2, 0), 0.000001);
+    EXPECT_NEAR(0, viewMatrix.GetElement(2, 1), 0.000001);
+    EXPECT_NEAR(-1, viewMatrix.GetElement(2, 2), 0.000001);
+    EXPECT_NEAR(0, viewMatrix.GetElement(2, 3), 0.000001);
+
+    EXPECT_NEAR(0, viewMatrix.GetElement(3, 0), 0.000001);
+    EXPECT_NEAR(0, viewMatrix.GetElement(3, 1), 0.000001);
+    EXPECT_NEAR(10, viewMatrix.GetElement(3, 2), 0.000001);
+    EXPECT_NEAR(1, viewMatrix.GetElement(3, 3), 0.000001);
 }

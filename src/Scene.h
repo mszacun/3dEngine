@@ -41,7 +41,7 @@ class Scene3D
         void SetLightColor(const QColor& color);
 
         Scene2D GetPerspectiveProjection() const;
-        QImage RenederPerspectiveProjection();
+        QImage RenederPerspectiveProjection(int width, int height);
 
         void DrawTriangleWithXParellGround(const Point& p1, const Point& p2,
             const Point& p3, QPainter& painter, FlatShader& shader);
@@ -57,6 +57,8 @@ class Scene3D
 
         Point observatorPosition_;
         Point lightPosition_;
+        Vector observedPoint_;
+        Vector upDirection_;
         QColor lightColor_;
 
         double** zBuffer_;
@@ -64,6 +66,10 @@ class Scene3D
         Triangle2D ProjectTrianglePerspectively(const Triangle3D& triangle,
                 const Matrix& transformationMatrix) const;
         void PrintProjectInfo(const Triangle3D& t, const Triangle2D& t2) const;
+
+        Matrix CreateViewMatrix() const;
+        Matrix CreatePerspectiveProjectionMatrix(double viewAngleRad,
+            double aspect, double znear, double zfar) const;
 
 };
 

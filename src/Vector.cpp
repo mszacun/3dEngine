@@ -19,6 +19,11 @@ Vector Vector::operator+(const Vector& right) const
     return Vector(x_ + right.x_, y_ + right.y_, z_ + right.z_);
 }
 
+Vector Vector::operator-(const Vector& right) const
+{
+    return Vector(x_ - right.x_, y_ - right.y_, z_ - right.z_);
+}
+
 Vector Vector::operator*(double scalar) const
 {
     return Vector(x_ * scalar, y_ * scalar, z_ * scalar);
@@ -52,9 +57,6 @@ double Vector::Length() const
 
 double Vector::Dot(const Vector& right) const
 {
-    assert(std::abs(Length() - 1) < EPSILON);
-    assert(std::abs(right.Length() - 1) < EPSILON);
-
     return x_ * right.x_ + y_ * right.y_ + z_ * right.z_;
 }
 

@@ -29,8 +29,8 @@ int main(int argc, char** argv)
         ObjDeserializer deserializer;
         Scene3D scene = deserializer.ParseFile("scene.obj");
 
-        scene.Transform(Matrix::CreateTranslationMatrix(3, 3, 2));
-        scene.Transform(Matrix::CreateScaleMatrix(20, 20, 7));
+//        scene.Transform(Matrix::CreateTranslationMatrix(3, 3, 2));
+//        scene.Transform(Matrix::CreateScaleMatrix(20, 20, 7));
 
         scene.RecalculateNormals();
         scene.SetLightColor(QColor("white"));
