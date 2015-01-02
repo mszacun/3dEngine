@@ -1,6 +1,10 @@
 #include "Scene.h"
 #include <cassert>
 
+#define ZBUFFER_WIDTH 1024
+#define ZBUFFER_HEIGHT 1024
+void ClearZBuffer(double** zBuffer);
+
 void Scene2D::AddTriangle(const Triangle2D& triangle)
 {
     triangles_.push_back(triangle);
@@ -8,6 +12,18 @@ void Scene2D::AddTriangle(const Triangle2D& triangle)
 
 Scene3D::Scene3D() : observatorPosition_(0, 0, 0)
 {
+    zBuffer_ = new double*[ZBUFFER_HEIGHT];
+
+    for (int i = 0; i < ZBUFFER_HEIGHT; i++)
+        zBuffer_[i] = new double[ZBUFFER_WIDTH];
+}
+
+Scene3D::~Scene3D()
+{
+//    for (int i = 0; i < ZBUFFER_HEIGHT; i++)
+//        delete[] zBuffer_[i];
+
+//    delete[] zBuffer_;
 }
 
 void Scene3D::AddPoint(const int& x, const int& y, const int& z)
@@ -143,7 +159,7 @@ double CalculateDeltaY(double y, double ystart, double yend)
     return (ystart == yend) ? 1 : (y - yend) / (ystart - yend);
 }
 
-void DrawTriangleWithXParellGround(const Point& p1, const Point& p2, const Point& p3, QPainter& painter, FlatShader& shader)
+void Scene3D::DrawTriangleWithXParellGround(const Point& p1, const Point& p2, const Point& p3, QPainter& painter, FlatShader& shader)
 {
     // inv: p2 and p3 are on the same line, p1 is peak of triangle
     assert(p2.GetY() == p3.GetY());
@@ -167,7 +183,7 @@ void DrawTriangleWithXParellGround(const Point& p1, const Point& p2, const Point
     }
 }
 
-void DrawTriangle(const Point& p1, const Point& p2, const Point& p3, QPainter& painter, FlatShader& shader)
+void Scene3D::DrawTriangle(const Point& p1, const Point& p2, const Point& p3, QPainter& painter, FlatShader& shader)
 {
     // inv: p2 is on the left of p3
     Point left, right, center;
@@ -204,13 +220,13 @@ void Scene3D::PrintProjectInfo(const Triangle3D& t, const Triangle2D& t2) const
     std::cout << points_[t.GetP1()] << " -> " << t2.p1_ << std::endl;
 }
 
-QImage Scene3D::RenederPerspectiveProjection() const
+QImage Scene3D::RenederPerspectiveProjection()
 {
     QImage result(200, 200, QImage::Format_ARGB32);
     QPainter painter(&result);
 
     painter.fillRect(0, 0, 200, 200, QColor("white"));
-    QColor c("blue");
+    ClearZBuffer(zBuffer_);
 
     Matrix transformationMatrix = Matrix::CreateProjectMatrix(-observatorPosition_.GetZ());
     std::cout << "Transformation matrix: " << std::endl;
@@ -255,4 +271,11 @@ Triangle2D Scene3D::ProjectTrianglePerspectively(const Triangle3D& triangle,
      return Triangle2D(points_[triangle.GetP1()].Transform(transformationMatrix),
          points_[triangle.GetP2()].Transform(transformationMatrix),
          points_[triangle.GetP3()].Transform(transformationMatrix));
-  }
+}
+
+void ClearZBuffer(double** zBuffer)
+{
+    for (int i = 0; i < ZBUFFER_HEIGHT; i++)
+        for (int j = 0; j < ZBUFFER_WIDTH; j++)
+            zBuffer[i][j] = -666;
+}

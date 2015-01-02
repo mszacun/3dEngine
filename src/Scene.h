@@ -22,6 +22,7 @@ class Scene3D
 {
     public:
         Scene3D();
+        ~Scene3D();
 
         void AddPoint(const int& x, const int& y, const int& z);
         void AddPoint(const Point& p);
@@ -40,7 +41,12 @@ class Scene3D
         void SetLightColor(const QColor& color);
 
         Scene2D GetPerspectiveProjection() const;
-        QImage RenederPerspectiveProjection() const;
+        QImage RenederPerspectiveProjection();
+
+        void DrawTriangleWithXParellGround(const Point& p1, const Point& p2,
+            const Point& p3, QPainter& painter, FlatShader& shader);
+        void DrawTriangle(const Point& p1, const Point& p2, const Point& p3,
+                QPainter& painter, FlatShader& shader);
 
         void Transform(const Matrix& transformationMatrix);
 
@@ -52,6 +58,8 @@ class Scene3D
         Point observatorPosition_;
         Point lightPosition_;
         QColor lightColor_;
+
+        double** zBuffer_;
 
         Triangle2D ProjectTrianglePerspectively(const Triangle3D& triangle,
                 const Matrix& transformationMatrix) const;

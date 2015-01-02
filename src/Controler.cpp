@@ -16,7 +16,7 @@ Scene2D Controler::GetPerspectiveProjection() const
     return scene_.GetPerspectiveProjection();
 }
 
-QImage Controler::GetRenderedPerspectiveView() const
+QImage Controler::GetRenderedPerspectiveView()
 {
     return scene_.RenederPerspectiveProjection();
 }
