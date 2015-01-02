@@ -62,6 +62,7 @@ class Scene3D
         QColor lightColor_;
 
         double** zBuffer_;
+        Matrix worldTransformation_;
 
         Triangle2D ProjectTrianglePerspectively(const Triangle3D& triangle,
                 const Matrix& transformationMatrix) const;

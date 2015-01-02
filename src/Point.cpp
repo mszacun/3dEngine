@@ -22,6 +22,11 @@ Point Point::Transform(const Matrix& transformationMatrix) const
     return Point(transformedPointMatrix.GetElement(0, 0) / w,
         transformedPointMatrix.GetElement(1, 0) / w,
         transformedPointMatrix.GetElement(2, 0) / w);
+/*    double x = (x_ * transformationMatrix.GetElement(0, 0)) + (y_ * transformationMatrix.GetElement(1, 0)) + (z_ * transformationMatrix.GetElement(2, 0)) + transformationMatrix.GetElement(3, 0);
+    double y = (x_ * transformationMatrix.GetElement(0, 1)) + (y_ * transformationMatrix.GetElement(1, 1)) + (z_ * transformationMatrix.GetElement(2, 1)) + transformationMatrix.GetElement(3, 1);
+    double z = (x_ * transformationMatrix.GetElement(0, 2)) + (y_ * transformationMatrix.GetElement(1, 2)) + (z_ * transformationMatrix.GetElement(2, 2)) + transformationMatrix.GetElement(3, 2);
+    double w = (x_ * transformationMatrix.GetElement(0, 3)) + (y_ * transformationMatrix.GetElement(1, 3)) + (z_ * transformationMatrix.GetElement(2, 3)) + transformationMatrix.GetElement(3, 3);
+    return Point(x / w, y / w, z / w);*/
 }
 
 bool Point::operator==(const Point& right) const

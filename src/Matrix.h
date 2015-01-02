@@ -15,14 +15,19 @@ class Matrix
         Matrix(const int& n);
         Matrix(const int& width, const int& height);
         Matrix(const std::vector<std::vector<double>>& matrix);
+        Matrix(const Matrix& other);
         Matrix(Matrix&& other);
         ~Matrix();
 
         double GetElement(const int& row, const int& col) const;
         void SetElement(const int& row, const int& col, const double& val);
+        unsigned int GetWidth() const { return width_; }
+        unsigned int GetHeight() const { return height_; }
 
         bool operator==(const Matrix& right);
+        Matrix& operator=(const Matrix& right);
         Matrix operator*(double number) const;
+        Matrix operator*(const Matrix& right) const;
         Matrix operator-(const Matrix& right) const;
 
         Matrix Invert3x3Matrix() const;
@@ -51,7 +56,6 @@ class Matrix
         const unsigned int width_;
         const unsigned int height_;
 
-        Matrix(const Matrix& other);
         double Det() const;
 };
 

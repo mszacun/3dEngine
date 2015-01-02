@@ -2,6 +2,11 @@
 #include "Controler.h"
 #include <chrono>
 
+View::View()
+{
+    setFocusPolicy(Qt::ClickFocus);
+}
+
 void View::SetScene(const Scene2D& scene)
 {
     scene_ = scene;
@@ -37,9 +42,8 @@ void View::paintEvent(QPaintEvent* event)
     std::cout << "FPS: " << 1000.0 / dur << std::endl;
 }
 
-
-
 void View::keyPressEvent(QKeyEvent* event)
 {
+    update();
     QWidget::keyPressEvent(event);
 }

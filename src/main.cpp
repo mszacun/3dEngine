@@ -16,7 +16,7 @@ int main(int argc, char** argv)
 
         QApplication app (argc, argv);
 
-        //Scene3D scene;
+//        Scene3D scene;
 
         /*scene.AddPoint(1, 1, 1);
         scene.AddPoint(-1, 1, 1);
@@ -29,8 +29,9 @@ int main(int argc, char** argv)
         ObjDeserializer deserializer;
         Scene3D scene = deserializer.ParseFile("scene.obj");
 
-//        scene.Transform(Matrix::CreateTranslationMatrix(3, 3, 2));
-//        scene.Transform(Matrix::CreateScaleMatrix(20, 20, 7));
+        scene.Transform(Matrix::CreateTranslationMatrix(3, 3, 5));
+        scene.Transform(Matrix::CreateScaleMatrix(30, 30, 3));
+        scene.Transform(Matrix::CreateTranslationMatrix(-20, -35, 0));
 
         scene.RecalculateNormals();
         scene.SetLightColor(QColor("white"));

@@ -26,6 +26,13 @@ Matrix::Matrix(const std::vector<std::vector<double>>& matrix):
             matrix_[i * width_ + j] = matrix[i][j];
 }
 
+Matrix::Matrix(const Matrix& other) : Matrix(other.width_, other.height_)
+{
+    for (unsigned int i = 0; i < height_; i++)
+        for (unsigned int j = 0; j < width_; j++)
+            SetElement(i, j, other.GetElement(i, j));
+}
+
 Matrix::~Matrix()
 {
     delete[] matrix_;
@@ -36,10 +43,6 @@ Matrix::Matrix(Matrix&& other): width_(other.width_), height_(other.height_)
     matrix_ = other.matrix_;
 
     other.matrix_ = nullptr;
-}
-
-Matrix::Matrix(const Matrix& other): width_(0), height_(0)
-{
 }
 
 double Matrix::GetElement(const int& row, const int& col) const
@@ -67,6 +70,19 @@ bool Matrix::operator==(const Matrix& right)
         return false;
 }
 
+Matrix& Matrix::operator=(const Matrix& right)
+{
+    if (this != &right)
+    {
+        delete[] matrix_;
+
+        matrix_ = new double[right.width_ * right.height_];
+        for (unsigned int i = 0; i < right.GetHeight(); i++)
+            for (unsigned int j = 0; j < right.GetWidth(); j++)
+                SetElement(i, j, right.GetElement(i, j));
+    }
+    return *this;
+}
 
 void Matrix::Multiply(const Matrix& left, const Matrix& right, Matrix& result)
 {
@@ -97,6 +113,15 @@ Matrix Matrix::operator*(double number) const
     for (unsigned int row = 0; row < height_; row++)
         for (unsigned int col = 0; col < width_; col++)
             result.SetElement(row, col, GetElement(row, col) * number);
+
+    return result;
+}
+
+Matrix Matrix::operator*(const Matrix& right) const
+{
+    Matrix result(GetHeight(), right.GetWidth());
+
+    Multiply(*this, right, result);
 
     return result;
 }

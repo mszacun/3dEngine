@@ -18,5 +18,7 @@ Scene2D Controler::GetPerspectiveProjection() const
 
 QImage Controler::GetRenderedPerspectiveView()
 {
-    return scene_.RenederPerspectiveProjection(200, 200);
+    scene_.Transform(Matrix::CreateXAxisRotationMatrix(1));
+    scene_.Transform(Matrix::CreateYAxisRotationMatrix(1));
+    return scene_.RenederPerspectiveProjection(160, 100);
 }

@@ -16,6 +16,7 @@ class View : public QWidget
     Q_OBJECT
 
     public:
+        View();
         void SetScene(const Scene2D& scene);
 
         QSize minimumSizeHint() const;

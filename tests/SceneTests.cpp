@@ -16,18 +16,18 @@ TEST(SceneTests, ShouldTransformPerspectively){
     scene.SetObserverPosition(Point(0, 0, -7));
 
     scene.Transform(Matrix::CreateTranslationMatrix(3, 3, 0));
-    scene.Transform(Matrix::CreateScaleMatrix(20, 20, 10));
+    scene.Transform(Matrix::CreateScaleMatrix(20, 20, 1));
 
     Scene2D perspectiveProjection = scene.GetPerspectiveProjection();
 
     Triangle2D expectedProjectedTriangle1(
-            Point(16.4706, 32.9412, 0),
-            Point(32.9412, 32.9412, 0),
-            Point(32.9412, 16.4706, 0));
+            Point(42.5, 77.5, 0),
+            Point(77.5, 77.5, 0),
+            Point(77.5, 42.5, 0));
     Triangle2D expectedProjectedTriangle2(
-            Point(16.4706, 32.9412, 0),
-            Point(32.9412, 16.4706, 0),
-            Point(16.4706, 16.4706, 0));
+            Point(42.5, 77.5, 0),
+            Point(77.5, 42.5, 0),
+            Point(42.5, 42.5, 0));
 
     EXPECT_TRUE(expectedProjectedTriangle1 == perspectiveProjection.triangles_[0]);
     EXPECT_TRUE(expectedProjectedTriangle2 == perspectiveProjection.triangles_[1]);
@@ -36,10 +36,10 @@ TEST(SceneTests, ShouldTransformPerspectively){
 TEST(SceneTests, ShouldTransformFartherPointsSmaller){
     Scene3D scene;
 
-    scene.AddPoint(1, 1, 1);
-    scene.AddPoint(-1, 1, 1);
-    scene.AddPoint(1, -1, 1);
-    scene.AddPoint(-1, -1, 1);
+    scene.AddPoint(1, 1, 3);
+    scene.AddPoint(-1, 1, 3);
+    scene.AddPoint(1, -1, 3);
+    scene.AddPoint(-1, -1, 3);
 
     scene.AddTriangle(1, 0, 2);
     scene.AddTriangle(1, 2, 3);
@@ -47,18 +47,18 @@ TEST(SceneTests, ShouldTransformFartherPointsSmaller){
     scene.SetObserverPosition(Point(0, 0, -7));
 
     scene.Transform(Matrix::CreateTranslationMatrix(3, 3, 0));
-    scene.Transform(Matrix::CreateScaleMatrix(20, 20, 70));
+    scene.Transform(Matrix::CreateScaleMatrix(20, 20, 1));
 
     Scene2D perspectiveProjection = scene.GetPerspectiveProjection();
 
     Triangle2D expectedProjectedTriangle1(
-            Point(3.63636, 7.27273, 0),
-            Point(7.27273, 7.27273, 0),
-            Point(7.27273, 3.63636, 0));
+            Point(45.9999, 74, 0),
+            Point(74, 74, 0),
+            Point(74, 45.9999, 0));
     Triangle2D expectedProjectedTriangle2(
-            Point(3.63636, 7.27273, 0),
-            Point(7.27273, 3.63636, 0),
-            Point(3.63636, 3.63636, 0));
+            Point(45.9999, 74, 0),
+            Point(74, 45.9999, 0),
+            Point(45.9999, 45.9999, 0));
 
     EXPECT_TRUE(expectedProjectedTriangle1 == perspectiveProjection.triangles_[0]);
     EXPECT_TRUE(expectedProjectedTriangle2 == perspectiveProjection.triangles_[1]);
