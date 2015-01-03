@@ -231,15 +231,10 @@ QImage Scene3D::RenederPerspectiveProjection(int width, int height)
     painter.fillRect(0, 0, 200, 200, QColor("white"));
     ClearZBuffer(zBuffer_);
 
-    // Matrix projectionMatrix = Matrix::CreateProjectMatrix(-observatorPosition_.GetZ());
-//    Matrix viewMatrix = Matrix::CreateViewMatrix(observatorPosition_, observedPoint_, Vector(0, 1, 0));
-//    Matrix projectionMatrix = Matrix::CreatePerspectiveProjectionMatrix(0.78, 1, 0.01, 1.0);
-//    Matrix transformationMatrix = worldTransformation_ * viewMatrix * projectionMatrix;
-    Matrix transformationMatrix =  worldTransformation_ * Matrix::CreateProjectMatrix(-observatorPosition_.GetZ());
+    Matrix transformationMatrix = Matrix::CreateProjectMatrix(-observatorPosition_.GetZ()) * worldTransformation_;
 
     std::cout << "Transformation matrix: " << std::endl;
     transformationMatrix.Print();
-
 /*    for (const Triangle3D& t : triangles_)
     {
         Triangle2D t2 = ProjectTrianglePerspectively(t, transformationMatrix);
@@ -269,6 +264,7 @@ QImage Scene3D::RenederPerspectiveProjection(int width, int height)
     for (const Point& p : points_)
     {
          Point transformed = p.Transform(transformationMatrix);
+         std::cout << "Original: " << p << " transformed: " << transformed << std::endl;
          double x = transformed.GetX()/* * width + width / 2*/;
          double y = transformed.GetY()/* * height + height / 2*/;
          painter.setBrush(QColor("gold"));
@@ -278,11 +274,15 @@ QImage Scene3D::RenederPerspectiveProjection(int width, int height)
     return result;
 }
 
+void Scene3D::AccumulateTransformation(const Matrix& transformationMatrix)
+{
+    worldTransformation_ = transformationMatrix * worldTransformation_;
+}
+
 void Scene3D::Transform(const Matrix& transformationMatrix)
 {
-/*    for (Point& p : points_)
-        p = p.Transform(transformationMatrix);*/
-    worldTransformation_ = transformationMatrix * worldTransformation_;
+    for (Point& p : points_)
+        p = p.Transform(transformationMatrix);
 }
 
 Triangle2D Scene3D::ProjectTrianglePerspectively(const Triangle3D& triangle,

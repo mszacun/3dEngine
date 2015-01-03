@@ -48,6 +48,7 @@ class Scene3D
         void DrawTriangle(const Point& p1, const Point& p2, const Point& p3,
                 QPainter& painter, FlatShader& shader);
 
+        void AccumulateTransformation(const Matrix& transformationMatrix);
         void Transform(const Matrix& transformationMatrix);
 
     private:
@@ -71,7 +72,6 @@ class Scene3D
         Matrix CreateViewMatrix() const;
         Matrix CreatePerspectiveProjectionMatrix(double viewAngleRad,
             double aspect, double znear, double zfar) const;
-
 };
 
 #endif

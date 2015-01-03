@@ -15,8 +15,8 @@ TEST(SceneTests, ShouldTransformPerspectively){
 
     scene.SetObserverPosition(Point(0, 0, -7));
 
-    scene.Transform(Matrix::CreateTranslationMatrix(3, 3, 0));
-    scene.Transform(Matrix::CreateScaleMatrix(20, 20, 1));
+    scene.AccumulateTransformation(Matrix::CreateTranslationMatrix(3, 3, 0));
+    scene.AccumulateTransformation(Matrix::CreateScaleMatrix(20, 20, 1));
 
     Scene2D perspectiveProjection = scene.GetPerspectiveProjection();
 
@@ -46,8 +46,8 @@ TEST(SceneTests, ShouldTransformFartherPointsSmaller){
 
     scene.SetObserverPosition(Point(0, 0, -7));
 
-    scene.Transform(Matrix::CreateTranslationMatrix(3, 3, 0));
-    scene.Transform(Matrix::CreateScaleMatrix(20, 20, 1));
+    scene.AccumulateTransformation(Matrix::CreateTranslationMatrix(3, 3, 0));
+    scene.AccumulateTransformation(Matrix::CreateScaleMatrix(20, 20, 1));
 
     Scene2D perspectiveProjection = scene.GetPerspectiveProjection();
 
