@@ -48,7 +48,7 @@ class Matrix
 
         static Matrix CreatePerspectiveProjectionMatrix(double viewAngleRad,
             double aspect, double znear, double zfar);
-        static Matrix CreateViewMatrix(const Point& cameraPosition,
+        static Matrix CreateViewMatrix(const Vector& cameraPosition,
             const Vector& observedPoint, const Vector& upDirection);
 
     private:

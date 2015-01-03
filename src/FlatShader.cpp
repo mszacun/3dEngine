@@ -4,11 +4,11 @@
 FlatShader::FlatShader(const TriangleShadingInfo& shadingInfo) : 
     shadingInfo_(shadingInfo)
 {
-    lightVector_  = Vector(shadingInfo_.p1, shadingInfo_.lightPosition);
+    lightVector_  = shadingInfo_.lightPosition - shadingInfo_.p1;
     lightVector_ = lightVector_.Normalize();
 }
 
-QColor FlatShader::GetColorForPixel(const Point& pixel) const
+QColor FlatShader::GetColorForPixel(const Vector& pixel) const
 {
     int numberOfColors = 3;
     int lightRgb[4];

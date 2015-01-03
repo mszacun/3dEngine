@@ -1,6 +1,5 @@
 #include "Matrix.h"
 #include "Vector.h"
-#include "Point.h"
 
 bool DoubleEquals(double d1, double d2)
 {
@@ -291,10 +290,10 @@ Matrix Matrix::CreatePerspectiveProjectionMatrix(double viewAngleRad,
     return result;
 }
 
-Matrix Matrix::CreateViewMatrix(const Point& cameraPosition,
+Matrix Matrix::CreateViewMatrix(const Vector& cameraPosition,
         const Vector& observedPoint, const Vector& upDirection)
 {
-    Vector cameraVector(cameraPosition, Point(0, 0, 0));
+    Vector cameraVector = Vector(0, 0, 0) - cameraPosition;
     Vector zAxis = (observedPoint - cameraVector).Normalize();
     Vector xAxis = upDirection.Cross(zAxis).Normalize();
     Vector yAxis = zAxis.Cross(xAxis).Normalize();

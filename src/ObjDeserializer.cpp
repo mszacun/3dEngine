@@ -23,14 +23,14 @@ Scene3D ObjDeserializer::ParseFile(const std::string& filename) const
     return result;
 }
 
-Point ObjDeserializer::ParseVertex(const std::string& vertexInfo) const
+Vector ObjDeserializer::ParseVertex(const std::string& vertexInfo) const
 {
     std::stringstream stream(vertexInfo);
     std::string v, x, y, z;
 
     stream >> v >> x >> y >> z;
 
-    return Point(std::stod(x), std::stod(y), std::stod(z));
+    return Vector(std::stod(x), std::stod(y), std::stod(z));
 }
 
 Triangle3D ObjDeserializer::ParseTriangle(const std::string& triangleInfo) const

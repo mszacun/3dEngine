@@ -1,16 +1,13 @@
 #include "Vector.h"
 
+Matrix Vector::pointMatrix(1, 4);
+Matrix Vector::transformedPointMatrix(1, 4);
+
 Vector::Vector() : Vector(0, 0, 0)
 {
 }
 
 Vector::Vector(double x, double y, double z): x_(x), y_(y), z_(z)
-{
-}
-
-Vector::Vector(const Point& start, const Point& end):
-    Vector(end.GetX() - start.GetX(), end.GetY() - start.GetY(),
-        end.GetZ() - start.GetZ())
 {
 }
 
@@ -60,9 +57,30 @@ double Vector::Dot(const Vector& right) const
     return x_ * right.x_ + y_ * right.y_ + z_ * right.z_;
 }
 
+Vector Vector::Transform(const Matrix& transformationMatrix) const
+{
+    pointMatrix.SetElement(0, 0, x_);
+    pointMatrix.SetElement(1, 0, y_);
+    pointMatrix.SetElement(2, 0, z_);
+    pointMatrix.SetElement(3, 0, 1);
+
+    Matrix::Multiply(transformationMatrix, pointMatrix, transformedPointMatrix);
+
+    double w = transformedPointMatrix.GetElement(3, 0);
+    return Vector(transformedPointMatrix.GetElement(0, 0) / w,
+        transformedPointMatrix.GetElement(1, 0) / w,
+        transformedPointMatrix.GetElement(2, 0) / w);
+}
+
 bool Vector::operator==(const Vector& right) const
 {
     return std::abs(x_ - right.x_) <= EPSILON && 
         std::abs(y_ - right.y_) <= EPSILON && 
         std::abs(z_ - right.z_) <= EPSILON;
+}
+
+std::ostream& operator<< (std::ostream& out, const Vector& v)
+{
+    out << "(" << v.x_ << ", " << v.y_ << ", " << v.z_ << ")";
+    return out;
 }

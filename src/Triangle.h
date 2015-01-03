@@ -1,7 +1,6 @@
 #ifndef TRIANGLE_H
 #define TRIANGLE_H
 
-#include "Point.h"
 #include "Vector.h"
 
 class Triangle3D
@@ -29,11 +28,11 @@ class Triangle3D
 
 struct Triangle2D
 {
-    Point p1_;
-    Point p2_;
-    Point p3_;
+    Vector p1_;
+    Vector p2_;
+    Vector p3_;
 
-    Triangle2D(const Point& p1, const Point& p2, const Point& p3);
+    Triangle2D(const Vector& p1, const Vector& p2, const Vector& p3);
 
     bool operator==(const Triangle2D right) const;
 };

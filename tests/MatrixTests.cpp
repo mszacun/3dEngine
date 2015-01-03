@@ -1,7 +1,6 @@
 #include <gtest/gtest.h>
 #include "../src/Matrix.h"
 #include "../src/Vector.h"
-#include "../src/Point.h"
 
 using std::vector;
 
@@ -116,7 +115,7 @@ TEST(MatrixTests, ShouldCalculatePerspectiveProjectionMatrix)
 
 TEST(MatrixTests, ShouldCalculateViewMatrix)
 {
-    Matrix viewMatrix = Matrix::CreateViewMatrix(Point(0, 0, -10), Vector(0, 0, 0), Vector(0, 1, 0));
+    Matrix viewMatrix = Matrix::CreateViewMatrix(Vector(0, 0, -10), Vector(0, 0, 0), Vector(0, 1, 0));
 
     EXPECT_NEAR(-1, viewMatrix.GetElement(0, 0), 0.000001);
     EXPECT_NEAR(0, viewMatrix.GetElement(0, 1), 0.000001);

@@ -1,7 +1,7 @@
 #include "Interpolator.h"
 
-BarycentricCoordinates ConvertToBarycentric(const Point& p1, const Point& p2,
-    const Point& p3, const Point& p)
+BarycentricCoordinates ConvertToBarycentric(const Vector& p1, const Vector& p2,
+    const Vector& p3, const Vector& p)
 {
     BarycentricCoordinates result;
 

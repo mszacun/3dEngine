@@ -31,10 +31,10 @@ Scene3D::~Scene3D()
 
 void Scene3D::AddPoint(const int& x, const int& y, const int& z)
 {
-    points_.push_back(Point(x, y, z));
+    points_.push_back(Vector(x, y, z));
 }
 
-void Scene3D::AddPoint(const Point& p)
+void Scene3D::AddPoint(const Vector& p)
 {
     points_.push_back(p);
 }
@@ -53,8 +53,8 @@ void Scene3D::AddTriangle(Triangle3D& triangle)
 
 Vector Scene3D::CalculateNormal(const Triangle3D& triangle) const
 {
-    Vector v1(points_[triangle.GetP1()], points_[triangle.GetP2()]);
-    Vector v2(points_[triangle.GetP2()], points_[triangle.GetP3()]);
+    Vector v1 = points_[triangle.GetP2()] - points_[triangle.GetP1()];
+    Vector v2 = points_[triangle.GetP3()] - points_[triangle.GetP2()];
 
     return v1.Cross(v2).Normalize();
 }
@@ -80,12 +80,12 @@ void Scene3D::RecalculateNormals()
         pointsNormals_.push_back(CalculatePointNormal(i));
 }
 
-void Scene3D::SetObserverPosition(const Point& newPosition)
+void Scene3D::SetObserverPosition(const Vector& newPosition)
 {
     observatorPosition_ = newPosition;
 }
 
-void Scene3D::SetLightPosition(const Point& newPosition)
+void Scene3D::SetLightPosition(const Vector& newPosition)
 {
     lightPosition_ = newPosition;
 }
@@ -106,8 +106,8 @@ Scene2D Scene3D::GetPerspectiveProjection() const
     return result;
 }
 
-void SortVertices(const Point& p1, const Point& p2, const Point& p3,
-        Point& left, Point& center, Point& right)
+void SortVertices(const Vector& p1, const Vector& p2, const Vector& p3,
+        Vector& left, Vector& center, Vector& right)
 {
     if (p1.GetX() < p2.GetX())
     {
@@ -162,7 +162,7 @@ double CalculateDeltaY(double y, double ystart, double yend)
     return (ystart == yend) ? 1 : (y - yend) / (ystart - yend);
 }
 
-void Scene3D::DrawTriangleWithXParellGround(const Point& p1, const Point& p2, const Point& p3, QPainter& painter, FlatShader& shader)
+void Scene3D::DrawTriangleWithXParellGround(const Vector& p1, const Vector& p2, const Vector& p3, QPainter& painter, FlatShader& shader)
 {
     // inv: p2 and p3 are on the same line, p1 is peak of triangle
     assert(p2.GetY() == p3.GetY());
@@ -179,17 +179,17 @@ void Scene3D::DrawTriangleWithXParellGround(const Point& p1, const Point& p2, co
 
         for (int x = (int) xl; x < xr; x++)
         {
-            painter.setPen(shader.GetColorForPixel(Point(x, y, 0)));
+            painter.setPen(shader.GetColorForPixel(Vector(x, y, 0)));
             painter.drawPoint(x, y);
         }
 
     }
 }
 
-void Scene3D::DrawTriangle(const Point& p1, const Point& p2, const Point& p3, QPainter& painter, FlatShader& shader)
+void Scene3D::DrawTriangle(const Vector& p1, const Vector& p2, const Vector& p3, QPainter& painter, FlatShader& shader)
 {
     // inv: p2 is on the left of p3
-    Point left, right, center;
+    Vector left, right, center;
     SortVertices(p1, p2, p3, left, center, right);
     if (left.GetY() == right.GetY())
         DrawTriangleWithXParellGround(center, left, right, painter, shader);
@@ -201,8 +201,8 @@ void Scene3D::DrawTriangle(const Point& p1, const Point& p2, const Point& p3, QP
             double betay = CalculateDeltaY(y, center.GetY(), right.GetY());
             double xr = betay * center.GetX() + (1 - betay) * right.GetX();
 
-            DrawTriangleWithXParellGround(center, left, Point(xr, left.GetY(), 0), painter, shader);
-            DrawTriangleWithXParellGround(right, left, Point(xr, left.GetY(), 0), painter, shader);
+            DrawTriangleWithXParellGround(center, left, Vector(xr, left.GetY(), 0), painter, shader);
+            DrawTriangleWithXParellGround(right, left, Vector(xr, left.GetY(), 0), painter, shader);
         }
         else
         {
@@ -210,8 +210,8 @@ void Scene3D::DrawTriangle(const Point& p1, const Point& p2, const Point& p3, QP
             double betay = CalculateDeltaY(y, center.GetY(), left.GetY());
             double xl = betay * center.GetX() + (1 - betay) * left.GetX();
 
-            DrawTriangleWithXParellGround(center, Point(xl, right.GetY(), 0), right, painter, shader);
-            DrawTriangleWithXParellGround(left, Point(xl, right.GetY(), 0), right, painter, shader);
+            DrawTriangleWithXParellGround(center, Vector(xl, right.GetY(), 0), right, painter, shader);
+            DrawTriangleWithXParellGround(left, Vector(xl, right.GetY(), 0), right, painter, shader);
         }
     }
 
@@ -261,9 +261,9 @@ QImage Scene3D::RenederPerspectiveProjection(int width, int height)
         painter.drawLine((int) t2.p1_.GetX(), (int) t2.p1_.GetY(), (int) t2.p3_.GetX(), (int) t2.p3_.GetY());
         painter.drawEllipse((int) t2.p1_.GetX(), (int) t2.p1_.GetY(), 1, 1);
     }*/
-    for (const Point& p : points_)
+    for (const Vector& p : points_)
     {
-         Point transformed = p.Transform(transformationMatrix);
+         Vector transformed = p.Transform(transformationMatrix);
          std::cout << "Original: " << p << " transformed: " << transformed << std::endl;
          double x = transformed.GetX()/* * width + width / 2*/;
          double y = transformed.GetY()/* * height + height / 2*/;
@@ -281,7 +281,7 @@ void Scene3D::AccumulateTransformation(const Matrix& transformationMatrix)
 
 void Scene3D::Transform(const Matrix& transformationMatrix)
 {
-    for (Point& p : points_)
+    for (Vector& p : points_)
         p = p.Transform(transformationMatrix);
 }
 

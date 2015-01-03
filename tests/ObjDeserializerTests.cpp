@@ -21,10 +21,10 @@ bool VectorsEqual(const std::vector<T>& left, const std::vector<T>& right)
 TEST(ObjDeserializerTests, ShouldParseVertexInfo)
 {
     std::string vertexInfo = "v 0.981561 1.098386 0.836118";
-    Point expectedPoint(0.981561, 1.098386, 0.836118);
+    Vector expectedPoint(0.981561, 1.098386, 0.836118);
     ObjDeserializer deserializer;
 
-    Point deserialized = deserializer.ParseVertex(vertexInfo);
+    Vector deserialized = deserializer.ParseVertex(vertexInfo);
 
 
     EXPECT_TRUE(deserialized == expectedPoint);
@@ -49,12 +49,12 @@ TEST(ObjDeserializerTests, ShouldParseObjFile)
 {
     std::string testObjFilePath = "tests/test.obj";
     ObjDeserializer deserializer;
-    std::vector<Point> expectedPoints 
+    std::vector<Vector> expectedPoints 
     { 
-        Point(4.675601, 0.000000, 3.052211),
-        Point(-3.472256, 0.000000, 1.000000),
-        Point(1.000000, 0.000000, -3.762115),
-        Point(-1.000000, 0.000000, -3.074859)
+        Vector(4.675601, 0.000000, 3.052211),
+        Vector(-3.472256, 0.000000, 1.000000),
+        Vector(1.000000, 0.000000, -3.762115),
+        Vector(-1.000000, 0.000000, -3.074859)
     };
     std::vector<Triangle3D> expectedTriangles
     {

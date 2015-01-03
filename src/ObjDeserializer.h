@@ -11,7 +11,7 @@ class ObjDeserializer
     public:
         Scene3D ParseFile(const std::string& filename) const;
 
-        Point ParseVertex(const std::string& vertexInfo) const;
+        Vector ParseVertex(const std::string& vertexInfo) const;
         Triangle3D ParseTriangle(const std::string& triangleInfo) const;
 
 };

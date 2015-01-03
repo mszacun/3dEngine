@@ -1,15 +1,16 @@
 #ifndef VECTOR_H
 #define VECTOR_H
 
-#include "Point.h"
+#define EPSILON 0.0001
+
 #include <cassert>
+#include "Matrix.h"
 
 class Vector
 {
     public:
         Vector();
         Vector(double x, double y, double z);
-        Vector(const Point& start, const Point& end);
 
         double GetX() const { return x_; }
         double GetY() const { return y_; }
@@ -24,12 +25,18 @@ class Vector
         double Length() const;
         double Dot(const Vector& right) const;
 
+        Vector Transform(const Matrix& transformationMatrix) const;
+
         bool operator==(const Vector& right) const;
+        friend std::ostream& operator<< (std::ostream& out, const Vector& p);
 
     private:
         double x_;
         double y_;
         double z_;
+
+        static Matrix pointMatrix;
+        static Matrix transformedPointMatrix;
 };
 
 #endif

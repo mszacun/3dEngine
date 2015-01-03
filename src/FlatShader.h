@@ -3,23 +3,22 @@
 
 #include <QColor>
 
-#include "Point.h"
 #include "Vector.h"
 #include "Material.h"
 
 struct TriangleShadingInfo
 {
-    Point p1;
-    Point p2;
-    Point p3;
+    Vector p1;
+    Vector p2;
+    Vector p3;
     Vector p1Normal;
     Vector p2Normal;
     Vector p3Normal;
 
     Vector triangleNormal;
 
-    Point observatorPosition;
-    Point lightPosition;
+    Vector observatorPosition;
+    Vector lightPosition;
     QColor lightColor;
     Material material;
 };
@@ -28,7 +27,7 @@ class FlatShader
 {
     public:
         FlatShader(const TriangleShadingInfo& shadingInfo);
-        QColor GetColorForPixel(const Point& pixel) const;
+        QColor GetColorForPixel(const Vector& pixel) const;
 
     protected:
         TriangleShadingInfo shadingInfo_;

@@ -12,16 +12,6 @@ TEST(VectorTests, CheckTwoVectorsEqulity){
     EXPECT_TRUE(v == v2);
 }
 
-TEST(VectorTests, ShouldCreateVectorFromTwoPoints){
-    Point start(4, -2, 0);
-    Point end(1, 5, -10);
-    Vector expectedVector(-3, 7, -10);
-
-    Vector calculatedVector(start, end);
-
-    EXPECT_TRUE(expectedVector == calculatedVector);
-}
-
 TEST(VectorTests, ShouldAddTwoVectors){
     Vector v(1, 2,3);
     Vector v2(-6, 12, 5);
