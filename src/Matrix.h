@@ -41,9 +41,16 @@ class Matrix
             double zFactor);
         static Matrix CreateTranslationMatrix(double xMove, double yMove,
             double zMove);
-        static Matrix CreateXAxisRotationMatrix(double angleInDegrees);
-        static Matrix CreateYAxisRotationMatrix(double angleInDegrees);
-        static Matrix CreateZAxisRotationMatrix(double angleInDegrees);
+        static Matrix CreateTranslationMatrix(const Vector& v);
+        static Matrix CreateXAxisRotationMatrix(double angleInRadians);
+        static Matrix CreateXAxisRotationMatrixAroundPoint(double angleInRadians,
+                const Vector& p);
+        static Matrix CreateYAxisRotationMatrix(double angleInRadians);
+        static Matrix CreateYAxisRotationMatrixAroundPoint(double angleInRadians,
+                const Vector& p);
+        static Matrix CreateZAxisRotationMatrix(double angleInRadians);
+        static Matrix CreateZAxisRotationMatrixAroundPoint(double angleInRadians,
+                const Vector& p);
         static Matrix CreateProjectMatrix(double zDistance);
 
         static Matrix CreatePerspectiveProjectionMatrix(double viewAngleRad,

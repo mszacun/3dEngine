@@ -20,6 +20,9 @@ class Controler
     private:
         ViewWeakPtr view_;
         Scene3D scene_;
+
+        Vector observerPosition_;
+        double rotationAngle;
 };
 
 #endif

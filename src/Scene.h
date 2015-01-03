@@ -36,6 +36,7 @@ class Scene3D
         void RecalculateNormals();
 
         void SetObserverPosition(const Vector& newPosition);
+        void SetObservedPoint(const Vector& newObservedPoint);
         void SetLightPosition(const Vector& newPosition);
         void SetLightColor(const QColor& color);
 
@@ -71,6 +72,10 @@ class Scene3D
         Matrix CreateViewMatrix() const;
         Matrix CreatePerspectiveProjectionMatrix(double viewAngleRad,
             double aspect, double znear, double zfar) const;
+
+        void DrawScene(QPainter& painter, const Matrix& transformationMatrix);
+
+        void ViewTransform();
 };
 
 #endif

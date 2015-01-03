@@ -85,6 +85,11 @@ void Scene3D::SetObserverPosition(const Vector& newPosition)
     observatorPosition_ = newPosition;
 }
 
+void Scene3D::SetObservedPoint(const Vector& newObservedPoint)
+{
+    observedPoint_ = newObservedPoint;
+}
+
 void Scene3D::SetLightPosition(const Vector& newPosition)
 {
     lightPosition_ = newPosition;
@@ -223,19 +228,9 @@ void Scene3D::PrintProjectInfo(const Triangle3D& t, const Triangle2D& t2) const
     std::cout << points_[t.GetP1()] << " -> " << t2.p1_ << std::endl;
 }
 
-QImage Scene3D::RenederPerspectiveProjection(int width, int height)
+void Scene3D::DrawScene(QPainter& painter, const Matrix& transformationMatrix)
 {
-    QImage result(width, height, QImage::Format_ARGB32);
-    QPainter painter(&result);
-
-    painter.fillRect(0, 0, 200, 200, QColor("white"));
-    ClearZBuffer(zBuffer_);
-
-    Matrix transformationMatrix = Matrix::CreateProjectMatrix(-observatorPosition_.GetZ()) * worldTransformation_;
-
-    std::cout << "Transformation matrix: " << std::endl;
-    transformationMatrix.Print();
-/*    for (const Triangle3D& t : triangles_)
+    for (const Triangle3D& t : triangles_)
     {
         Triangle2D t2 = ProjectTrianglePerspectively(t, transformationMatrix);
         PrintProjectInfo(t, t2);
@@ -258,18 +253,29 @@ QImage Scene3D::RenederPerspectiveProjection(int width, int height)
         FlatShader shader(shadingInfo);
         //DrawTriangle(t2.p1_, t2.p2_, t2.p3_, painter, shader);
         painter.drawLine((int) t2.p1_.GetX(), (int) t2.p1_.GetY(), (int) t2.p2_.GetX(), (int) t2.p2_.GetY());
+        painter.drawLine((int) t2.p2_.GetX(), (int) t2.p2_.GetY(), (int) t2.p3_.GetX(), (int) t2.p3_.GetY());
         painter.drawLine((int) t2.p1_.GetX(), (int) t2.p1_.GetY(), (int) t2.p3_.GetX(), (int) t2.p3_.GetY());
         painter.drawEllipse((int) t2.p1_.GetX(), (int) t2.p1_.GetY(), 1, 1);
-    }*/
-    for (const Vector& p : points_)
-    {
-         Vector transformed = p.Transform(transformationMatrix);
-         std::cout << "Original: " << p << " transformed: " << transformed << std::endl;
-         double x = transformed.GetX()/* * width + width / 2*/;
-         double y = transformed.GetY()/* * height + height / 2*/;
-         painter.setBrush(QColor("gold"));
-         painter.drawEllipse((int) x, (int) y, 1, 1);
     }
+}
+
+QImage Scene3D::RenederPerspectiveProjection(int width, int height)
+{
+    QImage result(width, height, QImage::Format_ARGB32);
+    QPainter painter(&result);
+
+    painter.fillRect(0, 0, width, height, QColor("white"));
+    ClearZBuffer(zBuffer_);
+
+    Scene3D observedScene(*this);
+    observedScene.ViewTransform();
+
+    Matrix transformationMatrix = Matrix::CreateProjectMatrix(-observedScene.observatorPosition_.GetZ()) ;
+
+    std::cout << "Transformation matrix: " << std::endl;
+    transformationMatrix.Print();
+
+    observedScene.DrawScene(painter, transformationMatrix);
 
     return result;
 }
@@ -283,6 +289,11 @@ void Scene3D::Transform(const Matrix& transformationMatrix)
 {
     for (Vector& p : points_)
         p = p.Transform(transformationMatrix);
+
+    observatorPosition_ = observatorPosition_.Transform(transformationMatrix);
+    lightPosition_ = lightPosition_.Transform(transformationMatrix);
+    observedPoint_ = observedPoint_.Transform(transformationMatrix);
+    upDirection_ = upDirection_.Transform(transformationMatrix);
 }
 
 Triangle2D Scene3D::ProjectTrianglePerspectively(const Triangle3D& triangle,
@@ -291,6 +302,31 @@ Triangle2D Scene3D::ProjectTrianglePerspectively(const Triangle3D& triangle,
      return Triangle2D(points_[triangle.GetP1()].Transform(transformationMatrix),
          points_[triangle.GetP2()].Transform(transformationMatrix),
          points_[triangle.GetP3()].Transform(transformationMatrix));
+}
+
+void Scene3D::ViewTransform()
+{
+    /* step 1 */
+    Transform(Matrix::CreateTranslationMatrix(-observedPoint_.GetX(),
+                -observedPoint_.GetY(), -observedPoint_.GetZ()));
+
+    // step 2
+    double alfa = std::atan2(observatorPosition_.GetX(), observatorPosition_.GetZ());
+    double fi = M_PI - alfa;
+    Transform(Matrix::CreateYAxisRotationMatrix(fi));
+
+    // step 3
+    alfa = std::atan2(observatorPosition_.GetZ(), observatorPosition_.GetY());
+    fi = -M_PI / 2 - alfa;
+    Transform(Matrix::CreateXAxisRotationMatrix(fi));
+
+    // step 4
+    alfa = std::atan2(upDirection_.GetY(), upDirection_.GetX());
+    fi = M_PI / 2 - alfa;
+    Transform(Matrix::CreateZAxisRotationMatrix(fi));
+
+    std::cout << "Observer position after transformation: " << observatorPosition_ << std::endl;
+
 }
 
 void ClearZBuffer(double** zBuffer)

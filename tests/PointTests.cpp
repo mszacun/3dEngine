@@ -36,7 +36,7 @@ TEST(PointTests, ShouldTranslatePoint){
 TEST(PointTests, ShouldRotatePointAroundXAxis){
     Vector p(1, 2, 3);
 
-    Matrix transformationMatrix = Matrix::CreateXAxisRotationMatrix(90);
+    Matrix transformationMatrix = Matrix::CreateXAxisRotationMatrix(M_PI / 2);
 
     Vector result = p.Transform(transformationMatrix);
 
@@ -48,7 +48,7 @@ TEST(PointTests, ShouldRotatePointAroundXAxis){
 TEST(PointTests, ShouldRotatePointAroundYAxis){
     Vector p(1, 2, 3);
 
-    Matrix transformationMatrix = Matrix::CreateYAxisRotationMatrix(45);
+    Matrix transformationMatrix = Matrix::CreateYAxisRotationMatrix(M_PI / 4);
 
     Vector result = p.Transform(transformationMatrix);
 
@@ -60,7 +60,7 @@ TEST(PointTests, ShouldRotatePointAroundYAxis){
 TEST(PointTests, ShouldRotatePointAroundZAxis){
     Vector p(1, 2, 3);
 
-    Matrix transformationMatrix = Matrix::CreateZAxisRotationMatrix(30);
+    Matrix transformationMatrix = Matrix::CreateZAxisRotationMatrix(M_PI / 6);
 
     Vector result = p.Transform(transformationMatrix);
 
@@ -74,4 +74,14 @@ TEST(PointTests, PointsShouldBeEqualWhenEpsilonIsMet){
     Vector p2(1.0000001, 2.000003, 3.00002);
 
     EXPECT_TRUE(p == p2);
+}
+
+TEST(PointTests, WhenRotated360DegPointShouldStayTheSame)
+{
+    Vector p(0, 0, -10);
+    Vector expectedVector(0, 0, -10);
+
+    Vector rotatedVector = p.Transform(Matrix::CreateXAxisRotationMatrix(M_PI * 2));
+
+    EXPECT_TRUE(expectedVector == rotatedVector);
 }

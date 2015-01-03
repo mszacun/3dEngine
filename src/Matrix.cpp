@@ -220,9 +220,14 @@ Matrix Matrix::CreateTranslationMatrix(double xMove, double yMove, double zMove)
     return Matrix(matrixData);
 }
 
-Matrix Matrix::CreateXAxisRotationMatrix(double angleInDegrees)
+Matrix Matrix::CreateTranslationMatrix(const Vector& v)
 {
-    double radians = angleInDegrees * M_PI / 180;
+    return CreateTranslationMatrix(v.GetX(), v.GetY(), v.GetZ());
+}
+
+Matrix Matrix::CreateXAxisRotationMatrix(double angleInRadians)
+{
+    double radians = angleInRadians;
     std::vector<std::vector<double>> matrixData { { 1, 0, 0, 0 },
                                                   { 0, cos(radians), -sin(radians), 0 },
                                                   { 0, sin(radians), cos(radians), 0 },
@@ -231,9 +236,15 @@ Matrix Matrix::CreateXAxisRotationMatrix(double angleInDegrees)
     return Matrix(matrixData);
 }
 
-Matrix Matrix::CreateYAxisRotationMatrix(double angleInDegrees)
+Matrix Matrix::CreateXAxisRotationMatrixAroundPoint(double angleInRadians,
+    const Vector& p)
 {
-    double radians = angleInDegrees * M_PI / 180;
+    return CreateTranslationMatrix(p) * CreateXAxisRotationMatrix(angleInRadians) * CreateTranslationMatrix(-p);
+}
+
+Matrix Matrix::CreateYAxisRotationMatrix(double angleInRadians)
+{
+    double radians = angleInRadians;
     std::vector<std::vector<double>> matrixData { { cos(radians), 0, sin(radians), 0 },
                                                   { 0, 1, 0, 0 },
                                                   { -sin(radians), 0, cos(radians), 0 },
@@ -242,15 +253,27 @@ Matrix Matrix::CreateYAxisRotationMatrix(double angleInDegrees)
     return Matrix(matrixData);
 }
 
-Matrix Matrix::CreateZAxisRotationMatrix(double angleInDegrees)
+Matrix Matrix::CreateYAxisRotationMatrixAroundPoint(double angleInRadians,
+    const Vector& p)
 {
-    double radians = angleInDegrees * M_PI / 180;
+    return CreateTranslationMatrix(p) * CreateYAxisRotationMatrix(angleInRadians) * CreateTranslationMatrix(-p);
+}
+
+Matrix Matrix::CreateZAxisRotationMatrix(double angleInRadians)
+{
+    double radians = angleInRadians;
     std::vector<std::vector<double>> matrixData { { cos(radians), -sin(radians), 0, 0 },
                                                   { sin(radians), cos(radians), 0, 0 },
                                                   { 0, 0, 1, 0 },
                                                   { 0, 0, 0, 1} };
 
     return Matrix(matrixData);
+}
+
+Matrix Matrix::CreateZAxisRotationMatrixAroundPoint(double angleInRadians,
+    const Vector& p)
+{
+    return CreateTranslationMatrix(p) * CreateZAxisRotationMatrix(angleInRadians) * CreateTranslationMatrix(-p);
 }
 
 Matrix Matrix::CreateProjectMatrix(double zDistance)
