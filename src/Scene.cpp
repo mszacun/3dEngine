@@ -198,6 +198,10 @@ void Scene3D::DrawProjectedTriangle(QPainter& painter, const Triangle3D& t, cons
     shadingInfo.p2 = points_[t.GetP2()];
     shadingInfo.p3 = points_[t.GetP3()];
 
+    shadingInfo.projectedP1 = t2.p1_;
+    shadingInfo.projectedP2 = t2.p2_;
+    shadingInfo.projectedP3 = t2.p3_;
+
     shadingInfo.p1Normal = pointsNormals_[t.GetP1()];
     shadingInfo.p2Normal = pointsNormals_[t.GetP2()];
     shadingInfo.p3Normal = pointsNormals_[t.GetP3()];

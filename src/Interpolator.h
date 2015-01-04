@@ -17,6 +17,7 @@ template <typename T>
 class Triangle3DInterpolator
 {
     public:
+        Triangle3DInterpolator() {}
         Triangle3DInterpolator(const Vector& p1, const T& value1,
             const Vector& p2, const T& value2,
             const Vector& p3, const T& value3);
@@ -25,7 +26,7 @@ class Triangle3DInterpolator
         void SetVector2(const Vector& p, const T& value);
         void SetVector3(const Vector& p, const T& value);
 
-        T Interpolate(const Vector& p);
+        T Interpolate(const Vector& p) const;
 
     private:
         Vector p1_;
@@ -67,11 +68,15 @@ void Triangle3DInterpolator<T>::SetVector3(const Vector& p, const T& value)
 }
 
 template <typename T>
-T Triangle3DInterpolator<T>::Interpolate(const Vector& p)
+T Triangle3DInterpolator<T>::Interpolate(const Vector& p) const
 {
     BarycentricCoordinates barycentric = ConvertToBarycentric(p1_, p2_, p3_, p);
 
-    return barycentric.l1 * p1Value_ + barycentric.l2 * p2Value_ + barycentric.l3 * p3Value_;
+    T p1Part = p1Value_ * barycentric.l1;
+    T p2Part = p2Value_ * barycentric.l2;
+    T p3Part = p3Value_ * barycentric.l3;
+    T result = p1Part + p2Part + p3Part;
+    return result;
 }
 
 #endif
