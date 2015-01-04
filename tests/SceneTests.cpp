@@ -21,13 +21,13 @@ TEST(SceneTests, ShouldTransformPerspectively){
     Scene2D perspectiveProjection = scene.GetPerspectiveProjection();
 
     Triangle2D expectedProjectedTriangle1(
-            Vector(42.5, 77.5, 0),
-            Vector(77.5, 77.5, 0),
-            Vector(77.5, 42.5, 0));
+            Vector(42.5, 77.5, 1),
+            Vector(77.5, 77.5, 1),
+            Vector(77.5, 42.5, 1));
     Triangle2D expectedProjectedTriangle2(
-            Vector(42.5, 77.5, 0),
-            Vector(77.5, 42.5, 0),
-            Vector(42.5, 42.5, 0));
+            Vector(42.5, 77.5, 1),
+            Vector(77.5, 42.5, 1),
+            Vector(42.5, 42.5, 1));
 
     EXPECT_TRUE(expectedProjectedTriangle1 == perspectiveProjection.triangles_[0]);
     EXPECT_TRUE(expectedProjectedTriangle2 == perspectiveProjection.triangles_[1]);
@@ -52,13 +52,13 @@ TEST(SceneTests, ShouldTransformFartherPointsSmaller){
     Scene2D perspectiveProjection = scene.GetPerspectiveProjection();
 
     Triangle2D expectedProjectedTriangle1(
-            Vector(45.9999, 74, 0),
-            Vector(74, 74, 0),
-            Vector(74, 45.9999, 0));
+            Vector(45.9999, 74, 3),
+            Vector(74, 74, 3),
+            Vector(74, 45.9999, 3));
     Triangle2D expectedProjectedTriangle2(
-            Vector(45.9999, 74, 0),
-            Vector(74, 45.9999, 0),
-            Vector(45.9999, 45.9999, 0));
+            Vector(45.9999, 74, 3),
+            Vector(74, 45.9999, 3),
+            Vector(45.9999, 45.9999, 3));
 
     EXPECT_TRUE(expectedProjectedTriangle1 == perspectiveProjection.triangles_[0]);
     EXPECT_TRUE(expectedProjectedTriangle2 == perspectiveProjection.triangles_[1]);

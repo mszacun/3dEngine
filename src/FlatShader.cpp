@@ -20,8 +20,8 @@ QColor FlatShader::GetColorForPixel(const Vector& pixel) const
     {
         double cos = std::max(0.0, shadingInfo_.triangleNormal.Dot(lightVector_));
         double calculatedComponent = lightRgb[i] * cos * shadingInfo_.material.GetDiffuse(i, 0, 0, 0);
-        std::cout << "Cos: " << cos << std::endl;
-        std::cout << names[i] << ": " << lightRgb[i] << " -> " << calculatedComponent <<std::endl;
+ //       std::cout << "Cos: " << cos << std::endl;
+ //       std::cout << names[i] << ": " << lightRgb[i] << " -> " << calculatedComponent <<std::endl;
         lightRgb[i] *= cos * shadingInfo_.material.GetDiffuse(i, 0, 0, 0);
     }
 

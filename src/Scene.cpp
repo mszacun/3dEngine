@@ -75,6 +75,9 @@ Vector Scene3D::CalculatePointNormal(unsigned int pointNumber) const
 
 void Scene3D::RecalculateNormals()
 {
+    for (Triangle3D& t : triangles_)
+        t.SetNormal(CalculateNormal(t));
+
     pointsNormals_.clear();
     for (unsigned int i = 0; i < points_.size(); i++)
         pointsNormals_.push_back(CalculatePointNormal(i));
@@ -296,12 +299,20 @@ void Scene3D::Transform(const Matrix& transformationMatrix)
     upDirection_ = upDirection_.Transform(transformationMatrix);
 }
 
+Vector Scene3D::ProjectPoint(const Vector& p, const Matrix& projectionMatrix) const
+{
+    Vector projected = p.Transform(projectionMatrix);
+    projected.SetZ(p.GetZ());
+
+    return projected;
+}
+
 Triangle2D Scene3D::ProjectTrianglePerspectively(const Triangle3D& triangle,
         const Matrix& transformationMatrix) const
 {
-     return Triangle2D(points_[triangle.GetP1()].Transform(transformationMatrix),
-         points_[triangle.GetP2()].Transform(transformationMatrix),
-         points_[triangle.GetP3()].Transform(transformationMatrix));
+     return Triangle2D(ProjectPoint(points_[triangle.GetP1()], transformationMatrix),
+         ProjectPoint(points_[triangle.GetP2()], transformationMatrix),
+         ProjectPoint(points_[triangle.GetP3()], transformationMatrix));
 }
 
 void Scene3D::ViewTransform()
@@ -324,6 +335,8 @@ void Scene3D::ViewTransform()
     alfa = std::atan2(upDirection_.GetY(), upDirection_.GetX());
     fi = M_PI / 2 - alfa;
     Transform(Matrix::CreateZAxisRotationMatrix(fi));
+
+    RecalculateNormals();
 
     std::cout << "Observer position after transformation: " << observatorPosition_ << std::endl;
 

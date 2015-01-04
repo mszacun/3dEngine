@@ -16,6 +16,8 @@ class Vector
         double GetY() const { return y_; }
         double GetZ() const { return z_; }
 
+        void SetZ(double z) { z_ = z; }
+
         Vector operator+(const Vector& right) const;
         Vector operator-(const Vector& right) const;
         Vector operator*(double scalar) const;

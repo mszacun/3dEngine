@@ -65,6 +65,7 @@ class Scene3D
         double** zBuffer_;
         Matrix worldTransformation_;
 
+        Vector ProjectPoint(const Vector& p, const Matrix& projectionMatrix) const;
         Triangle2D ProjectTrianglePerspectively(const Triangle3D& triangle,
                 const Matrix& transformationMatrix) const;
         void PrintProjectInfo(const Triangle3D& t, const Triangle2D& t2) const;
@@ -74,6 +75,7 @@ class Scene3D
             double aspect, double znear, double zfar) const;
 
         void DrawScene(QPainter& painter, const Matrix& transformationMatrix);
+        void DrawProjectedTriangle(QPainter& painter, const Triangle3D t, const Matrix& transformationMatrix);
 
         void ViewTransform();
 };
