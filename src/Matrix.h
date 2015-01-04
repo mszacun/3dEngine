@@ -36,7 +36,11 @@ class Matrix
 
         static void Multiply(const Matrix& m1, const Matrix& m2, Matrix& result);
 
+        static void Set3x3Matrix(Matrix& m, double m11, double m12, double m13, double m21, double m22, double m23, double m31, double m32, double m33);
+
         static Matrix CreateIdentityMatrix(int size);
+        static Matrix Create3x3Matrix(double m11, double m12, double m13, double m21, double m22, double m23, double m31, double m32, double m33);
+        static Matrix Create3x1Matrix(double m11, double m21, double m31);
         static Matrix CreateScaleMatrix(double xFactor, double yFactor,
             double zFactor);
         static Matrix CreateTranslationMatrix(double xMove, double yMove,

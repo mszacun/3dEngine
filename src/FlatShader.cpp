@@ -3,7 +3,7 @@
 
 QColor operator*(const QColor& left, double right)
 {
-    return QColor(std::max(left.red() * right, 0.0), std::max(left.green() * right, 0.0), std::max(left.blue() * right, 0.0));
+    return QColor(std::max(left.red() * right, 0.0), std::max(0.0, left.green() * right), std::max(0.0, left.blue() * right));
 }
 
 QColor operator+(const QColor& left, const QColor& right)

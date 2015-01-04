@@ -4,6 +4,7 @@
 #define ZBUFFER_WIDTH 1024
 #define ZBUFFER_HEIGHT 1024
 void ClearZBuffer(double** zBuffer);
+double infinity = std::numeric_limits<double>::max();
 
 void Scene2D::AddTriangle(const Triangle2D& triangle)
 {
@@ -314,5 +315,5 @@ void ClearZBuffer(double** zBuffer)
 {
     for (int i = 0; i < ZBUFFER_HEIGHT; i++)
         for (int j = 0; j < ZBUFFER_WIDTH; j++)
-            zBuffer[i][j] = std::numeric_limits<double>::max();
+            zBuffer[i][j] = infinity;
 }

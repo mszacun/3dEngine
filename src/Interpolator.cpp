@@ -1,22 +1,23 @@
 #include "Interpolator.h"
 
+Matrix pMatrix(1, 3);
+Matrix lambdas (1, 3);
+Matrix conversionMatrix(3, 3);
+
 BarycentricCoordinates ConvertToBarycentric(const Vector& p1, const Vector& p2,
     const Vector& p3, const Vector& p)
 {
     BarycentricCoordinates result;
 
-    std::vector<std::vector<double>> matrixData
-    {
-        { p1.GetX(), p2.GetX(), p3.GetX() },
-        { p1.GetY(), p2.GetY(), p3.GetY() },
-        { p1.GetZ(), p2.GetZ(), p3.GetZ() }
-    };
-    std::vector<std::vector<double>> pData { { p.GetX() }, { p.GetY() }, { p.GetZ() } };
+    Matrix::Set3x3Matrix(conversionMatrix,
+            p1.GetX(), p2.GetX(), p3.GetX(),
+            p1.GetY(), p2.GetY(), p3.GetY(),
+            p1.GetZ(), p2.GetZ(), p3.GetZ());
 
-    Matrix conversionMatrix(matrixData);
-    Matrix pMatrix(pData);
+    pMatrix.SetElement(0, 0, p.GetX());
+    pMatrix.SetElement(1, 0, p.GetY());
+    pMatrix.SetElement(2, 0, p.GetZ());
 
-    Matrix lambdas (1, 3);
     Matrix::Multiply(conversionMatrix.Invert3x3Matrix(), pMatrix, lambdas);
 
     result.l1 = lambdas.GetElement(0, 0);

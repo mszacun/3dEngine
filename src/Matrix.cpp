@@ -1,6 +1,8 @@
 #include "Matrix.h"
 #include "Vector.h"
 
+Matrix semiInvertedMatrix(3, 3);
+
 bool DoubleEquals(double d1, double d2)
 {
     return std::abs(d1 - d2) < 0.0001;
@@ -139,25 +141,17 @@ Matrix Matrix::operator-(const Matrix& right) const
 Matrix Matrix::Invert3x3Matrix() const
 {
     double det = Det();
-    std::vector<std::vector<double>> matrixData  {
-        {
-            GetElement(1, 1) * GetElement(2, 2) - GetElement(1, 2) * GetElement(2, 1),
-            GetElement(0, 2) * GetElement(2, 1) - GetElement(0, 1) * GetElement(2, 2),
-            GetElement(0, 1) * GetElement(1, 2) - GetElement(0, 2) * GetElement(1, 1)
-        },
-        {
-            GetElement(1, 2) * GetElement(2, 0) - GetElement(1, 0) * GetElement(2, 2),
-            GetElement(0, 0) * GetElement(2, 2) - GetElement(0, 2) * GetElement(2, 0),
-            GetElement(0, 2) * GetElement(1, 0) - GetElement(0, 0) * GetElement(1, 2)
-        },
-        {
-            GetElement(1, 0) * GetElement(2, 1) - GetElement(1, 1) * GetElement(2, 0),
-            GetElement(0, 1) * GetElement(2, 0) - GetElement(0, 0) * GetElement(2, 1),
-            GetElement(0, 0) * GetElement(1, 1) - GetElement(0, 1) * GetElement(1, 0)
-        }
-    };
-    Matrix semiInverted(matrixData);
-    return semiInverted * (1 / det);
+    semiInvertedMatrix.SetElement(0, 0, GetElement(1, 1) * GetElement(2, 2) - GetElement(1, 2) * GetElement(2, 1));
+    semiInvertedMatrix.SetElement(0, 1, GetElement(0, 2) * GetElement(2, 1) - GetElement(0, 1) * GetElement(2, 2));
+    semiInvertedMatrix.SetElement(0, 2, GetElement(0, 1) * GetElement(1, 2) - GetElement(0, 2) * GetElement(1, 1));
+    semiInvertedMatrix.SetElement(1, 0, GetElement(1, 2) * GetElement(2, 0) - GetElement(1, 0) * GetElement(2, 2));
+    semiInvertedMatrix.SetElement(1, 1, GetElement(0, 0) * GetElement(2, 2) - GetElement(0, 2) * GetElement(2, 0));
+    semiInvertedMatrix.SetElement(1, 2, GetElement(0, 2) * GetElement(1, 0) - GetElement(0, 0) * GetElement(1, 2));
+    semiInvertedMatrix.SetElement(2, 0, GetElement(1, 0) * GetElement(2, 1) - GetElement(1, 1) * GetElement(2, 0));
+    semiInvertedMatrix.SetElement(2, 1, GetElement(0, 1) * GetElement(2, 0) - GetElement(0, 0) * GetElement(2, 1));
+    semiInvertedMatrix.SetElement(2, 2, GetElement(0, 0) * GetElement(1, 1) - GetElement(0, 1) * GetElement(1, 0));
+
+    return semiInvertedMatrix * (1 / det);
 }
 
 void Matrix::Print() const
@@ -199,6 +193,49 @@ Matrix Matrix::CreateIdentityMatrix(int size)
     return result;
 }
 
+Matrix Matrix::Create3x3Matrix(double m11, double m12, double m13, double m21, double m22, double m23, double m31, double m32, double m33)
+{
+    Matrix m(3, 3);
+    m.SetElement(0, 0, m11);
+    m.SetElement(0, 1, m12);
+    m.SetElement(0, 2, m13);
+
+    m.SetElement(1, 0, m21);
+    m.SetElement(1, 1, m22);
+    m.SetElement(1, 2, m23);
+
+    m.SetElement(2, 0, m31);
+    m.SetElement(2, 1, m32);
+    m.SetElement(2, 2, m33);
+
+    return m;
+}
+
+void Matrix::Set3x3Matrix(Matrix& m, double m11, double m12, double m13, double m21, double m22, double m23, double m31, double m32, double m33)
+{
+    m.SetElement(0, 0, m11);
+    m.SetElement(0, 1, m12);
+    m.SetElement(0, 2, m13);
+
+    m.SetElement(1, 0, m21);
+    m.SetElement(1, 1, m22);
+    m.SetElement(1, 2, m23);
+
+    m.SetElement(2, 0, m31);
+    m.SetElement(2, 1, m32);
+    m.SetElement(2, 2, m33);
+}
+
+Matrix Matrix::Create3x1Matrix(double m11, double m21, double m31)
+{
+    Matrix m(1, 3);
+
+    m.SetElement(0, 0, m11);
+    m.SetElement(1, 0, m21);
+    m.SetElement(2, 0, m31);
+
+    return m;
+}
 
 Matrix Matrix::CreateScaleMatrix(double xFactor, double yFactor, double zFactor)
 {
