@@ -32,3 +32,17 @@ QImage Controler::GetRenderedPerspectiveView()
 
     return result;
 }
+
+void Controler::KeyPressed(int key)
+{
+    switch (key)
+    {
+        case Qt::Key_W: observerPosition_.SetZ(observerPosition_.GetZ() + 1); break;
+        case Qt::Key_S: observerPosition_.SetZ(observerPosition_.GetZ() - 1); break;
+        case Qt::Key_A: observerPosition_.SetX(observerPosition_.GetX() - 0.01); break;
+        case Qt::Key_D: observerPosition_.SetX(observerPosition_.GetX() + 0.01); break;
+    }
+        
+    scene_.SetObserverPosition(observerPosition_);
+}
+

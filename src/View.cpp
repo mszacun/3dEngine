@@ -44,6 +44,7 @@ void View::paintEvent(QPaintEvent* event)
 
 void View::keyPressEvent(QKeyEvent* event)
 {
+    controler_->KeyPressed(event->key());
     update();
     QWidget::keyPressEvent(event);
 }

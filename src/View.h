@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QPainter>
+#include <QKeyEvent>
 #include <memory>
 #include <cassert>
 

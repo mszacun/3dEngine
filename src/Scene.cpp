@@ -200,6 +200,8 @@ void Scene3D::PrintProjectInfo(const Triangle3D& t, const Triangle2D& t2) const
 {
     std::cout << "Projectiing trinagle" << std::endl;
     std::cout << points_[t.GetP1()] << " -> " << t2.p1_ << std::endl;
+    std::cout << points_[t.GetP2()] << " -> " << t2.p2_ << std::endl;
+    std::cout << points_[t.GetP3()] << " -> " << t2.p3_ << std::endl;
 }
 
 void Scene3D::DrawScene(QPainter& painter, const Matrix& transformationMatrix)
