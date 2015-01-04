@@ -23,15 +23,32 @@ struct TriangleShadingInfo
     Material material;
 };
 
-class FlatShader
+class Shader
 {
     public:
-        FlatShader(const TriangleShadingInfo& shadingInfo);
-        QColor GetColorForPixel(const Vector& pixel) const;
+        Shader(const TriangleShadingInfo& shadingInfo);
+        virtual QColor GetColorForPixel(const Vector& pixel) const = 0;
 
     protected:
         TriangleShadingInfo shadingInfo_;
         Vector lightVector_;
+};
+
+class FlatShader : public Shader
+{
+    public:
+        FlatShader(const TriangleShadingInfo& shadingInfo);
+        QColor GetColorForPixel(const Vector& pixel) const override;
+
+    protected:
+        QColor calculatedColor_;
+};
+
+class GouraudShader : public Shader
+{
+    public:
+        GouraudShader(const TriangleShadingInfo& shadingInfo);
+        QColor GetColorForPixel(const Vector& pixel) const override;
 };
 
 #endif

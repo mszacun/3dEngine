@@ -44,9 +44,9 @@ class Scene3D
         QImage RenederPerspectiveProjection(int width, int height);
 
         void DrawTriangleWithXParellGround(const Vector& p1, Vector p2,
-            Vector p3, QPainter& painter, FlatShader& shader);
+            Vector p3, QPainter& painter, Shader& shader);
         void DrawTriangle(const Vector& p1, const Vector& p2, const Vector& p3,
-                QPainter& painter, FlatShader& shader);
+                QPainter& painter, Shader& shader);
 
         void AccumulateTransformation(const Matrix& transformationMatrix);
         void Transform(const Matrix& transformationMatrix);

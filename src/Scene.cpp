@@ -47,7 +47,6 @@ void Scene3D::AddTriangle(const int& p1, const int& p2, const int& p3)
 
 void Scene3D::AddTriangle(Triangle3D& triangle)
 {
-    triangle.SetNormal(CalculateNormal(triangle));
     triangles_.push_back(triangle);
 }
 
@@ -55,8 +54,10 @@ Vector Scene3D::CalculateNormal(const Triangle3D& triangle) const
 {
     Vector v1 = points_[triangle.GetP2()] - points_[triangle.GetP1()];
     Vector v2 = points_[triangle.GetP3()] - points_[triangle.GetP2()];
+    Vector normal = v1.Cross(v2).Normalize();
 
-    return v1.Cross(v2).Normalize();
+    std::cout << "Calculated normal: " << normal << std::endl;
+    return normal;
 }
 
 Vector Scene3D::CalculatePointNormal(unsigned int pointNumber) const
@@ -131,7 +132,7 @@ double CalculateDeltaY(double y, double ystart, double yend)
     return (ystart == yend) ? 1 : (y - yend) / (ystart - yend);
 }
 
-void Scene3D::DrawTriangleWithXParellGround(const Vector& p1, Vector p2, Vector p3, QPainter& painter, FlatShader& shader)
+void Scene3D::DrawTriangleWithXParellGround(const Vector& p1, Vector p2, Vector p3, QPainter& painter, Shader& shader)
 {
     // inv: p2 and p3 are on the same line, p1 is peak of triangle
     assert(p2.GetY() == p3.GetY());
@@ -158,7 +159,7 @@ void Scene3D::DrawTriangleWithXParellGround(const Vector& p1, Vector p2, Vector 
     }
 }
 
-void Scene3D::DrawTriangle(const Vector& p1, const Vector& p2, const Vector& p3, QPainter& painter, FlatShader& shader)
+void Scene3D::DrawTriangle(const Vector& p1, const Vector& p2, const Vector& p3, QPainter& painter, Shader& shader)
 {
     Vector top = p1, middle = p2, bottom = p3;
     SortVertices(top, middle, bottom);
