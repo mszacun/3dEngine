@@ -43,8 +43,8 @@ class Scene3D
         Scene2D GetPerspectiveProjection() const;
         QImage RenederPerspectiveProjection(int width, int height);
 
-        void DrawTriangleWithXParellGround(const Vector& p1, const Vector& p2,
-            const Vector& p3, QPainter& painter, FlatShader& shader);
+        void DrawTriangleWithXParellGround(const Vector& p1, Vector p2,
+            Vector p3, QPainter& painter, FlatShader& shader);
         void DrawTriangle(const Vector& p1, const Vector& p2, const Vector& p3,
                 QPainter& painter, FlatShader& shader);
 
@@ -75,7 +75,7 @@ class Scene3D
             double aspect, double znear, double zfar) const;
 
         void DrawScene(QPainter& painter, const Matrix& transformationMatrix);
-        void DrawProjectedTriangle(QPainter& painter, const Triangle3D t, const Matrix& transformationMatrix);
+        void DrawProjectedTriangle(QPainter& painter, const Triangle3D& t, const Matrix& transformationMatrix);
 
         void ViewTransform();
 };

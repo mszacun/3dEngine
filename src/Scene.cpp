@@ -114,55 +114,16 @@ Scene2D Scene3D::GetPerspectiveProjection() const
     return result;
 }
 
-void SortVertices(const Vector& p1, const Vector& p2, const Vector& p3,
-        Vector& left, Vector& center, Vector& right)
+void SortVertices(Vector& top, Vector& middle, Vector& bottom)
 {
-    if (p1.GetX() < p2.GetX())
-    {
-        if (p1.GetX() < p3.GetX())
-        {
-            left = p1;
-            if (p3.GetX() < p2.GetX())
-            {
-                center = p3;
-                right = p2;
-            }
-            else
-            {
-                center = p2;
-                right = p3;
-            }
-        }
-        else
-        {
-            left = p3;
-            center = p1;
-            right = p2;
-        }
-    }
-    else
-    {
-        if (p2.GetX() < p3.GetX())
-        {
-            left = p2;
-            if (p3.GetX() < p1.GetX())
-            {
-                center = p3;
-                right = p1;
-            }
-            else
-            {
-                center = p1;
-                right = p3;
-            }
-        }
-        else
-        {
-            left = p3;
-            center = p2;
-            right = p1;
-        }
-    }
+    if (top.GetY() > middle.GetY())
+        std::swap(top, middle);
+
+    if (middle.GetY() > bottom.GetY())
+        std::swap(middle, bottom);
+
+    if (top.GetY() > middle.GetY())
+        std::swap(top, middle);
 }
 
 double CalculateDeltaY(double y, double ystart, double yend)
@@ -170,10 +131,13 @@ double CalculateDeltaY(double y, double ystart, double yend)
     return (ystart == yend) ? 1 : (y - yend) / (ystart - yend);
 }
 
-void Scene3D::DrawTriangleWithXParellGround(const Vector& p1, const Vector& p2, const Vector& p3, QPainter& painter, FlatShader& shader)
+void Scene3D::DrawTriangleWithXParellGround(const Vector& p1, Vector p2, Vector p3, QPainter& painter, FlatShader& shader)
 {
     // inv: p2 and p3 are on the same line, p1 is peak of triangle
     assert(p2.GetY() == p3.GetY());
+    // we want to draw from left to right
+    if (p2.GetX() > p3.GetX())
+        std::swap(p2, p3);
 
     // in case of problems try changing to double
     int ystart = (int) p1.GetY();
@@ -196,33 +160,40 @@ void Scene3D::DrawTriangleWithXParellGround(const Vector& p1, const Vector& p2, 
 
 void Scene3D::DrawTriangle(const Vector& p1, const Vector& p2, const Vector& p3, QPainter& painter, FlatShader& shader)
 {
-    // inv: p2 is on the left of p3
-    Vector left, right, center;
-    SortVertices(p1, p2, p3, left, center, right);
-    if (left.GetY() == right.GetY())
-        DrawTriangleWithXParellGround(center, left, right, painter, shader);
-    else
-    {
-        if (left.GetY() < right.GetY())
-        {
-            double y = left.GetY();
-            double betay = CalculateDeltaY(y, center.GetY(), right.GetY());
-            double xr = betay * center.GetX() + (1 - betay) * right.GetX();
+    Vector top = p1, middle = p2, bottom = p3;
+    SortVertices(top, middle, bottom);
 
-            DrawTriangleWithXParellGround(center, left, Vector(xr, left.GetY(), 0), painter, shader);
-            DrawTriangleWithXParellGround(right, left, Vector(xr, left.GetY(), 0), painter, shader);
-        }
-        else
-        {
-            double y = right.GetY();
-            double betay = CalculateDeltaY(y, center.GetY(), left.GetY());
-            double xl = betay * center.GetX() + (1 - betay) * left.GetX();
+    // inv: p1.y <= p2.y <= p3.y
+    double y = middle.GetY();
+    double betay = CalculateDeltaY(y, top.GetY(), bottom.GetY());
+    double xr = betay * top.GetX() + (1 - betay) * bottom.GetX();
 
-            DrawTriangleWithXParellGround(center, Vector(xl, right.GetY(), 0), right, painter, shader);
-            DrawTriangleWithXParellGround(left, Vector(xl, right.GetY(), 0), right, painter, shader);
-        }
-    }
+    DrawTriangleWithXParellGround(top, Vector(xr, y, 0), middle, painter, shader);
+    DrawTriangleWithXParellGround(bottom, Vector(xr, y, 0), middle, painter, shader);
+}
 
+void Scene3D::DrawProjectedTriangle(QPainter& painter, const Triangle3D& t, const Matrix& transformationMatrix)
+{
+    Triangle2D t2 = ProjectTrianglePerspectively(t, transformationMatrix);
+    PrintProjectInfo(t, t2);
+    TriangleShadingInfo shadingInfo;
+
+    shadingInfo.p1 = points_[t.GetP1()];
+    shadingInfo.p2 = points_[t.GetP2()];
+    shadingInfo.p3 = points_[t.GetP3()];
+
+    shadingInfo.p1Normal = pointsNormals_[t.GetP1()];
+    shadingInfo.p2Normal = pointsNormals_[t.GetP2()];
+    shadingInfo.p3Normal = pointsNormals_[t.GetP3()];
+
+    shadingInfo.triangleNormal = t.GetNormal();
+
+    shadingInfo.observatorPosition = observatorPosition_;
+    shadingInfo.lightPosition = lightPosition_;
+    shadingInfo.lightColor = lightColor_;
+
+    FlatShader shader(shadingInfo);
+    DrawTriangle(t2.p1_, t2.p2_, t2.p3_, painter, shader);
 }
 
 void Scene3D::PrintProjectInfo(const Triangle3D& t, const Triangle2D& t2) const
@@ -234,32 +205,13 @@ void Scene3D::PrintProjectInfo(const Triangle3D& t, const Triangle2D& t2) const
 void Scene3D::DrawScene(QPainter& painter, const Matrix& transformationMatrix)
 {
     for (const Triangle3D& t : triangles_)
-    {
-        Triangle2D t2 = ProjectTrianglePerspectively(t, transformationMatrix);
-        PrintProjectInfo(t, t2);
-        TriangleShadingInfo shadingInfo;
-
-        shadingInfo.p1 = points_[t.GetP1()];
-        shadingInfo.p2 = points_[t.GetP2()];
-        shadingInfo.p3 = points_[t.GetP3()];
-
-        shadingInfo.p1Normal = pointsNormals_[t.GetP1()];
-        shadingInfo.p2Normal = pointsNormals_[t.GetP2()];
-        shadingInfo.p3Normal = pointsNormals_[t.GetP3()];
-
-        shadingInfo.triangleNormal = t.GetNormal();
-
-        shadingInfo.observatorPosition = observatorPosition_;
-        shadingInfo.lightPosition = lightPosition_;
-        shadingInfo.lightColor = lightColor_;
-
-        FlatShader shader(shadingInfo);
-        //DrawTriangle(t2.p1_, t2.p2_, t2.p3_, painter, shader);
-        painter.drawLine((int) t2.p1_.GetX(), (int) t2.p1_.GetY(), (int) t2.p2_.GetX(), (int) t2.p2_.GetY());
-        painter.drawLine((int) t2.p2_.GetX(), (int) t2.p2_.GetY(), (int) t2.p3_.GetX(), (int) t2.p3_.GetY());
-        painter.drawLine((int) t2.p1_.GetX(), (int) t2.p1_.GetY(), (int) t2.p3_.GetX(), (int) t2.p3_.GetY());
-        painter.drawEllipse((int) t2.p1_.GetX(), (int) t2.p1_.GetY(), 1, 1);
-    }
+        DrawProjectedTriangle(painter, t, transformationMatrix);
+    // {
+    //     painter.drawLine((int) t2.p1_.GetX(), (int) t2.p1_.GetY(), (int) t2.p2_.GetX(), (int) t2.p2_.GetY());
+    //     painter.drawLine((int) t2.p2_.GetX(), (int) t2.p2_.GetY(), (int) t2.p3_.GetX(), (int) t2.p3_.GetY());
+    //     painter.drawLine((int) t2.p1_.GetX(), (int) t2.p1_.GetY(), (int) t2.p3_.GetX(), (int) t2.p3_.GetY());
+    //     painter.drawEllipse((int) t2.p1_.GetX(), (int) t2.p1_.GetY(), 1, 1);
+    //}
 }
 
 QImage Scene3D::RenederPerspectiveProjection(int width, int height)
