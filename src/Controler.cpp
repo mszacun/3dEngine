@@ -4,7 +4,7 @@ Controler::Controler(const Scene3D& scene) : scene_(scene), observerPosition_(0,
     rotationAngle(0)
 {
     scene_.SetObserverPosition(observerPosition_);
-    scene_.SetLightPosition(Vector(30, 50, 0));
+    scene_.SetLightPosition(Vector(30, 50, -4));
 }
 
 void Controler::SetView(ViewWeakPtr view)

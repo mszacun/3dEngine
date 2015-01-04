@@ -2,6 +2,7 @@
 #define SCENE_H
 
 #include <vector>
+#include <limits>
 #include <unordered_set>
 #include <QWidget>
 #include <QPainter>

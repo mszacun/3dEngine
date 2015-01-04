@@ -132,6 +132,11 @@ double CalculateDeltaY(double y, double ystart, double yend)
     return (ystart == yend) ? 1 : (y - yend) / (ystart - yend);
 }
 
+double InterpolateZ(double betaz, double min, double max)
+{
+    return  1 / (betaz * (1 / min) + (1 - betaz) * (1 / max)); 
+}
+
 void Scene3D::DrawTriangleWithXParellGround(const Vector& p1, Vector p2, Vector p3, QPainter& painter, Shader& shader)
 {
     // inv: p2 and p3 are on the same line, p1 is peak of triangle
@@ -148,12 +153,21 @@ void Scene3D::DrawTriangleWithXParellGround(const Vector& p1, Vector p2, Vector 
     {
         double betay = CalculateDeltaY(y, ystart, yend);
         double xl = betay * p1.GetX() + (1 - betay) * p2.GetX();
+        double zl = InterpolateZ(betay, p1.GetZ(), p2.GetZ());
+
         double xr = betay * p1.GetX() + (1 - betay) * p3.GetX();
+        double zr = InterpolateZ(betay, p1.GetZ(), p3.GetZ());
 
         for (int x = (int) xl; x < xr; x++)
         {
-            painter.setPen(shader.GetColorForPixel(Vector(x, y, 0)));
-            painter.drawPoint(x, y);
+            double betax = CalculateDeltaY(x, xl, xr);
+            double z = InterpolateZ(betax, zl, zr);
+            if (zBuffer_[x][y] > z)
+            {
+                painter.setPen(shader.GetColorForPixel(Vector(x, y, z)));
+                painter.drawPoint(x, y);
+                zBuffer_[x][y] = z;
+            }
         }
 
     }
@@ -168,9 +182,10 @@ void Scene3D::DrawTriangle(const Vector& p1, const Vector& p2, const Vector& p3,
     double y = middle.GetY();
     double betay = CalculateDeltaY(y, top.GetY(), bottom.GetY());
     double xr = betay * top.GetX() + (1 - betay) * bottom.GetX();
+    double zr = InterpolateZ(betay, top.GetZ(), bottom.GetZ());
 
-    DrawTriangleWithXParellGround(top, Vector(xr, y, 0), middle, painter, shader);
-    DrawTriangleWithXParellGround(bottom, Vector(xr, y, 0), middle, painter, shader);
+    DrawTriangleWithXParellGround(top, Vector(xr, y, zr), middle, painter, shader);
+    DrawTriangleWithXParellGround(bottom, Vector(xr, y, zr), middle, painter, shader);
 }
 
 void Scene3D::DrawProjectedTriangle(QPainter& painter, const Triangle3D& t, const Matrix& transformationMatrix)
@@ -274,7 +289,7 @@ void Scene3D::ViewTransform()
 {
     /* step 1 */
     Transform(Matrix::CreateTranslationMatrix(-observedPoint_.GetX(),
-                -observedPoint_.GetY(), -observedPoint_.GetZ()));
+        -observedPoint_.GetY(), -observedPoint_.GetZ()));
 
     // step 2
     double alfa = std::atan2(observatorPosition_.GetX(), observatorPosition_.GetZ());
@@ -301,5 +316,5 @@ void ClearZBuffer(double** zBuffer)
 {
     for (int i = 0; i < ZBUFFER_HEIGHT; i++)
         for (int j = 0; j < ZBUFFER_WIDTH; j++)
-            zBuffer[i][j] = -666;
+            zBuffer[i][j] = std::numeric_limits<double>::max();
 }
