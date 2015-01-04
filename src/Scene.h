@@ -40,6 +40,7 @@ class Scene3D
         void SetObservedPoint(const Vector& newObservedPoint);
         void SetLightPosition(const Vector& newPosition);
         void SetLightColor(const QColor& color);
+        void SetAmbientLightColor(const QColor& color) { ambientLightColor_ = color; }
 
         Scene2D GetPerspectiveProjection() const;
         QImage RenederPerspectiveProjection(int width, int height);
@@ -61,7 +62,9 @@ class Scene3D
         Vector lightPosition_;
         Vector observedPoint_;
         Vector upDirection_;
+
         QColor lightColor_;
+        QColor ambientLightColor_;
 
         double** zBuffer_;
         Matrix worldTransformation_;

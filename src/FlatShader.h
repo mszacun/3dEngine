@@ -20,6 +20,7 @@ struct TriangleShadingInfo
     Vector observatorPosition;
     Vector lightPosition;
     QColor lightColor;
+    QColor ambientLightColor;
     Material material;
 };
 
@@ -32,6 +33,9 @@ class Shader
     protected:
         TriangleShadingInfo shadingInfo_;
         Vector lightVector_;
+
+        QColor CalculatePhongModel(const Vector& point, const Vector& lightVector,
+            const Vector& normal) const;
 };
 
 class FlatShader : public Shader

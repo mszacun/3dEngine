@@ -5,6 +5,7 @@ Controler::Controler(const Scene3D& scene) : scene_(scene), observerPosition_(0,
 {
     scene_.SetObserverPosition(observerPosition_);
     scene_.SetLightPosition(Vector(30, 50, -4));
+    scene_.SetAmbientLightColor(QColor(0, 0, 0));
 }
 
 void Controler::SetView(ViewWeakPtr view)

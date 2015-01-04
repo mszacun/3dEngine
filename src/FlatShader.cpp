@@ -5,6 +5,42 @@ Shader::Shader(const TriangleShadingInfo& shadingInfo): shadingInfo_(shadingInfo
 {
 }
 
+double fattr(double r)
+{
+    return 1;
+}
+
+QColor Shader::CalculatePhongModel(const Vector& point, const Vector& lightVector,
+       const Vector& normal) const
+{
+    int lightRgb[4];
+    int ambientLightRgb[4];
+    int result[4];
+
+    shadingInfo_.lightColor.getRgb(lightRgb, lightRgb +1, lightRgb + 2, lightRgb + 3);
+    shadingInfo_.ambientLightColor.getRgb(ambientLightRgb, ambientLightRgb +1, ambientLightRgb + 2, ambientLightRgb + 3);
+
+    // difuse
+    double cos = std::max(0.0, normal.Dot(lightVector_));
+    double lightVectorLen = lightVector.Length();
+
+    // specular
+    Vector toObserverVector = shadingInfo_.observatorPosition - point;
+    Vector reflectionVector = (normal * 2 * normal.Dot(toObserverVector) - toObserverVector).Normalize();
+    double dot = lightVector_.Dot(reflectionVector);
+    double exponent = std::pow(dot, shadingInfo_.material.GetShiness());
+
+    for (int i = 0; i < 3; i++)
+    {
+        double diffuse = fattr(lightVectorLen) * lightRgb[i] * cos * shadingInfo_.material.GetDiffuse(i, 0, 0, 0);
+        double specular = shadingInfo_.material.GetSpecular(i, 0, 0, 0) * fattr(lightVectorLen) * lightRgb[i] * exponent;
+        double own = shadingInfo_.material.GetOwnLigth(i, 0, 0, 0);
+        result[i] = diffuse + specular + own + ambientLightRgb[i];;
+    }
+
+    return QColor(std::min(result[0], 255), std::min(result[1], 255), std::min(result[2], 255));
+}
+
 FlatShader::FlatShader(const TriangleShadingInfo& shadingInfo) : 
     Shader(shadingInfo)
 {
@@ -15,17 +51,7 @@ FlatShader::FlatShader(const TriangleShadingInfo& shadingInfo) :
     lightVector_  = shadingInfo_.lightPosition - triangleCenter;
     lightVector_ = lightVector_.Normalize();
 
-    int numberOfColors = 3;
-    int lightRgb[4];
-    char names[] = {'R', 'G', 'B', 'A'};
-
-    shadingInfo_.lightColor.getRgb(lightRgb, lightRgb +1, lightRgb + 2, lightRgb + 3);
-
-    double cos = std::max(0.0, shadingInfo_.triangleNormal.Dot(lightVector_));
-    for (int i = 0; i < 3; i++)
-        lightRgb[i] *= cos * shadingInfo_.material.GetDiffuse(i, 0, 0, 0);
-
-    calculatedColor_ =  QColor(lightRgb[0], lightRgb[1], lightRgb[2], lightRgb[3]);
+    calculatedColor_ =  CalculatePhongModel(triangleCenter, lightVector_, shadingInfo_.triangleNormal);
 }
 
 QColor FlatShader::GetColorForPixel(const Vector& pixel) const

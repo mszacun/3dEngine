@@ -207,6 +207,7 @@ void Scene3D::DrawProjectedTriangle(QPainter& painter, const Triangle3D& t, cons
     shadingInfo.observatorPosition = observatorPosition_;
     shadingInfo.lightPosition = lightPosition_;
     shadingInfo.lightColor = lightColor_;
+    shadingInfo.ambientLightColor = ambientLightColor_;
 
     FlatShader shader(shadingInfo);
     DrawTriangle(t2.p1_, t2.p2_, t2.p3_, painter, shader);
