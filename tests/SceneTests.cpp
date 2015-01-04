@@ -135,6 +135,7 @@ TEST(SceneTests, ShouldCalculateNormalVectorForVertex)
     scene.AddTriangle(triangle);
     scene.AddTriangle(triangle2);
 
+    scene.RecalculateNormals();
     Vector vertextNormal = scene.CalculatePointNormal(0);
     Vector expectedNormal = Vector(0.548431, 0.821383, 0.156694);
 

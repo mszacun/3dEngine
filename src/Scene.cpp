@@ -56,7 +56,6 @@ Vector Scene3D::CalculateNormal(const Triangle3D& triangle) const
     Vector v2 = points_[triangle.GetP3()] - points_[triangle.GetP2()];
     Vector normal = v1.Cross(v2).Normalize();
 
-    std::cout << "Calculated normal: " << normal << std::endl;
     return normal;
 }
 
@@ -191,7 +190,7 @@ void Scene3D::DrawTriangle(const Vector& p1, const Vector& p2, const Vector& p3,
 void Scene3D::DrawProjectedTriangle(QPainter& painter, const Triangle3D& t, const Matrix& transformationMatrix)
 {
     Triangle2D t2 = ProjectTrianglePerspectively(t, transformationMatrix);
-    PrintProjectInfo(t, t2);
+    //PrintProjectInfo(t, t2);
     TriangleShadingInfo shadingInfo;
 
     shadingInfo.p1 = points_[t.GetP1()];
@@ -213,7 +212,7 @@ void Scene3D::DrawProjectedTriangle(QPainter& painter, const Triangle3D& t, cons
     shadingInfo.lightColor = lightColor_;
     shadingInfo.ambientLightColor = ambientLightColor_;
 
-    FlatShader shader(shadingInfo);
+    GouraudShader shader(shadingInfo);
     DrawTriangle(t2.p1_, t2.p2_, t2.p3_, painter, shader);
 }
 
@@ -249,9 +248,6 @@ QImage Scene3D::RenederPerspectiveProjection(int width, int height)
     observedScene.ViewTransform();
 
     Matrix transformationMatrix = Matrix::CreateProjectMatrix(-observedScene.observatorPosition_.GetZ()) ;
-
-    std::cout << "Transformation matrix: " << std::endl;
-    transformationMatrix.Print();
 
     observedScene.DrawScene(painter, transformationMatrix);
 
@@ -312,9 +308,6 @@ void Scene3D::ViewTransform()
     Transform(Matrix::CreateZAxisRotationMatrix(fi));
 
     RecalculateNormals();
-
-    std::cout << "Observer position after transformation: " << observatorPosition_ << std::endl;
-
 }
 
 void ClearZBuffer(double** zBuffer)

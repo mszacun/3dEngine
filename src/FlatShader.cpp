@@ -3,7 +3,7 @@
 
 QColor operator*(const QColor& left, double right)
 {
-    return QColor(left.red() * right, left.green() * right, left.blue() * right);
+    return QColor(std::max(left.red() * right, 0.0), std::max(left.green() * right, 0.0), std::max(left.blue() * right, 0.0));
 }
 
 QColor operator+(const QColor& left, const QColor& right)
@@ -28,7 +28,7 @@ QColor Shader::CalculatePhongModel(const Vector& point, const Vector& lightVecto
     int result[4];
 
     // difuse
-    double cos = std::max(0.0, normal.Dot(lightVector_));
+    double cos = std::max(0.0, normal.Dot(lightVector));
     double lightVectorLen = lightVector.Length();
 
     // specular
@@ -70,20 +70,20 @@ GouraudShader::GouraudShader(const TriangleShadingInfo& shadingInfo) :
     Shader(shadingInfo)
 {
     p1Color_ = CalculatePhongModel(shadingInfo_.p1,
-            shadingInfo_.lightPosition - shadingInfo_.p1, shadingInfo_.p1Normal);            
+            (shadingInfo_.lightPosition - shadingInfo_.p1).Normalize(), shadingInfo_.p1Normal);            
     p2Color_ = CalculatePhongModel(shadingInfo_.p2,
-            shadingInfo_.lightPosition - shadingInfo_.p2, shadingInfo_.p2Normal);            
+            (shadingInfo_.lightPosition - shadingInfo_.p2).Normalize(), shadingInfo_.p2Normal);            
     p3Color_ = CalculatePhongModel(shadingInfo_.p3,
-            shadingInfo_.lightPosition - shadingInfo_.p3, shadingInfo_.p3Normal);            
+            (shadingInfo_.lightPosition - shadingInfo_.p3).Normalize(), shadingInfo_.p3Normal);            
 
-    interpolator.SetVector1(Vector((int) shadingInfo_.projectedP1.GetX(), (int) shadingInfo_.projectedP1.GetY(), (int) shadingInfo_.projectedP1.GetZ()), p1Color_);
-    interpolator.SetVector2(Vector((int) shadingInfo_.projectedP2.GetX(), (int) shadingInfo_.projectedP2.GetY(), (int) shadingInfo_.projectedP2.GetZ()), p2Color_);
-    interpolator.SetVector3(Vector((int) shadingInfo_.projectedP3.GetX(), (int) shadingInfo_.projectedP3.GetY(), (int) shadingInfo_.projectedP3.GetZ()), p3Color_);
+    interpolator.SetVector1(Vector((int) shadingInfo_.projectedP1.GetX(), (int) shadingInfo_.projectedP1.GetY(), 1), p1Color_);
+    interpolator.SetVector2(Vector((int) shadingInfo_.projectedP2.GetX(), (int) shadingInfo_.projectedP2.GetY(), 1), p2Color_);
+    interpolator.SetVector3(Vector((int) shadingInfo_.projectedP3.GetX(), (int) shadingInfo_.projectedP3.GetY(), 1), p3Color_);
     // interpolator.SetVector2(shadingInfo_.projectedP2, p2Color_);
     // interpolator.SetVector3(shadingInfo_.projectedP3, p3Color_);
 }
 
 QColor GouraudShader::GetColorForPixel(const Vector& pixel) const
 {
-    return interpolator.Interpolate(pixel);
+    return interpolator.Interpolate(Vector(pixel.GetX(), pixel.GetY(), 1));
 }
