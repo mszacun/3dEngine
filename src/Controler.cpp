@@ -3,12 +3,8 @@
 Controler::Controler(const Scene3D& scene) : scene_(scene), observerPosition_(0, 0, -10),
     rotationAngle(0)
 {
-    scene_.SetObserverPosition(observerPosition_);
     scene_.SetLightPosition(Vector(30, 50, -4));
     scene_.SetAmbientLightColor(QColor(0, 0, 0));
-    scene_.SetZMin(10);
-    scene_.SetZMax(1000);
-    scene_.SetViewAngle(0.78);
 }
 
 void Controler::SetView(ViewWeakPtr view)
@@ -16,23 +12,17 @@ void Controler::SetView(ViewWeakPtr view)
     view_ = view;
 }
 
-Scene2D Controler::GetPerspectiveProjection() const
-{
-    return scene_.GetPerspectiveProjection();
-}
-
 QImage Controler::GetRenderedPerspectiveView()
 {
-    QImage result = scene_.RenederPerspectiveProjection(400, 400);
-    /*Vector cubeCenter(220, 205, 2);
+    PerspectiveCamera cam;
+    cam.position = observerPosition_;
+    cam.target = Vector(0, 0, 0);
+    cam.viewAngle = 0.78;
+    cam.zmin = 10;
+    cam.zmax = 1000;
+    cam.upDirection = Vector(0, 1, 0);
 
-    rotationAngle += M_PI / 180;
-    Matrix transformationMatrix = Matrix::CreateYAxisRotationMatrix(rotationAngle);
-    Vector newObP = observerPosition_.Transform(transformationMatrix);
-    scene_.SetObserverPosition(newObP);
-
-    std::cout << "Observer position: " << newObP << std::endl;
-    std::cout << "Angle: " << rotationAngle << std::endl;*/
+    QImage result = scene_.RenederPerspectiveProjection(400, 400, cam);
 
     return result;
 }
@@ -46,7 +36,5 @@ void Controler::KeyPressed(int key)
         case Qt::Key_A: observerPosition_.SetX(observerPosition_.GetX() - 0.01); break;
         case Qt::Key_D: observerPosition_.SetX(observerPosition_.GetX() + 0.01); break;
     }
-        
-    scene_.SetObserverPosition(observerPosition_);
 }
 

@@ -1,69 +1,6 @@
 #include <gtest/gtest.h>
 #include "../src/Scene.h"
 
-// test based on output, transforms plane into plane, doesnt deform it
-TEST(SceneTests, ShouldTransformPerspectively){
-    Scene3D scene;
-
-    scene.AddPoint(1, 1, 1);
-    scene.AddPoint(-1, 1, 1);
-    scene.AddPoint(1, -1, 1);
-    scene.AddPoint(-1, -1, 1);
-
-    scene.AddTriangle(1, 0, 2);
-    scene.AddTriangle(1, 2, 3);
-
-    scene.SetObserverPosition(Vector(0, 0, -7));
-
-    scene.AccumulateTransformation(Matrix::CreateTranslationMatrix(3, 3, 0));
-    scene.AccumulateTransformation(Matrix::CreateScaleMatrix(20, 20, 1));
-
-    Scene2D perspectiveProjection = scene.GetPerspectiveProjection();
-
-    Triangle2D expectedProjectedTriangle1(
-            Vector(42.5, 77.5, 1),
-            Vector(77.5, 77.5, 1),
-            Vector(77.5, 42.5, 1));
-    Triangle2D expectedProjectedTriangle2(
-            Vector(42.5, 77.5, 1),
-            Vector(77.5, 42.5, 1),
-            Vector(42.5, 42.5, 1));
-
-    EXPECT_TRUE(expectedProjectedTriangle1 == perspectiveProjection.triangles_[0]);
-    EXPECT_TRUE(expectedProjectedTriangle2 == perspectiveProjection.triangles_[1]);
-}
-
-TEST(SceneTests, ShouldTransformFartherPointsSmaller){
-    Scene3D scene;
-
-    scene.AddPoint(1, 1, 3);
-    scene.AddPoint(-1, 1, 3);
-    scene.AddPoint(1, -1, 3);
-    scene.AddPoint(-1, -1, 3);
-
-    scene.AddTriangle(1, 0, 2);
-    scene.AddTriangle(1, 2, 3);
-
-    scene.SetObserverPosition(Vector(0, 0, -7));
-
-    scene.AccumulateTransformation(Matrix::CreateTranslationMatrix(3, 3, 0));
-    scene.AccumulateTransformation(Matrix::CreateScaleMatrix(20, 20, 1));
-
-    Scene2D perspectiveProjection = scene.GetPerspectiveProjection();
-
-    Triangle2D expectedProjectedTriangle1(
-            Vector(45.9999, 74, 3),
-            Vector(74, 74, 3),
-            Vector(74, 45.9999, 3));
-    Triangle2D expectedProjectedTriangle2(
-            Vector(45.9999, 74, 3),
-            Vector(74, 45.9999, 3),
-            Vector(45.9999, 45.9999, 3));
-
-    EXPECT_TRUE(expectedProjectedTriangle1 == perspectiveProjection.triangles_[0]);
-    EXPECT_TRUE(expectedProjectedTriangle2 == perspectiveProjection.triangles_[1]);
-}
-
 TEST(SceneTests, ShouldCalculateTriangleNormalVector)
 {
     Vector p1(-1, 0, 5);

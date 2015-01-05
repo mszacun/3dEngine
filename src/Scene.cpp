@@ -13,10 +13,6 @@ void Scene2D::AddTriangle(const Triangle2D& triangle)
 
 Scene3D::Scene3D() : worldTransformation_(4, 4)
 {
-    cam.position = Vector(0, 0, 0);
-    cam.upDirection = Vector(0, 1, 0);
-    cam.target = Vector(0, 0, 0);
-
     zBuffer_ = new double*[ZBUFFER_HEIGHT];
 
     for (int i = 0; i < ZBUFFER_HEIGHT; i++)
@@ -87,16 +83,6 @@ void Scene3D::RecalculateNormals()
         pointsNormals_.push_back(CalculatePointNormal(i));
 }
 
-void Scene3D::SetObserverPosition(const Vector& newPosition)
-{
-    cam.position = newPosition;
-}
-
-void Scene3D::SetObservedPoint(const Vector& newObservedPoint)
-{
-    cam.target = newObservedPoint;
-}
-
 void Scene3D::SetLightPosition(const Vector& newPosition)
 {
     lightPosition_ = newPosition;
@@ -105,17 +91,6 @@ void Scene3D::SetLightPosition(const Vector& newPosition)
 void Scene3D::SetLightColor(const QColor& color)
 {
     lightColor_ = color;
-}
-
-Scene2D Scene3D::GetPerspectiveProjection() const
-{
-    Scene2D result;
-    Matrix transformationMatrix = worldTransformation_ * Matrix::CreateProjectMatrix(1);
-
-    for (const Triangle3D& t : triangles_)
-        result.AddTriangle(ProjectTrianglePerspectively(t, transformationMatrix));
-
-    return result;
 }
 
 void SortVertices(Vector& top, Vector& middle, Vector& bottom)
@@ -191,7 +166,8 @@ void Scene3D::DrawTriangle(const Vector& p1, const Vector& p2, const Vector& p3,
     DrawTriangleWithXParellGround(bottom, Vector(xr, y, zr), middle, painter, shader);
 }
 
-void Scene3D::DrawProjectedTriangle(QPainter& painter, const Triangle3D& t, const Matrix& transformationMatrix)
+void Scene3D::DrawProjectedTriangle(QPainter& painter, const Triangle3D& t,
+        const Matrix& transformationMatrix, const Camera& camera)
 {
     Triangle2D t2 = ProjectTrianglePerspectively(t, transformationMatrix);
     //PrintProjectInfo(t, t2);
@@ -211,7 +187,7 @@ void Scene3D::DrawProjectedTriangle(QPainter& painter, const Triangle3D& t, cons
 
     shadingInfo.triangleNormal = t.GetNormal();
 
-    shadingInfo.observatorPosition = cam.position;
+    shadingInfo.observatorPosition = camera.position;
     shadingInfo.lightPosition = lightPosition_;
     shadingInfo.lightColor = lightColor_;
     shadingInfo.ambientLightColor = ambientLightColor_;
@@ -228,26 +204,29 @@ void Scene3D::PrintProjectInfo(const Triangle3D& t, const Triangle2D& t2) const
     std::cout << points_[t.GetP3()] << " -> " << t2.p3_ << std::endl;
 }
 
-void Scene3D::DrawScene(QPainter& painter, const Matrix& transformationMatrix)
+void Scene3D::DrawScene(QPainter& painter, const Matrix& transformationMatrix,
+    const Camera& camera)
 {
     for (const Triangle3D& t : triangles_)
-        DrawProjectedTriangle(painter, t, transformationMatrix);
+        DrawProjectedTriangle(painter, t, transformationMatrix, camera);
 }
 
-QImage Scene3D::RenederPerspectiveProjection(int width, int height)
+QImage Scene3D::RenederPerspectiveProjection(int width, int height,
+    const PerspectiveCamera& camera)
 {
     QImage result(width, height, QImage::Format_ARGB32);
     QPainter painter(&result);
+    PerspectiveCamera cameraCopy = camera;
 
     painter.fillRect(0, 0, width, height, QColor("white"));
     ClearZBuffer(zBuffer_);
 
     Scene3D observedScene(*this);
-    observedScene.ViewTransform();
+    observedScene.ViewTransform(cameraCopy);
 
-    Matrix transformationMatrix = Matrix::CreateProjectMatrix(-cam.position.GetZ()) ;
+    Matrix transformationMatrix = Matrix::CreateProjectMatrix(-camera.position.GetZ()) ;
 
-    observedScene.DrawScene(painter, transformationMatrix);
+    observedScene.DrawScene(painter, transformationMatrix, cameraCopy);
 
     return result;
 }
@@ -257,19 +236,19 @@ void Scene3D::AccumulateTransformation(const Matrix& transformationMatrix)
     worldTransformation_ = transformationMatrix * worldTransformation_;
 }
 
-void Scene3D::Transform(const Matrix& transformationMatrix)
+void Scene3D::Transform(const Matrix& transformationMatrix, Camera& camera)
 {
     for (Vector& p : points_)
         p = p.Transform(transformationMatrix);
 
-    cam.Transform(transformationMatrix);
     lightPosition_ = lightPosition_.Transform(transformationMatrix);
+    camera.Transform(transformationMatrix);
 }
 
 Vector Scene3D::ProjectPoint(const Vector& p, const Matrix& projectionMatrix) const
 {
-    //Vector projected = p.Transform(projectionMatrix);
-    //projected.SetZ(p.GetZ());
+    /*Vector projected = p.Transform(projectionMatrix);
+    projected.SetZ(p.GetZ());*/
 
     Vector projected = Vector(p.GetX() / p.GetZ(), p.GetY() / p.GetZ(), p.GetZ());
     std::cout << p << " projected -> " << projected << std::endl;
@@ -284,34 +263,34 @@ Triangle2D Scene3D::ProjectTrianglePerspectively(const Triangle3D& triangle,
          ProjectPoint(points_[triangle.GetP3()], transformationMatrix));
 }
 
-void Scene3D::ViewTransform()
+void Scene3D::ViewTransform(Camera& camera)
 {
     /* step 1 */
-    Transform(Matrix::CreateTranslationMatrix(-cam.target.GetX(),
-        -cam.target.GetY(), -cam.target.GetZ()));
+    Transform(Matrix::CreateTranslationMatrix(-camera.target.GetX(),
+        -camera.target.GetY(), -camera.target.GetZ()), camera);
 
     // step 2
-    double alfa = std::atan2(cam.position.GetX(), cam.position.GetZ());
+    double alfa = std::atan2(camera.position.GetX(), camera.position.GetZ());
     double fi = M_PI - alfa;
-    Transform(Matrix::CreateYAxisRotationMatrix(fi));
+    Transform(Matrix::CreateYAxisRotationMatrix(fi), camera);
 
     // step 3
-    alfa = std::atan2(cam.position.GetZ(), cam.position.GetY());
+    alfa = std::atan2(camera.position.GetZ(), camera.position.GetY());
     fi = -M_PI / 2 - alfa;
-    Transform(Matrix::CreateXAxisRotationMatrix(fi));
+    Transform(Matrix::CreateXAxisRotationMatrix(fi), camera);
 
     // step 4
-    alfa = std::atan2(cam.upDirection.GetY(), cam.upDirection.GetX());
+    alfa = std::atan2(camera.upDirection.GetY(), camera.upDirection.GetX());
     fi = M_PI / 2 - alfa;
-    Transform(Matrix::CreateZAxisRotationMatrix(fi));
+    Transform(Matrix::CreateZAxisRotationMatrix(fi), camera);
     
     // step 5 - additional
-    Transform(Matrix::CreateTranslationMatrix(-cam.position.GetX(),
-        -cam.position.GetY(), -cam.position.GetZ()));
+    Transform(Matrix::CreateTranslationMatrix(-camera.position.GetX(),
+        -camera.position.GetY(), -camera.position.GetZ()), camera);
 
-    double scaleXYFactor = 1 / (cam.zmax * std::tan(cam.viewAngle / 2));
+    double scaleXYFactor = 1 / camera.GetMaxX();
     // step 6 - normalize coordinates
-    Transform(Matrix::CreateScaleMatrix(scaleXYFactor, scaleXYFactor, 1 / cam.zmax));
+    Transform(Matrix::CreateScaleMatrix(scaleXYFactor, scaleXYFactor, 1 / camera.zmax), camera);
 
     RecalculateNormals();
 }

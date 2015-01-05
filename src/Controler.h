@@ -14,7 +14,6 @@ class Controler
         Controler(const Scene3D& scene);
         void SetView(ViewWeakPtr view);
 
-        Scene2D GetPerspectiveProjection() const;
         QImage GetRenderedPerspectiveView();
 
         void KeyPressed(int key);

@@ -38,17 +38,12 @@ class Scene3D
         Vector CalculatePointNormal(unsigned int pointNumber) const;
         void RecalculateNormals();
 
-        void SetObserverPosition(const Vector& newPosition);
-        void SetObservedPoint(const Vector& newObservedPoint);
         void SetLightPosition(const Vector& newPosition);
         void SetLightColor(const QColor& color);
         void SetAmbientLightColor(const QColor& color) { ambientLightColor_ = color; }
-        void SetZMin(double zmin) { cam.zmin = zmin; }
-        void SetZMax(double zmax) { cam.zmax = zmax; }
-        void SetViewAngle(double viewAngle) { cam.viewAngle = viewAngle; }
 
-        Scene2D GetPerspectiveProjection() const;
-        QImage RenederPerspectiveProjection(int width, int height);
+        QImage RenederPerspectiveProjection(int width, int height,
+            const PerspectiveCamera& camera);
 
         void DrawTriangleWithXParellGround(const Vector& p1, Vector p2,
             Vector p3, QPainter& painter, Shader& shader);
@@ -56,7 +51,7 @@ class Scene3D
                 QPainter& painter, Shader& shader);
 
         void AccumulateTransformation(const Matrix& transformationMatrix);
-        void Transform(const Matrix& transformationMatrix);
+        void Transform(const Matrix& transformationMatrix, Camera& camera);
 
     private:
         std::vector<Vector> points_;
@@ -64,8 +59,6 @@ class Scene3D
         std::vector<Vector> pointsNormals_;
 
         Vector lightPosition_;
-
-        Camera cam;
 
         QColor lightColor_;
         QColor ambientLightColor_;
@@ -82,10 +75,11 @@ class Scene3D
         Matrix CreatePerspectiveProjectionMatrix(double viewAngleRad,
             double aspect, double znear, double zfar) const;
 
-        void DrawScene(QPainter& painter, const Matrix& transformationMatrix);
-        void DrawProjectedTriangle(QPainter& painter, const Triangle3D& t, const Matrix& transformationMatrix);
+        void DrawScene(QPainter& painter, const Matrix& transformationMatrix, const Camera& camera);
+        void DrawProjectedTriangle(QPainter& painter, const Triangle3D& t,
+                const Matrix& transformationMatrix, const Camera& camera);
 
-        void ViewTransform();
+        void ViewTransform(Camera& camera);
 };
 
 #endif
