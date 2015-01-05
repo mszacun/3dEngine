@@ -107,7 +107,7 @@ void Scene3D::SetLightColor(const QColor& color)
 Scene2D Scene3D::GetPerspectiveProjection() const
 {
     Scene2D result;
-    Matrix transformationMatrix = worldTransformation_ * Matrix::CreateProjectMatrix(-observatorPosition_.GetZ());
+    Matrix transformationMatrix = worldTransformation_ * Matrix::CreateProjectMatrix(1);
 
     for (const Triangle3D& t : triangles_)
         result.AddTriangle(ProjectTrianglePerspectively(t, transformationMatrix));
@@ -229,12 +229,6 @@ void Scene3D::DrawScene(QPainter& painter, const Matrix& transformationMatrix)
 {
     for (const Triangle3D& t : triangles_)
         DrawProjectedTriangle(painter, t, transformationMatrix);
-    // {
-    //     painter.drawLine((int) t2.p1_.GetX(), (int) t2.p1_.GetY(), (int) t2.p2_.GetX(), (int) t2.p2_.GetY());
-    //     painter.drawLine((int) t2.p2_.GetX(), (int) t2.p2_.GetY(), (int) t2.p3_.GetX(), (int) t2.p3_.GetY());
-    //     painter.drawLine((int) t2.p1_.GetX(), (int) t2.p1_.GetY(), (int) t2.p3_.GetX(), (int) t2.p3_.GetY());
-    //     painter.drawEllipse((int) t2.p1_.GetX(), (int) t2.p1_.GetY(), 1, 1);
-    //}
 }
 
 QImage Scene3D::RenederPerspectiveProjection(int width, int height)
@@ -273,9 +267,11 @@ void Scene3D::Transform(const Matrix& transformationMatrix)
 
 Vector Scene3D::ProjectPoint(const Vector& p, const Matrix& projectionMatrix) const
 {
-    Vector projected = p.Transform(projectionMatrix);
-    projected.SetZ(p.GetZ());
+    //Vector projected = p.Transform(projectionMatrix);
+    //projected.SetZ(p.GetZ());
 
+    Vector projected = Vector(p.GetX() / p.GetZ(), p.GetY() / p.GetZ(), p.GetZ());
+    std::cout << p << " projected -> " << projected << std::endl;
     return projected;
 }
 
@@ -307,6 +303,10 @@ void Scene3D::ViewTransform()
     alfa = std::atan2(upDirection_.GetY(), upDirection_.GetX());
     fi = M_PI / 2 - alfa;
     Transform(Matrix::CreateZAxisRotationMatrix(fi));
+    
+    // step 5 - additional
+    Transform(Matrix::CreateTranslationMatrix(-observatorPosition_.GetX(),
+        -observatorPosition_.GetY(), -observatorPosition_.GetZ()));
 
     RecalculateNormals();
 }
