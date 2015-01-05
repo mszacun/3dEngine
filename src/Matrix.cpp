@@ -340,7 +340,7 @@ Matrix Matrix::CreateZAxisRotationMatrixAroundPoint(double angleInRadians,
     return CreateTranslationMatrix(p) * CreateZAxisRotationMatrix(angleInRadians) * CreateTranslationMatrix(-p);
 }
 
-Matrix Matrix::CreateProjectMatrix()
+Matrix Matrix::CreatePerspectiveProjectionMatrix()
 {
     return Create4x4Matrix(
             1, 0, 0, 0,
@@ -349,7 +349,16 @@ Matrix Matrix::CreateProjectMatrix()
             0, 0, 1, 0);
 }
 
-Matrix Matrix::CreatePerspectiveProjectionMatrix(double viewAngleRad,
+Matrix Matrix::CreateOrthogonalProjectionMatrix()
+{
+    return Create4x4Matrix(
+            1, 0, 0, 0,
+            0, 1, 0, 0,
+            0, 0, 0, 0,
+            0, 0, 0, 1);
+}
+
+Matrix Matrix::CreatePerspectiveProjectionMatrix2(double viewAngleRad,
         double aspect, double znear, double zfar)
 {
     Matrix result(4, 4);

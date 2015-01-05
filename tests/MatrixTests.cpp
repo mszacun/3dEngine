@@ -90,7 +90,7 @@ TEST(MatrixTests, ShouldInvertMatrix)
 
 TEST(MatrixTests, ShouldCalculatePerspectiveProjectionMatrix)
 {
-    Matrix projectionMatrix = Matrix::CreatePerspectiveProjectionMatrix(0.78, 1, 0.01, 1.0);
+    Matrix projectionMatrix = Matrix::CreatePerspectiveProjectionMatrix2(0.78, 1, 0.01, 1.0);
 
     EXPECT_NEAR(2.432765, projectionMatrix.GetElement(0, 0), 0.000001);
     EXPECT_NEAR(0, projectionMatrix.GetElement(0, 1), 0.000001);

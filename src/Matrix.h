@@ -60,9 +60,10 @@ class Matrix
         static Matrix CreateZAxisRotationMatrix(double angleInRadians);
         static Matrix CreateZAxisRotationMatrixAroundPoint(double angleInRadians,
                 const Vector& p);
-        static Matrix CreateProjectMatrix();
+        static Matrix CreatePerspectiveProjectionMatrix();
+        static Matrix CreateOrthogonalProjectionMatrix();
 
-        static Matrix CreatePerspectiveProjectionMatrix(double viewAngleRad,
+        static Matrix CreatePerspectiveProjectionMatrix2(double viewAngleRad,
             double aspect, double znear, double zfar);
         static Matrix CreateViewMatrix(const Vector& cameraPosition,
             const Vector& observedPoint, const Vector& upDirection);

@@ -12,17 +12,20 @@ void Controler::SetView(ViewWeakPtr view)
     view_ = view;
 }
 
+QImage Controler::GetRenderedOrthogonalView()
+{
+    OrthogonalCamera cam(observerPosition_, Vector(0, 1, 0),
+            Vector(0, 0, 0), 10, 1000, 400, 400);
+
+    return scene_.RenderProjection(400, 400, cam);
+}
+
 QImage Controler::GetRenderedPerspectiveView()
 {
-    PerspectiveCamera cam;
-    cam.position = observerPosition_;
-    cam.target = Vector(0, 0, 0);
-    cam.viewAngle = 0.78;
-    cam.zmin = 10;
-    cam.zmax = 1000;
-    cam.upDirection = Vector(0, 1, 0);
+    PerspectiveCamera cam(observerPosition_, Vector(0, 1, 0),
+            Vector(0, 0, 0), 10, 1000, 0.78);
 
-    QImage result = scene_.RenederPerspectiveProjection(400, 400, cam);
+    QImage result = scene_.RenderProjection(400, 400, cam);
 
     return result;
 }

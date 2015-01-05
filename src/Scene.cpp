@@ -115,7 +115,12 @@ double InterpolateZ(double betaz, double min, double max)
     return  1 / (betaz * (1 / min) + (1 - betaz) * (1 / max)); 
 }
 
-void Scene3D::DrawTriangleWithXParellGround(const Vector& p1, Vector p2, Vector p3, QPainter& painter, Shader& shader)
+double InterpolateZLinearly(double betaz, double min, double max)
+{
+    return  betaz * min + (1 - betaz) * max;
+}
+
+void Scene3D::DrawTriangleWithXParellGround(const Vector& p1, Vector p2, Vector p3, QPainter& painter, Shader& shader, const ZInterpolator& zinterpolator)
 {
     // inv: p2 and p3 are on the same line, p1 is peak of triangle
     assert(p2.GetY() == p3.GetY());
@@ -131,15 +136,15 @@ void Scene3D::DrawTriangleWithXParellGround(const Vector& p1, Vector p2, Vector 
     {
         double betay = CalculateDeltaY(y, ystart, yend);
         double xl = betay * p1.GetX() + (1 - betay) * p2.GetX();
-        double zl = InterpolateZ(betay, p1.GetZ(), p2.GetZ());
+        double zl = zinterpolator(betay, p1.GetZ(), p2.GetZ());
 
         double xr = betay * p1.GetX() + (1 - betay) * p3.GetX();
-        double zr = InterpolateZ(betay, p1.GetZ(), p3.GetZ());
+        double zr = zinterpolator(betay, p1.GetZ(), p3.GetZ());
 
         for (int x = (int) xl; x < xr; x++)
         {
             double betax = CalculateDeltaY(x, xl, xr);
-            double z = InterpolateZ(betax, zl, zr);
+            double z = zinterpolator(betax, zl, zr);
             if (zBuffer_[x][y] > z)
             {
                 painter.setPen(shader.GetColorForPixel(Vector(x, y, z)));
@@ -151,7 +156,8 @@ void Scene3D::DrawTriangleWithXParellGround(const Vector& p1, Vector p2, Vector 
     }
 }
 
-void Scene3D::DrawTriangle(const Vector& p1, const Vector& p2, const Vector& p3, QPainter& painter, Shader& shader)
+void Scene3D::DrawTriangle(const Vector& p1, const Vector& p2, const Vector& p3,
+        QPainter& painter, Shader& shader, const ZInterpolator& zinterpolator)
 {
     Vector top = p1, middle = p2, bottom = p3;
     SortVertices(top, middle, bottom);
@@ -160,16 +166,17 @@ void Scene3D::DrawTriangle(const Vector& p1, const Vector& p2, const Vector& p3,
     double y = middle.GetY();
     double betay = CalculateDeltaY(y, top.GetY(), bottom.GetY());
     double xr = betay * top.GetX() + (1 - betay) * bottom.GetX();
-    double zr = InterpolateZ(betay, top.GetZ(), bottom.GetZ());
+    double zr = zinterpolator(betay, top.GetZ(), bottom.GetZ());
 
-    DrawTriangleWithXParellGround(top, Vector(xr, y, zr), middle, painter, shader);
-    DrawTriangleWithXParellGround(bottom, Vector(xr, y, zr), middle, painter, shader);
+    DrawTriangleWithXParellGround(top, Vector(xr, y, zr), middle, painter, shader, zinterpolator);
+    DrawTriangleWithXParellGround(bottom, Vector(xr, y, zr), middle, painter, shader, zinterpolator);
 }
 
 void Scene3D::DrawProjectedTriangle(QPainter& painter, const Triangle3D& t,
-        const Matrix& transformationMatrix, const Camera& camera)
+        const Matrix& transformationMatrix, const Camera& camera,
+        const ZInterpolator& zinterpolator)
 {
-    Triangle2D t2 = ProjectTrianglePerspectively(t, transformationMatrix);
+    Triangle2D t2 = ProjectTriangle(t, transformationMatrix);
     //PrintProjectInfo(t, t2);
     TriangleShadingInfo shadingInfo;
 
@@ -193,7 +200,7 @@ void Scene3D::DrawProjectedTriangle(QPainter& painter, const Triangle3D& t,
     shadingInfo.ambientLightColor = ambientLightColor_;
 
     GouraudShader shader(shadingInfo);
-    DrawTriangle(t2.p1_, t2.p2_, t2.p3_, painter, shader);
+    DrawTriangle(t2.p1_, t2.p2_, t2.p3_, painter, shader, zinterpolator);
 }
 
 void Scene3D::PrintProjectInfo(const Triangle3D& t, const Triangle2D& t2) const
@@ -205,14 +212,13 @@ void Scene3D::PrintProjectInfo(const Triangle3D& t, const Triangle2D& t2) const
 }
 
 void Scene3D::DrawScene(QPainter& painter, const Matrix& transformationMatrix,
-    const Camera& camera)
+    const Camera& camera, const ZInterpolator& zinterpolator)
 {
     for (const Triangle3D& t : triangles_)
-        DrawProjectedTriangle(painter, t, transformationMatrix, camera);
+        DrawProjectedTriangle(painter, t, transformationMatrix, camera, zinterpolator);
 }
 
-QImage Scene3D::RenederPerspectiveProjection(int width, int height,
-    const PerspectiveCamera& camera)
+QImage Scene3D::RenderProjection(int width, int height, const PerspectiveCamera& camera)
 {
     QImage result(width, height, QImage::Format_ARGB32);
     QPainter painter(&result);
@@ -224,9 +230,28 @@ QImage Scene3D::RenederPerspectiveProjection(int width, int height,
     Scene3D observedScene(*this);
     observedScene.ViewTransform(cameraCopy);
 
-    Matrix transformationMatrix = Matrix::CreateProjectMatrix() ;
+    Matrix transformationMatrix = Matrix::CreatePerspectiveProjectionMatrix();
 
-    observedScene.DrawScene(painter, transformationMatrix, cameraCopy);
+    observedScene.DrawScene(painter, transformationMatrix, cameraCopy, InterpolateZ);
+
+    return result;
+}
+
+QImage Scene3D::RenderProjection(int width, int height, const OrthogonalCamera& camera)
+{
+    QImage result(width, height, QImage::Format_ARGB32);
+    QPainter painter(&result);
+    OrthogonalCamera cameraCopy = camera;
+
+    painter.fillRect(0, 0, width, height, QColor("white"));
+    ClearZBuffer(zBuffer_);
+
+    Scene3D observedScene(*this);
+    observedScene.ViewTransform(cameraCopy);
+
+    Matrix transformationMatrix = Matrix::CreateOrthogonalProjectionMatrix();
+
+    observedScene.DrawScene(painter, transformationMatrix, cameraCopy, InterpolateZLinearly);
 
     return result;
 }
@@ -254,7 +279,7 @@ Vector Scene3D::ProjectPoint(const Vector& p, const Matrix& projectionMatrix) co
     return projected;
 }
 
-Triangle2D Scene3D::ProjectTrianglePerspectively(const Triangle3D& triangle,
+Triangle2D Scene3D::ProjectTriangle(const Triangle3D& triangle,
         const Matrix& transformationMatrix) const
 {
      return Triangle2D(ProjectPoint(points_[triangle.GetP1()], transformationMatrix),

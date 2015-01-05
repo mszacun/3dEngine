@@ -20,6 +20,8 @@ class Scene2D
         std::vector<Triangle2D> triangles_;
 };
 
+typedef std::function<double(double, double, double)> ZInterpolator;
+
 class Scene3D
 {
     public:
@@ -42,13 +44,13 @@ class Scene3D
         void SetLightColor(const QColor& color);
         void SetAmbientLightColor(const QColor& color) { ambientLightColor_ = color; }
 
-        QImage RenederPerspectiveProjection(int width, int height,
-            const PerspectiveCamera& camera);
+        QImage RenderProjection(int width, int height, const PerspectiveCamera& camera);
+        QImage RenderProjection(int width, int height, const OrthogonalCamera& camert);
 
         void DrawTriangleWithXParellGround(const Vector& p1, Vector p2,
-            Vector p3, QPainter& painter, Shader& shader);
+            Vector p3, QPainter& painter, Shader& shader, const ZInterpolator& zinterpolator);
         void DrawTriangle(const Vector& p1, const Vector& p2, const Vector& p3,
-                QPainter& painter, Shader& shader);
+                QPainter& painter, Shader& shader, const ZInterpolator& zinterpolator);
 
         void AccumulateTransformation(const Matrix& transformationMatrix);
         void Transform(const Matrix& transformationMatrix, Camera& camera);
@@ -67,7 +69,7 @@ class Scene3D
         Matrix worldTransformation_;
 
         Vector ProjectPoint(const Vector& p, const Matrix& projectionMatrix) const;
-        Triangle2D ProjectTrianglePerspectively(const Triangle3D& triangle,
+        Triangle2D ProjectTriangle(const Triangle3D& triangle,
                 const Matrix& transformationMatrix) const;
         void PrintProjectInfo(const Triangle3D& t, const Triangle2D& t2) const;
 
@@ -75,9 +77,11 @@ class Scene3D
         Matrix CreatePerspectiveProjectionMatrix(double viewAngleRad,
             double aspect, double znear, double zfar) const;
 
-        void DrawScene(QPainter& painter, const Matrix& transformationMatrix, const Camera& camera);
+        void DrawScene(QPainter& painter, const Matrix& transformationMatrix,
+                const Camera& camera, const ZInterpolator& zinterpolator);
         void DrawProjectedTriangle(QPainter& painter, const Triangle3D& t,
-                const Matrix& transformationMatrix, const Camera& camera);
+            const Matrix& transformationMatrix, const Camera& camera,
+            const ZInterpolator& zinterpolator);
 
         void ViewTransform(Camera& camera);
 };
