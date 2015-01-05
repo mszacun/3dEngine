@@ -11,9 +11,12 @@ void Scene2D::AddTriangle(const Triangle2D& triangle)
     triangles_.push_back(triangle);
 }
 
-Scene3D::Scene3D() : observatorPosition_(0, 0, 0), observedPoint_(0, 0, 0),
-    upDirection_(0, 1, 0), worldTransformation_(4, 4)
+Scene3D::Scene3D() : worldTransformation_(4, 4)
 {
+    cam.position = Vector(0, 0, 0);
+    cam.upDirection = Vector(0, 1, 0);
+    cam.target = Vector(0, 0, 0);
+
     zBuffer_ = new double*[ZBUFFER_HEIGHT];
 
     for (int i = 0; i < ZBUFFER_HEIGHT; i++)
@@ -86,12 +89,12 @@ void Scene3D::RecalculateNormals()
 
 void Scene3D::SetObserverPosition(const Vector& newPosition)
 {
-    observatorPosition_ = newPosition;
+    cam.position = newPosition;
 }
 
 void Scene3D::SetObservedPoint(const Vector& newObservedPoint)
 {
-    observedPoint_ = newObservedPoint;
+    cam.target = newObservedPoint;
 }
 
 void Scene3D::SetLightPosition(const Vector& newPosition)
@@ -208,7 +211,7 @@ void Scene3D::DrawProjectedTriangle(QPainter& painter, const Triangle3D& t, cons
 
     shadingInfo.triangleNormal = t.GetNormal();
 
-    shadingInfo.observatorPosition = observatorPosition_;
+    shadingInfo.observatorPosition = cam.position;
     shadingInfo.lightPosition = lightPosition_;
     shadingInfo.lightColor = lightColor_;
     shadingInfo.ambientLightColor = ambientLightColor_;
@@ -242,7 +245,7 @@ QImage Scene3D::RenederPerspectiveProjection(int width, int height)
     Scene3D observedScene(*this);
     observedScene.ViewTransform();
 
-    Matrix transformationMatrix = Matrix::CreateProjectMatrix(-observedScene.observatorPosition_.GetZ()) ;
+    Matrix transformationMatrix = Matrix::CreateProjectMatrix(-cam.position.GetZ()) ;
 
     observedScene.DrawScene(painter, transformationMatrix);
 
@@ -259,10 +262,8 @@ void Scene3D::Transform(const Matrix& transformationMatrix)
     for (Vector& p : points_)
         p = p.Transform(transformationMatrix);
 
-    observatorPosition_ = observatorPosition_.Transform(transformationMatrix);
+    cam.Transform(transformationMatrix);
     lightPosition_ = lightPosition_.Transform(transformationMatrix);
-    observedPoint_ = observedPoint_.Transform(transformationMatrix);
-    upDirection_ = upDirection_.Transform(transformationMatrix);
 }
 
 Vector Scene3D::ProjectPoint(const Vector& p, const Matrix& projectionMatrix) const
@@ -286,31 +287,31 @@ Triangle2D Scene3D::ProjectTrianglePerspectively(const Triangle3D& triangle,
 void Scene3D::ViewTransform()
 {
     /* step 1 */
-    Transform(Matrix::CreateTranslationMatrix(-observedPoint_.GetX(),
-        -observedPoint_.GetY(), -observedPoint_.GetZ()));
+    Transform(Matrix::CreateTranslationMatrix(-cam.target.GetX(),
+        -cam.target.GetY(), -cam.target.GetZ()));
 
     // step 2
-    double alfa = std::atan2(observatorPosition_.GetX(), observatorPosition_.GetZ());
+    double alfa = std::atan2(cam.position.GetX(), cam.position.GetZ());
     double fi = M_PI - alfa;
     Transform(Matrix::CreateYAxisRotationMatrix(fi));
 
     // step 3
-    alfa = std::atan2(observatorPosition_.GetZ(), observatorPosition_.GetY());
+    alfa = std::atan2(cam.position.GetZ(), cam.position.GetY());
     fi = -M_PI / 2 - alfa;
     Transform(Matrix::CreateXAxisRotationMatrix(fi));
 
     // step 4
-    alfa = std::atan2(upDirection_.GetY(), upDirection_.GetX());
+    alfa = std::atan2(cam.upDirection.GetY(), cam.upDirection.GetX());
     fi = M_PI / 2 - alfa;
     Transform(Matrix::CreateZAxisRotationMatrix(fi));
     
     // step 5 - additional
-    Transform(Matrix::CreateTranslationMatrix(-observatorPosition_.GetX(),
-        -observatorPosition_.GetY(), -observatorPosition_.GetZ()));
+    Transform(Matrix::CreateTranslationMatrix(-cam.position.GetX(),
+        -cam.position.GetY(), -cam.position.GetZ()));
 
-    double scaleXYFactor = 1 / (zmax_ * std::tan(viewAngle_ / 2));
+    double scaleXYFactor = 1 / (cam.zmax * std::tan(cam.viewAngle / 2));
     // step 6 - normalize coordinates
-    Transform(Matrix::CreateScaleMatrix(scaleXYFactor, scaleXYFactor, 1 / zmax_));
+    Transform(Matrix::CreateScaleMatrix(scaleXYFactor, scaleXYFactor, 1 / cam.zmax));
 
     RecalculateNormals();
 }

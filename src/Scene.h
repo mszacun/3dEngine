@@ -10,6 +10,8 @@
 #include "Vector.h"
 #include "Triangle.h"
 #include "FlatShader.h"
+#include "Camera.h"
+
 
 class Scene2D
 {
@@ -41,9 +43,9 @@ class Scene3D
         void SetLightPosition(const Vector& newPosition);
         void SetLightColor(const QColor& color);
         void SetAmbientLightColor(const QColor& color) { ambientLightColor_ = color; }
-        void SetZMin(double zmin) { zmin_ = zmin; }
-        void SetZMax(double zmax) { zmax_ = zmax; }
-        void SetViewAngle(double viewAngle) { viewAngle_ = viewAngle; }
+        void SetZMin(double zmin) { cam.zmin = zmin; }
+        void SetZMax(double zmax) { cam.zmax = zmax; }
+        void SetViewAngle(double viewAngle) { cam.viewAngle = viewAngle; }
 
         Scene2D GetPerspectiveProjection() const;
         QImage RenederPerspectiveProjection(int width, int height);
@@ -61,14 +63,9 @@ class Scene3D
         std::vector<Triangle3D> triangles_;
         std::vector<Vector> pointsNormals_;
 
-        Vector observatorPosition_;
         Vector lightPosition_;
-        Vector observedPoint_;
-        Vector upDirection_;
 
-        double viewAngle_;
-        double zmin_;
-        double zmax_;
+        Camera cam;
 
         QColor lightColor_;
         QColor ambientLightColor_;
