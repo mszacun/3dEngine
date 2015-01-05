@@ -118,6 +118,15 @@ Matrix Matrix::operator*(double number) const
     return result;
 }
 
+Matrix& Matrix::operator*=(double number)
+{
+    for (unsigned int row = 0; row < height_; row++)
+        for (unsigned int col = 0; col < width_; col++)
+            SetElement(row, col, GetElement(row, col) * number);
+
+    return *this;
+}
+
 Matrix Matrix::operator*(const Matrix& right) const
 {
     Matrix result(GetHeight(), right.GetWidth());
@@ -193,68 +202,94 @@ Matrix Matrix::CreateIdentityMatrix(int size)
     return result;
 }
 
+
+Matrix Matrix::Create4x4Matrix(double m11, double m12, double m13, double m14,
+        double m21, double m22, double m23, double m24,
+        double m31, double m32, double m33, double m34,
+        double m41, double m42, double m43, double m44)
+{
+    Matrix m(4, 4);
+    m.matrix_[0] =  m11;
+    m.matrix_[1] =  m12;
+    m.matrix_[2] =  m13;
+    m.matrix_[3] =  m14;
+
+    m.matrix_[4] =  m21;
+    m.matrix_[5] =  m22;
+    m.matrix_[6] =  m23;
+    m.matrix_[7] =  m24;
+
+    m.matrix_[8] =  m31;
+    m.matrix_[9] =  m32;
+    m.matrix_[10] =  m33;
+    m.matrix_[11] =  m34;
+
+    m.matrix_[12] =  m41;
+    m.matrix_[13] =  m42;
+    m.matrix_[14] =  m43;
+    m.matrix_[15] =  m44;
+
+    return m;
+}
 Matrix Matrix::Create3x3Matrix(double m11, double m12, double m13, double m21, double m22, double m23, double m31, double m32, double m33)
 {
     Matrix m(3, 3);
-    m.SetElement(0, 0, m11);
-    m.SetElement(0, 1, m12);
-    m.SetElement(0, 2, m13);
 
-    m.SetElement(1, 0, m21);
-    m.SetElement(1, 1, m22);
-    m.SetElement(1, 2, m23);
+    m.matrix_[0] = m11;
+    m.matrix_[1] = m12;
+    m.matrix_[2] =  m13;
 
-    m.SetElement(2, 0, m31);
-    m.SetElement(2, 1, m32);
-    m.SetElement(2, 2, m33);
+    m.matrix_[3] =  m21;
+    m.matrix_[4] =  m22;
+    m.matrix_[5] =  m23;
+
+    m.matrix_[6] =  m31;
+    m.matrix_[7] =  m32;
+    m.matrix_[8] =  m33;
 
     return m;
 }
 
 void Matrix::Set3x3Matrix(Matrix& m, double m11, double m12, double m13, double m21, double m22, double m23, double m31, double m32, double m33)
 {
-    m.SetElement(0, 0, m11);
-    m.SetElement(0, 1, m12);
-    m.SetElement(0, 2, m13);
+    m.matrix_[0] = m11;
+    m.matrix_[1] = m12;
+    m.matrix_[2] =  m13;
 
-    m.SetElement(1, 0, m21);
-    m.SetElement(1, 1, m22);
-    m.SetElement(1, 2, m23);
+    m.matrix_[3] =  m21;
+    m.matrix_[4] =  m22;
+    m.matrix_[5] =  m23;
 
-    m.SetElement(2, 0, m31);
-    m.SetElement(2, 1, m32);
-    m.SetElement(2, 2, m33);
+    m.matrix_[6] =  m31;
+    m.matrix_[7] =  m32;
+    m.matrix_[8] =  m33;
 }
 
 Matrix Matrix::Create3x1Matrix(double m11, double m21, double m31)
 {
     Matrix m(1, 3);
 
-    m.SetElement(0, 0, m11);
-    m.SetElement(1, 0, m21);
-    m.SetElement(2, 0, m31);
+    m.matrix_[0] =  m11;
+    m.matrix_[1] =  m21;
+    m.matrix_[2] =  m31;
 
     return m;
 }
 
 Matrix Matrix::CreateScaleMatrix(double xFactor, double yFactor, double zFactor)
 {
-    std::vector<std::vector<double>> matrixData { { xFactor, 0, 0, 0 },
-                                                  { 0, yFactor, 0, 0 },
-                                                  { 0, 0, zFactor, 0 },
-                                                  { 0, 0, 0, 1} };
-
-    return Matrix(matrixData);
+    return Create4x4Matrix(xFactor, 0, 0, 0,
+                              0, yFactor, 0, 0,
+                              0, 0, zFactor, 0,
+                              0, 0, 0, 1);
 }
 
 Matrix Matrix::CreateTranslationMatrix(double xMove, double yMove, double zMove)
 {
-    std::vector<std::vector<double>> matrixData { { 1, 0, 0, xMove },
-                                                  { 0, 1, 0, yMove },
-                                                  { 0, 0, 1, zMove },
-                                                  { 0, 0, 0, 1} };
-
-    return Matrix(matrixData);
+    return Create4x4Matrix(1, 0, 0, xMove,
+                          0, 1, 0, yMove,
+                          0, 0, 1, zMove,
+                          0, 0, 0, 1);
 }
 
 Matrix Matrix::CreateTranslationMatrix(const Vector& v)
@@ -262,15 +297,12 @@ Matrix Matrix::CreateTranslationMatrix(const Vector& v)
     return CreateTranslationMatrix(v.GetX(), v.GetY(), v.GetZ());
 }
 
-Matrix Matrix::CreateXAxisRotationMatrix(double angleInRadians)
+Matrix Matrix::CreateXAxisRotationMatrix(double radians)
 {
-    double radians = angleInRadians;
-    std::vector<std::vector<double>> matrixData { { 1, 0, 0, 0 },
-                                                  { 0, cos(radians), -sin(radians), 0 },
-                                                  { 0, sin(radians), cos(radians), 0 },
-                                                  { 0, 0, 0, 1} };
-
-    return Matrix(matrixData);
+    return Create4x4Matrix(1, 0, 0, 0,
+          0, cos(radians), -sin(radians), 0,
+          0, sin(radians), cos(radians), 0,
+          0, 0, 0, 1);
 }
 
 Matrix Matrix::CreateXAxisRotationMatrixAroundPoint(double angleInRadians,
@@ -279,15 +311,12 @@ Matrix Matrix::CreateXAxisRotationMatrixAroundPoint(double angleInRadians,
     return CreateTranslationMatrix(p) * CreateXAxisRotationMatrix(angleInRadians) * CreateTranslationMatrix(-p);
 }
 
-Matrix Matrix::CreateYAxisRotationMatrix(double angleInRadians)
+Matrix Matrix::CreateYAxisRotationMatrix(double radians)
 {
-    double radians = angleInRadians;
-    std::vector<std::vector<double>> matrixData { { cos(radians), 0, sin(radians), 0 },
-                                                  { 0, 1, 0, 0 },
-                                                  { -sin(radians), 0, cos(radians), 0 },
-                                                  { 0, 0, 0, 1} };
-
-    return Matrix(matrixData);
+    return Create4x4Matrix(cos(radians), 0, sin(radians), 0,
+                                                  0, 1, 0, 0,
+                                                  -sin(radians), 0, cos(radians), 0,
+                                                  0, 0, 0, 1);
 }
 
 Matrix Matrix::CreateYAxisRotationMatrixAroundPoint(double angleInRadians,
@@ -296,15 +325,13 @@ Matrix Matrix::CreateYAxisRotationMatrixAroundPoint(double angleInRadians,
     return CreateTranslationMatrix(p) * CreateYAxisRotationMatrix(angleInRadians) * CreateTranslationMatrix(-p);
 }
 
-Matrix Matrix::CreateZAxisRotationMatrix(double angleInRadians)
+Matrix Matrix::CreateZAxisRotationMatrix(double radians)
 {
-    double radians = angleInRadians;
-    std::vector<std::vector<double>> matrixData { { cos(radians), -sin(radians), 0, 0 },
-                                                  { sin(radians), cos(radians), 0, 0 },
-                                                  { 0, 0, 1, 0 },
-                                                  { 0, 0, 0, 1} };
+    return Create4x4Matrix(cos(radians), -sin(radians), 0, 0,
+            sin(radians), cos(radians), 0, 0,
+            0, 0, 1, 0,
+            0, 0, 0, 1);
 
-    return Matrix(matrixData);
 }
 
 Matrix Matrix::CreateZAxisRotationMatrixAroundPoint(double angleInRadians,
@@ -315,12 +342,11 @@ Matrix Matrix::CreateZAxisRotationMatrixAroundPoint(double angleInRadians,
 
 Matrix Matrix::CreateProjectMatrix(double zDistance)
 {
-    std::vector<std::vector<double>> matrixData { { 1, 0, 0, 0 },
-                                                  { 0, 1, 0, 0 },
-                                                  { 0, 0, 0, 0 },
-                                                  { 0, 0, 1 / zDistance, 1} };
-
-    return Matrix(matrixData);
+    return Create4x4Matrix(
+            1, 0, 0, 0,
+            0, 1, 0, 0,
+            0, 0, 0, 0,
+            0, 0, 1 / zDistance, 1);
 }
 
 Matrix Matrix::CreatePerspectiveProjectionMatrix(double viewAngleRad,

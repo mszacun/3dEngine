@@ -27,6 +27,7 @@ class Matrix
         bool operator==(const Matrix& right);
         Matrix& operator=(const Matrix& right);
         Matrix operator*(double number) const;
+        Matrix& operator*=(double number);
         Matrix operator*(const Matrix& right) const;
         Matrix operator-(const Matrix& right) const;
 
@@ -39,6 +40,10 @@ class Matrix
         static void Set3x3Matrix(Matrix& m, double m11, double m12, double m13, double m21, double m22, double m23, double m31, double m32, double m33);
 
         static Matrix CreateIdentityMatrix(int size);
+        static Matrix Create4x4Matrix(double m11, double m12, double m13, double m14,
+            double m21, double m22, double m23, double m24,
+            double m31, double m32, double m33, double m34,
+            double m41, double m42, double m43, double m44);
         static Matrix Create3x3Matrix(double m11, double m12, double m13, double m21, double m22, double m23, double m31, double m32, double m33);
         static Matrix Create3x1Matrix(double m11, double m21, double m31);
         static Matrix CreateScaleMatrix(double xFactor, double yFactor,
