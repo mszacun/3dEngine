@@ -41,6 +41,9 @@ class Scene3D
         void SetLightPosition(const Vector& newPosition);
         void SetLightColor(const QColor& color);
         void SetAmbientLightColor(const QColor& color) { ambientLightColor_ = color; }
+        void SetZMin(double zmin) { zmin_ = zmin; }
+        void SetZMax(double zmax) { zmax_ = zmax; }
+        void SetViewAngle(double viewAngle) { viewAngle_ = viewAngle; }
 
         Scene2D GetPerspectiveProjection() const;
         QImage RenederPerspectiveProjection(int width, int height);
@@ -62,6 +65,10 @@ class Scene3D
         Vector lightPosition_;
         Vector observedPoint_;
         Vector upDirection_;
+
+        double viewAngle_;
+        double zmin_;
+        double zmax_;
 
         QColor lightColor_;
         QColor ambientLightColor_;

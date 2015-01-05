@@ -308,6 +308,10 @@ void Scene3D::ViewTransform()
     Transform(Matrix::CreateTranslationMatrix(-observatorPosition_.GetX(),
         -observatorPosition_.GetY(), -observatorPosition_.GetZ()));
 
+    double scaleXYFactor = 1 / (zmax_ * std::tan(viewAngle_ / 2));
+    // step 6 - normalize coordinates
+    Transform(Matrix::CreateScaleMatrix(scaleXYFactor, scaleXYFactor, 1 / zmax_));
+
     RecalculateNormals();
 }
 
