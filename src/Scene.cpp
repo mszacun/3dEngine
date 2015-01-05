@@ -224,7 +224,7 @@ QImage Scene3D::RenederPerspectiveProjection(int width, int height,
     Scene3D observedScene(*this);
     observedScene.ViewTransform(cameraCopy);
 
-    Matrix transformationMatrix = Matrix::CreateProjectMatrix(-camera.position.GetZ()) ;
+    Matrix transformationMatrix = Matrix::CreateProjectMatrix() ;
 
     observedScene.DrawScene(painter, transformationMatrix, cameraCopy);
 
@@ -247,10 +247,9 @@ void Scene3D::Transform(const Matrix& transformationMatrix, Camera& camera)
 
 Vector Scene3D::ProjectPoint(const Vector& p, const Matrix& projectionMatrix) const
 {
-    /*Vector projected = p.Transform(projectionMatrix);
-    projected.SetZ(p.GetZ());*/
+    Vector projected = p.Transform(projectionMatrix);
+    projected.SetZ(p.GetZ());
 
-    Vector projected = Vector(p.GetX() / p.GetZ(), p.GetY() / p.GetZ(), p.GetZ());
     std::cout << p << " projected -> " << projected << std::endl;
     return projected;
 }

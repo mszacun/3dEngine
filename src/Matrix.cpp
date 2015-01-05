@@ -340,13 +340,13 @@ Matrix Matrix::CreateZAxisRotationMatrixAroundPoint(double angleInRadians,
     return CreateTranslationMatrix(p) * CreateZAxisRotationMatrix(angleInRadians) * CreateTranslationMatrix(-p);
 }
 
-Matrix Matrix::CreateProjectMatrix(double zDistance)
+Matrix Matrix::CreateProjectMatrix()
 {
     return Create4x4Matrix(
             1, 0, 0, 0,
             0, 1, 0, 0,
-            0, 0, 0, 0,
-            0, 0, 1 / zDistance, 1);
+            0, 0, 1, 0,
+            0, 0, 1, 0);
 }
 
 Matrix Matrix::CreatePerspectiveProjectionMatrix(double viewAngleRad,
