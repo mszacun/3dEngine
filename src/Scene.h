@@ -38,6 +38,7 @@ class Scene3D
 
         Vector CalculateNormal(const Triangle3D& triangle) const;
         Vector CalculatePointNormal(unsigned int pointNumber) const;
+        Vector CalculateCenter(const Triangle3D& triangle) const;
         void RecalculateNormals();
 
         void SetLightPosition(const Vector& newPosition);
@@ -82,6 +83,8 @@ class Scene3D
         void DrawProjectedTriangle(QPainter& painter, const Triangle3D& t,
             const Matrix& transformationMatrix, const Camera& camera,
             const ZInterpolator& zinterpolator);
+
+        void SortTriangles();
 
         void ViewTransform(Camera& camera);
 };

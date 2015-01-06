@@ -73,6 +73,19 @@ Vector Scene3D::CalculatePointNormal(unsigned int pointNumber) const
     return sum.Normalize();
 }
 
+Vector Scene3D::CalculateCenter(const Triangle3D& triangle) const
+{
+    Vector p1 = points_[triangle.GetP1()];
+    Vector p2 = points_[triangle.GetP2()];
+    Vector p3 = points_[triangle.GetP3()];
+
+    double xCenter = (p1.GetX() + p2.GetX() + p3.GetX()) / 3;
+    double yCenter = (p1.GetY() + p2.GetY() + p3.GetY()) / 3;
+    double zCenter = (p1.GetZ() + p2.GetZ() + p3.GetZ()) / 3;
+
+    return Vector(xCenter, yCenter, zCenter);
+}
+
 void Scene3D::RecalculateNormals()
 {
     for (Triangle3D& t : triangles_)
@@ -229,6 +242,7 @@ QImage Scene3D::RenderProjection(int width, int height, const PerspectiveCamera&
 
     Scene3D observedScene(*this);
     observedScene.ViewTransform(cameraCopy);
+    observedScene.SortTriangles();
 
     Matrix transformationMatrix = Matrix::CreatePerspectiveProjectionMatrix();
 
@@ -248,6 +262,7 @@ QImage Scene3D::RenderProjection(int width, int height, const OrthogonalCamera& 
 
     Scene3D observedScene(*this);
     observedScene.ViewTransform(cameraCopy);
+    observedScene.SortTriangles();
 
     Matrix transformationMatrix = Matrix::CreateOrthogonalProjectionMatrix();
 
@@ -317,6 +332,24 @@ void Scene3D::ViewTransform(Camera& camera)
     Transform(Matrix::CreateScaleMatrix(scaleXYFactor, scaleXYFactor, 1 / camera.zmax), camera);
 
     RecalculateNormals();
+}
+
+void Scene3D::SortTriangles()
+{
+/*    int i, j;
+    int length = triangles_.size();
+ 
+    for(i = 1; i < length; i++)
+    {
+        Triangle3D value = triangles_[i];
+        for (j = i - 1; j >= 0 && CalculateCenter(triangles_[j]).GetZ() > CalculateNormal(value).GetZ(); j--)
+        {
+            triangles_[j + 1] = triangles_[j];
+        }
+        triangles_[j + 1] = value;
+    }*/
+    std::sort(triangles_.begin(), triangles_.end(),
+            [this] (const Triangle3D& l, const Triangle3D& r) { return CalculateCenter(l).GetZ() < CalculateCenter(r).GetZ(); });
 }
 
 void ClearZBuffer(double** zBuffer)
