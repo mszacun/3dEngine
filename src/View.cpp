@@ -34,8 +34,16 @@ void View::paintEvent(QPaintEvent* event)
 
     QImage i = controler_->GetRenderedPerspectiveView();
     painter.drawImage(0, 0, i);
-    i = controler_->GetRenderedOrthogonalView();
+
+    i = controler_->GetFrontView();
     painter.drawImage(400, 400, i);
+
+    i = controler_->GetSideView();
+    painter.drawImage(0, 400, i);
+
+    i = controler_->GetTopView();
+    painter.drawImage(400, 0, i);
+
     auto end = std::chrono::steady_clock::now();
 
 

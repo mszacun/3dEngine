@@ -12,10 +12,26 @@ void Controler::SetView(ViewWeakPtr view)
     view_ = view;
 }
 
-QImage Controler::GetRenderedOrthogonalView()
+QImage Controler::GetFrontView()
 {
-    OrthogonalCamera cam(observerPosition_, Vector(0, 1, 0),
-            Vector(0, 0, 0), 3, 20, 10, 10);
+    OrthogonalCamera cam(Vector(0, 0, -5), Vector(0, 1, 0),
+            Vector(0, 0, 0), 3, 20, 5, 5);
+
+    return scene_.RenderProjection(400, 400, cam);
+}
+
+QImage Controler::GetSideView()
+{
+    OrthogonalCamera cam(Vector(-5, 0, 0), Vector(0, 1, 0),
+            Vector(0, 0, 0), 3, 20, 5, 5);
+
+    return scene_.RenderProjection(400, 400, cam);
+}
+
+QImage Controler::GetTopView()
+{
+    OrthogonalCamera cam(Vector(0, 5, 0), Vector(0, 1, 0),
+            Vector(0, 0, 0), 3, 20, 5, 5);
 
     return scene_.RenderProjection(400, 400, cam);
 }
@@ -38,6 +54,8 @@ void Controler::KeyPressed(int key)
         case Qt::Key_S: observerPosition_.SetZ(observerPosition_.GetZ() - 0.1); break;
         case Qt::Key_A: observerPosition_.SetX(observerPosition_.GetX() - 0.1); break;
         case Qt::Key_D: observerPosition_.SetX(observerPosition_.GetX() + 0.1); break;
+        case Qt::Key_Down: observerPosition_.SetY(observerPosition_.GetY() - 0.1); break;
+        case Qt::Key_Up: observerPosition_.SetY(observerPosition_.GetY() + 0.1); break;
     }
 }
 
