@@ -272,10 +272,10 @@ void Scene3D::Transform(const Matrix& transformationMatrix, Camera& camera)
 
 Vector Scene3D::ProjectPoint(const Vector& p, const Matrix& projectionMatrix) const
 {
-    Vector projected = p.Transform(projectionMatrix);
+    Vector projected = p.Transform(projectionMatrix).Transform(Matrix::CreateScaleMatrix(200, 200, 1)).Transform(Matrix::CreateTranslationMatrix(200, 200, 0));
     projected.SetZ(p.GetZ());
 
-    std::cout << p << " projected -> " << projected << std::endl;
+    //std::cout << p << " projected -> " << projected << std::endl;
     return projected;
 }
 

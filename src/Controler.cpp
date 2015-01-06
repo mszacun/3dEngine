@@ -15,7 +15,7 @@ void Controler::SetView(ViewWeakPtr view)
 QImage Controler::GetRenderedOrthogonalView()
 {
     OrthogonalCamera cam(observerPosition_, Vector(0, 1, 0),
-            Vector(0, 0, 0), 10, 1000, 400, 400);
+            Vector(0, 0, 0), 3, 20, 10, 10);
 
     return scene_.RenderProjection(400, 400, cam);
 }
@@ -23,7 +23,7 @@ QImage Controler::GetRenderedOrthogonalView()
 QImage Controler::GetRenderedPerspectiveView()
 {
     PerspectiveCamera cam(observerPosition_, Vector(0, 1, 0),
-            Vector(0, 0, 0), 10, 1000, 0.78);
+            Vector(0, 0, 0), 3, 20, 0.78);
 
     QImage result = scene_.RenderProjection(400, 400, cam);
 
@@ -34,10 +34,10 @@ void Controler::KeyPressed(int key)
 {
     switch (key)
     {
-        case Qt::Key_W: observerPosition_.SetZ(observerPosition_.GetZ() + 1); break;
-        case Qt::Key_S: observerPosition_.SetZ(observerPosition_.GetZ() - 1); break;
-        case Qt::Key_A: observerPosition_.SetX(observerPosition_.GetX() - 0.01); break;
-        case Qt::Key_D: observerPosition_.SetX(observerPosition_.GetX() + 0.01); break;
+        case Qt::Key_W: observerPosition_.SetZ(observerPosition_.GetZ() + 0.1); break;
+        case Qt::Key_S: observerPosition_.SetZ(observerPosition_.GetZ() - 0.1); break;
+        case Qt::Key_A: observerPosition_.SetX(observerPosition_.GetX() - 0.1); break;
+        case Qt::Key_D: observerPosition_.SetX(observerPosition_.GetX() + 0.1); break;
     }
 }
 
