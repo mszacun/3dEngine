@@ -46,7 +46,8 @@ class Scene3D
         void SetAmbientLightColor(const QColor& color) { ambientLightColor_ = color; }
 
         QImage RenderProjection(int width, int height, const PerspectiveCamera& camera);
-        QImage RenderProjection(int width, int height, const OrthogonalCamera& camert);
+        QImage RenderProjection(int width, int height, const OrthogonalCamera& camera,
+            Vector perspectiveCameraPosition);
 
         void DrawTriangleWithXParellGround(const Vector& p1, Vector p2,
             Vector p3, QPainter& painter, Shader& shader, const ZInterpolator& zinterpolator);

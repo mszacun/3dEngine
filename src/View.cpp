@@ -14,7 +14,7 @@ void View::SetScene(const Scene2D& scene)
 
 QSize View::minimumSizeHint() const
 {
-    return QSize(800, 800);
+    return QSize(1000, 1000);
 }
 
 QSize View::sizeHint() const
@@ -36,13 +36,13 @@ void View::paintEvent(QPaintEvent* event)
     painter.drawImage(0, 0, i);
 
     i = controler_->GetFrontView();
-    painter.drawImage(400, 400, i);
+    painter.drawImage(500, 500, i);
 
     i = controler_->GetSideView();
-    painter.drawImage(0, 400, i);
+    painter.drawImage(0, 500, i);
 
     i = controler_->GetTopView();
-    painter.drawImage(400, 0, i);
+    painter.drawImage(500, 0, i);
 
     auto end = std::chrono::steady_clock::now();
 

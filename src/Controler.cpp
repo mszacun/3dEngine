@@ -3,7 +3,7 @@
 Controler::Controler(const Scene3D& scene) : scene_(scene), observerPosition_(0, 0, -10),
     rotationAngle(0)
 {
-    scene_.SetLightPosition(Vector(30, 50, -4));
+    scene_.SetLightPosition(Vector(30, -50, -4));
     scene_.SetAmbientLightColor(QColor(0, 0, 0));
 }
 
@@ -17,7 +17,7 @@ QImage Controler::GetFrontView()
     OrthogonalCamera cam(Vector(0, 0, -5), Vector(0, 1, 0),
             Vector(0, 0, 0), 3, 20, 5, 5);
 
-    return scene_.RenderProjection(400, 400, cam);
+    return scene_.RenderProjection(500, 500, cam, observerPosition_);
 }
 
 QImage Controler::GetSideView()
@@ -25,7 +25,7 @@ QImage Controler::GetSideView()
     OrthogonalCamera cam(Vector(-5, 0, 0), Vector(0, 1, 0),
             Vector(0, 0, 0), 3, 20, 5, 5);
 
-    return scene_.RenderProjection(400, 400, cam);
+    return scene_.RenderProjection(500, 500, cam, observerPosition_);
 }
 
 QImage Controler::GetTopView()
@@ -33,7 +33,7 @@ QImage Controler::GetTopView()
     OrthogonalCamera cam(Vector(0, 5, 0), Vector(0, 1, 0),
             Vector(0, 0, 0), 3, 20, 5, 5);
 
-    return scene_.RenderProjection(400, 400, cam);
+    return scene_.RenderProjection(500, 500, cam, observerPosition_);
 }
 
 QImage Controler::GetRenderedPerspectiveView()
@@ -41,7 +41,7 @@ QImage Controler::GetRenderedPerspectiveView()
     PerspectiveCamera cam(observerPosition_, Vector(0, 1, 0),
             Vector(0, 0, 0), 3, 20, 0.78);
 
-    QImage result = scene_.RenderProjection(400, 400, cam);
+    QImage result = scene_.RenderProjection(500, 500, cam);
 
     return result;
 }

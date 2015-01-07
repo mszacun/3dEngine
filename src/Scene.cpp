@@ -237,36 +237,45 @@ QImage Scene3D::RenderProjection(int width, int height, const PerspectiveCamera&
     QPainter painter(&result);
     PerspectiveCamera cameraCopy = camera;
 
-    painter.fillRect(0, 0, width, height, QColor("white"));
+    painter.fillRect(0, 0, width, height, QColor("grey"));
     ClearZBuffer(zBuffer_);
 
     Scene3D observedScene(*this);
     observedScene.ViewTransform(cameraCopy);
     observedScene.SortTriangles();
 
-    Matrix transformationMatrix = Matrix::CreatePerspectiveProjectionMatrix();
+    Matrix transformationMatrix = Matrix::CreatePerspectiveProjectionMatrix(width, height);
 
     observedScene.DrawScene(painter, transformationMatrix, cameraCopy, InterpolateZ);
 
     return result;
 }
 
-QImage Scene3D::RenderProjection(int width, int height, const OrthogonalCamera& camera)
+QImage Scene3D::RenderProjection(int width, int height, const OrthogonalCamera& camera,
+        Vector perspectiveCameraPosition)
 {
     QImage result(width, height, QImage::Format_ARGB32);
     QPainter painter(&result);
     OrthogonalCamera cameraCopy = camera;
 
-    painter.fillRect(0, 0, width, height, QColor("white"));
+    painter.fillRect(0, 0, width, height, QColor("grey"));
     ClearZBuffer(zBuffer_);
 
     Scene3D observedScene(*this);
+    observedScene.AddPoint(perspectiveCameraPosition);
     observedScene.ViewTransform(cameraCopy);
     observedScene.SortTriangles();
 
-    Matrix transformationMatrix = Matrix::CreateOrthogonalProjectionMatrix();
+    Matrix transformationMatrix = Matrix::CreateOrthogonalProjectionMatrix(width, height);
 
     observedScene.DrawScene(painter, transformationMatrix, cameraCopy, InterpolateZLinearly);
+    perspectiveCameraPosition = observedScene.points_[observedScene.points_.size() - 1];
+
+    int cameraX = (int) (perspectiveCameraPosition.GetX() * (width / 2) + width / 2);
+    int cameraY = (int) (perspectiveCameraPosition.GetY() * (height / 2) + height / 2);
+    painter.fillRect(cameraX - 5, cameraY - 5, 10, 10, QColor("lime"));
+
+    //std::cout << "Perspective camera: " << perspectiveCameraPosition << std::endl;
 
     return result;
 }
@@ -287,7 +296,8 @@ void Scene3D::Transform(const Matrix& transformationMatrix, Camera& camera)
 
 Vector Scene3D::ProjectPoint(const Vector& p, const Matrix& projectionMatrix) const
 {
-    Vector projected = p.Transform(projectionMatrix).Transform(Matrix::CreateScaleMatrix(200, 200, 1)).Transform(Matrix::CreateTranslationMatrix(200, 200, 0));
+    //Vector projected = p.Transform(projectionMatrix).Transform(Matrix::CreateScaleMatrix(250, 250, 1)).Transform(Matrix::CreateTranslationMatrix(250, 250, 0));
+    Vector projected = p.Transform(projectionMatrix);
     projected.SetZ(p.GetZ());
 
     //std::cout << p << " projected -> " << projected << std::endl;

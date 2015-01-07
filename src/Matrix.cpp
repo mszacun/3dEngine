@@ -340,18 +340,24 @@ Matrix Matrix::CreateZAxisRotationMatrixAroundPoint(double angleInRadians,
     return CreateTranslationMatrix(p) * CreateZAxisRotationMatrix(angleInRadians) * CreateTranslationMatrix(-p);
 }
 
-Matrix Matrix::CreatePerspectiveProjectionMatrix()
+Matrix Matrix::CreatePerspectiveProjectionMatrix(int viewportWidth, int viewportHeight)
 {
-    return Create4x4Matrix(
+    return 
+        CreateTranslationMatrix(viewportWidth / 2, viewportHeight / 2, 0) *
+        CreateScaleMatrix(viewportWidth / 2, viewportHeight / 2, 1) * 
+        Create4x4Matrix(
             1, 0, 0, 0,
             0, 1, 0, 0,
             0, 0, 1, 0,
             0, 0, 1, 0);
 }
 
-Matrix Matrix::CreateOrthogonalProjectionMatrix()
+Matrix Matrix::CreateOrthogonalProjectionMatrix(int viewportWidth, int viewportHeight)
 {
-    return Create4x4Matrix(
+    return 
+        CreateTranslationMatrix(viewportWidth / 2, viewportHeight / 2, 0) *
+        CreateScaleMatrix(viewportWidth / 2, viewportHeight / 2, 1) * 
+        Create4x4Matrix(
             1, 0, 0, 0,
             0, 1, 0, 0,
             0, 0, 0, 0,
