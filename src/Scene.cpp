@@ -158,7 +158,7 @@ void Scene3D::DrawTriangleWithXParellGround(const Vector& p1, Vector p2, Vector 
         {
             double betax = CalculateDeltaY(x, xl, xr);
             double z = zinterpolator(betax, zl, zr);
-            if (zBuffer_[x][y] > z)
+            if (x >= 0 && y >= 0 && x < ZBUFFER_WIDTH && y < ZBUFFER_HEIGHT && zBuffer_[x][y] > z)
             {
                 painter.setPen(shader.GetColorForPixel(Vector(x, y, z)));
                 painter.drawPoint(x, y);
