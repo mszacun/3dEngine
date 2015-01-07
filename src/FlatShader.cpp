@@ -17,32 +17,28 @@ Shader::Shader(const TriangleShadingInfo& shadingInfo): shadingInfo_(shadingInfo
     shadingInfo_.ambientLightColor.getRgb(ambientLightRgb, ambientLightRgb +1, ambientLightRgb + 2, ambientLightRgb + 3);
 }
 
-double fattr(double r)
-{
-    return 1;
-}
-
 QColor Shader::CalculatePhongModel(const Vector& point, const Vector& lightVector,
        const Vector& normal) const
 {
     int result[4];
 
     // difuse
-    double cos = std::max(0.0, normal.Dot(lightVector));
-    double lightVectorLen = lightVector.Length();
+    double cos = normal.Dot(lightVector);
+    if (cos <= 0.0)
+        return QColor(0, 0, 0);
 
     // specular
-    Vector toObserverVector = shadingInfo_.observatorPosition - point;
-    Vector reflectionVector = (normal * 2 * normal.Dot(toObserverVector) - toObserverVector).Normalize();
-    double dot = lightVector_.Dot(reflectionVector);
+    Vector toObserverVector = (shadingInfo_.observatorPosition - point).Normalize();
+    Vector reflectionVector = (normal * 2 * normal.Dot(toObserverVector) - toObserverVector);
+    double dot = lightVector.Dot(reflectionVector);
     double exponent = std::pow(dot, shadingInfo_.material.GetShiness());
 
     for (int i = 0; i < 3; i++)
     {
-        double diffuse = fattr(lightVectorLen) * lightRgb[i] * cos * shadingInfo_.material.GetDiffuse(i, 0, 0, 0);
-        double specular = shadingInfo_.material.GetSpecular(i, 0, 0, 0) * fattr(lightVectorLen) * lightRgb[i] * exponent;
+        double diffuse = lightRgb[i] * cos * shadingInfo_.material.GetDiffuse(i, 0, 0, 0);
+        double specular = shadingInfo_.material.GetSpecular(i, 0, 0, 0) * lightRgb[i] * exponent;
         double own = shadingInfo_.material.GetOwnLigth(i, 0, 0, 0);
-        result[i] = diffuse + specular + own + ambientLightRgb[i];;
+        result[i] = diffuse + specular + own + ambientLightRgb[i];
     }
 
     return QColor(std::min(result[0], 255), std::min(result[1], 255), std::min(result[2], 255));
@@ -87,3 +83,4 @@ QColor GouraudShader::GetColorForPixel(const Vector& pixel) const
 {
     return interpolator.Interpolate(Vector(pixel.GetX(), pixel.GetY(), 1));
 }
+
