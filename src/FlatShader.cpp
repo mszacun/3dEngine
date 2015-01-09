@@ -75,8 +75,6 @@ GouraudShader::GouraudShader(const TriangleShadingInfo& shadingInfo) :
     interpolator.SetVector1(Vector((int) shadingInfo_.projectedP1.GetX(), (int) shadingInfo_.projectedP1.GetY(), 1), p1Color_);
     interpolator.SetVector2(Vector((int) shadingInfo_.projectedP2.GetX(), (int) shadingInfo_.projectedP2.GetY(), 1), p2Color_);
     interpolator.SetVector3(Vector((int) shadingInfo_.projectedP3.GetX(), (int) shadingInfo_.projectedP3.GetY(), 1), p3Color_);
-    // interpolator.SetVector2(shadingInfo_.projectedP2, p2Color_);
-    // interpolator.SetVector3(shadingInfo_.projectedP3, p3Color_);
 }
 
 QColor GouraudShader::GetColorForPixel(const Vector& pixel) const

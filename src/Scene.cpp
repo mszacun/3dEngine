@@ -23,10 +23,6 @@ Scene3D::Scene3D() : worldTransformation_(4, 4)
 
 Scene3D::~Scene3D()
 {
-//    for (int i = 0; i < ZBUFFER_HEIGHT; i++)
-//        delete[] zBuffer_[i];
-
-//    delete[] zBuffer_;
 }
 
 void Scene3D::AddPoint(const int& x, const int& y, const int& z)
@@ -190,7 +186,6 @@ void Scene3D::DrawProjectedTriangle(QPainter& painter, const Triangle3D& t,
         const ZInterpolator& zinterpolator)
 {
     Triangle2D t2 = ProjectTriangle(t, transformationMatrix);
-    //PrintProjectInfo(t, t2);
     TriangleShadingInfo shadingInfo;
 
     shadingInfo.p1 = points_[t.GetP1()];
@@ -275,8 +270,6 @@ QImage Scene3D::RenderProjection(int width, int height, const OrthogonalCamera& 
     int cameraY = (int) (perspectiveCameraPosition.GetY() * (height / 2) + height / 2);
     painter.fillRect(cameraX - 5, cameraY - 5, 10, 10, QColor("lime"));
 
-    //std::cout << "Perspective camera: " << perspectiveCameraPosition << std::endl;
-
     return result;
 }
 
@@ -296,11 +289,9 @@ void Scene3D::Transform(const Matrix& transformationMatrix, Camera& camera)
 
 Vector Scene3D::ProjectPoint(const Vector& p, const Matrix& projectionMatrix) const
 {
-    //Vector projected = p.Transform(projectionMatrix).Transform(Matrix::CreateScaleMatrix(250, 250, 1)).Transform(Matrix::CreateTranslationMatrix(250, 250, 0));
     Vector projected = p.Transform(projectionMatrix);
     projected.SetZ(p.GetZ());
 
-    //std::cout << p << " projected -> " << projected << std::endl;
     return projected;
 }
 
@@ -346,18 +337,6 @@ void Scene3D::ViewTransform(Camera& camera)
 
 void Scene3D::SortTriangles()
 {
-/*    int i, j;
-    int length = triangles_.size();
- 
-    for(i = 1; i < length; i++)
-    {
-        Triangle3D value = triangles_[i];
-        for (j = i - 1; j >= 0 && CalculateCenter(triangles_[j]).GetZ() > CalculateNormal(value).GetZ(); j--)
-        {
-            triangles_[j + 1] = triangles_[j];
-        }
-        triangles_[j + 1] = value;
-    }*/
     std::sort(triangles_.begin(), triangles_.end(),
             [this] (const Triangle3D& l, const Triangle3D& r) { return CalculateCenter(l).GetZ() < CalculateCenter(r).GetZ(); });
 }
