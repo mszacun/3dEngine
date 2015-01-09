@@ -70,4 +70,14 @@ class GouraudShader : public Shader
         Triangle3DInterpolator<QColor> interpolator;
 };
 
+class PhongShader : public Shader
+{
+    public:
+        PhongShader(const TriangleShadingInfo& shadingInfo);
+        QColor GetColorForPixel(const Vector& pixel) const override;
+
+    private:
+        Triangle3DInterpolator<Vector> interpolator;
+};
+
 #endif

@@ -4,25 +4,15 @@ Matrix pMatrix(1, 3);
 Matrix lambdas (1, 3);
 Matrix conversionMatrix(3, 3);
 
-BarycentricCoordinates ConvertToBarycentric(const Vector& p1, const Vector& p2,
-    const Vector& p3, const Vector& p)
+BarycentricCoordinates ConvertToBarycentric(const Vector& a, const Vector& b,
+    const Vector& c, const Vector& vec)
 {
     BarycentricCoordinates result;
+    double den = 1.0 / ((b.GetY() - c.GetY()) * (a.GetX() - c.GetX()) + (c.GetX() - b.GetX()) * (a.GetY() - c.GetY()));
 
-    Matrix::Set3x3Matrix(conversionMatrix,
-            p1.GetX(), p2.GetX(), p3.GetX(),
-            p1.GetY(), p2.GetY(), p3.GetY(),
-            p1.GetZ(), p2.GetZ(), p3.GetZ());
-
-    pMatrix.SetElement(0, 0, p.GetX());
-    pMatrix.SetElement(1, 0, p.GetY());
-    pMatrix.SetElement(2, 0, p.GetZ());
-
-    Matrix::Multiply(conversionMatrix.Invert3x3Matrix(), pMatrix, lambdas);
-
-    result.l1 = lambdas.GetElement(0, 0);
-    result.l2 = lambdas.GetElement(1, 0);
-    result.l3 = lambdas.GetElement(2, 0);
+    result.l1 = ((b.GetY() - c.GetY()) * (vec.GetX() - c.GetX()) + (c.GetX() - b.GetX()) * (vec.GetY() - c.GetY())) * den;
+    result.l2 = ((c.GetY() - a.GetY()) * (vec.GetX() - c.GetX()) + (a.GetX() - c.GetX()) * (vec.GetY() - c.GetY())) * den;
+    result.l3 = 1 - result.l1 - result.l2;
 
     return result;
 }

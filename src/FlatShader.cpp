@@ -17,6 +17,8 @@ Shader::Shader(const TriangleShadingInfo& shadingInfo): shadingInfo_(shadingInfo
     shadingInfo_.ambientLightColor.getRgb(ambientLightRgb, ambientLightRgb +1, ambientLightRgb + 2, ambientLightRgb + 3);
 }
 
+int ClipRGB(int color) { return std::max(std::min(color, 255),0); }
+
 QColor Shader::CalculatePhongModel(const Vector& point, const Vector& lightVector,
        const Vector& normal) const
 {
@@ -30,7 +32,7 @@ QColor Shader::CalculatePhongModel(const Vector& point, const Vector& lightVecto
     // specular
     Vector toObserverVector = (shadingInfo_.observatorPosition - point).Normalize();
     Vector reflectionVector = (normal * 2 * normal.Dot(toObserverVector) - toObserverVector);
-    double dot = lightVector.Dot(reflectionVector);
+    double dot = std::max(0.0, lightVector.Dot(reflectionVector));
     double exponent = std::pow(dot, shadingInfo_.material.GetShiness());
 
     for (int i = 0; i < 3; i++)
@@ -41,7 +43,7 @@ QColor Shader::CalculatePhongModel(const Vector& point, const Vector& lightVecto
         result[i] = diffuse + specular + own + ambientLightRgb[i];
     }
 
-    return QColor(std::min(result[0], 255), std::min(result[1], 255), std::min(result[2], 255));
+    return QColor(ClipRGB(result[0]), ClipRGB(result[1]), ClipRGB(result[2]));
 }
 
 FlatShader::FlatShader(const TriangleShadingInfo& shadingInfo) : 
@@ -82,3 +84,20 @@ QColor GouraudShader::GetColorForPixel(const Vector& pixel) const
     return interpolator.Interpolate(Vector(pixel.GetX(), pixel.GetY(), 1));
 }
 
+PhongShader::PhongShader(const TriangleShadingInfo& shadingInfo) : 
+    Shader(shadingInfo)
+{
+    interpolator.SetVector1(Vector(shadingInfo_.projectedP1.GetX(), shadingInfo_.projectedP1.GetY(), 1),
+            shadingInfo_.p1Normal);
+    interpolator.SetVector2(Vector(shadingInfo_.projectedP2.GetX(), shadingInfo_.projectedP2.GetY(), 1),
+            shadingInfo_.p2Normal);
+    interpolator.SetVector3(Vector(shadingInfo_.projectedP3.GetX(), shadingInfo_.projectedP3.GetY(), 1),
+            shadingInfo_.p3Normal);
+}
+
+QColor PhongShader::GetColorForPixel(const Vector& pixel) const
+{
+    Vector pointNormal =  interpolator.Interpolate(Vector(pixel.GetX(), pixel.GetY(), 1)).Normalize();
+    return CalculatePhongModel(pixel,
+            (shadingInfo_.lightPosition - pixel).Normalize(), pointNormal);            
+}
