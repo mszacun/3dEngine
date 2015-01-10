@@ -1,8 +1,8 @@
 #include "Scene.h"
 #include <cassert>
 
-#define ZBUFFER_WIDTH 1024
-#define ZBUFFER_HEIGHT 1024
+#define ZBUFFER_WIDTH 512
+#define ZBUFFER_HEIGHT 512
 void ClearZBuffer(double** zBuffer);
 double infinity = std::numeric_limits<double>::max();
 
