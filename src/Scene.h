@@ -12,6 +12,11 @@
 #include "FlatShader.h"
 #include "Camera.h"
 
+struct OrthogonalProjection
+{
+    QImage renderedImage;
+    Vector perspectiveCameraPosition;
+};
 
 class Scene2D
 {
@@ -46,7 +51,7 @@ class Scene3D
         void SetAmbientLightColor(const QColor& color) { ambientLightColor_ = color; }
 
         QImage RenderProjection(int width, int height, const PerspectiveCamera& camera);
-        QImage RenderProjection(int width, int height, const OrthogonalCamera& camera,
+        OrthogonalProjection RenderProjection(int width, int height, const OrthogonalCamera& camera,
             Vector perspectiveCameraPosition);
 
         void DrawTriangleWithXParellGround(const Vector& p1, Vector p2,

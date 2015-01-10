@@ -14,10 +14,12 @@ class Controler
         Controler(const Scene3D& scene);
         void SetView(ViewWeakPtr view);
 
-        QImage GetFrontView();
-        QImage GetSideView();
-        QImage GetTopView();
+        OrthogonalProjection GetFrontView();
+        OrthogonalProjection GetSideView();
+        OrthogonalProjection GetTopView();
         QImage GetRenderedPerspectiveView();
+
+        void MoveCamera(const Vector& moveVector);
 
         void KeyPressed(int key);
 

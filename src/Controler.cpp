@@ -1,5 +1,8 @@
 #include "Controler.h"
 
+int SCREEN_WIDTH = 500;
+int SCREEN_HEIGHT = 500;
+
 Controler::Controler(const Scene3D& scene) : scene_(scene), observerPosition_(0, 0, -10),
     rotationAngle(0)
 {
@@ -12,28 +15,28 @@ void Controler::SetView(ViewWeakPtr view)
     view_ = view;
 }
 
-QImage Controler::GetFrontView()
+OrthogonalProjection Controler::GetFrontView()
 {
     OrthogonalCamera cam(Vector(0, 0, -5), Vector(0, 1, 0),
             Vector(0, 0, 0), 3, 20, 5, 5);
 
-    return scene_.RenderProjection(500, 500, cam, observerPosition_);
+    return scene_.RenderProjection(SCREEN_WIDTH, SCREEN_WIDTH, cam, observerPosition_);
 }
 
-QImage Controler::GetSideView()
+OrthogonalProjection Controler::GetSideView()
 {
     OrthogonalCamera cam(Vector(-5, 0, 0), Vector(0, 1, 0),
             Vector(0, 0, 0), 3, 20, 5, 5);
 
-    return scene_.RenderProjection(500, 500, cam, observerPosition_);
+    return scene_.RenderProjection(SCREEN_WIDTH, SCREEN_WIDTH, cam, observerPosition_);
 }
 
-QImage Controler::GetTopView()
+OrthogonalProjection Controler::GetTopView()
 {
     OrthogonalCamera cam(Vector(0, 5, 0), Vector(0, 1, 0),
             Vector(0, 0, 0), 3, 20, 5, 5);
 
-    return scene_.RenderProjection(500, 500, cam, observerPosition_);
+    return scene_.RenderProjection(SCREEN_WIDTH, SCREEN_WIDTH, cam, observerPosition_);
 }
 
 QImage Controler::GetRenderedPerspectiveView()
@@ -41,9 +44,14 @@ QImage Controler::GetRenderedPerspectiveView()
     PerspectiveCamera cam(observerPosition_, Vector(0, 1, 0),
             Vector(0, 0, 0), 3, 20, 0.78);
 
-    QImage result = scene_.RenderProjection(500, 500, cam);
+    QImage result = scene_.RenderProjection(SCREEN_WIDTH, SCREEN_WIDTH, cam);
 
     return result;
+}
+
+void Controler::MoveCamera(const Vector& moveVector)
+{
+    observerPosition_ = observerPosition_ + moveVector;
 }
 
 void Controler::KeyPressed(int key)

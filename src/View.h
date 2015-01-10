@@ -11,6 +11,7 @@
 #include "Scene.h"
 
 class Controler;
+class View;
 typedef std::shared_ptr<Controler> ControlerPtr;
 
 class OrthagonalViewport : public QWidget
@@ -18,14 +19,50 @@ class OrthagonalViewport : public QWidget
     Q_OBJECT
 
     public:
-        void DrawScene(QImage& scene, const QPoint& perspectiveCameraPosition);
+        OrthagonalViewport(View* view) : view_(view), cameraMovingFlag_(false) {}
+        void DrawScene(QImage& scene, const Vector& perspectiveCameraPosition);
 
     protected:
         void paintEvent(QPaintEvent* event) override;
+        void mousePressEvent(QMouseEvent* event) override;
+        void mouseReleaseEvent(QMouseEvent* event) override;
+        void mouseMoveEvent(QMouseEvent* event) override;
 
-    private:
-        QPoint perspectiveCameraPosition_;
+        virtual Vector GetCameraTranslation(int deltaX, int deltaY) = 0;
+
+        View* view_;
+
+        bool cameraMovingFlag_;
+        QPoint lastMousePosition_;
+
+        QRect cameraRect_;
         QImage buffer_;
+};
+
+class FrontView : public OrthagonalViewport
+{
+    public:
+        FrontView(View* view) : OrthagonalViewport(view) {}
+    protected:
+        Vector GetCameraTranslation(int deltaX, int deltaY) { return Vector(deltaX, deltaY, 0); }
+};
+
+class TopView : public OrthagonalViewport
+{
+    public:
+        TopView(View* view) : OrthagonalViewport(view) {}
+
+    protected:
+        Vector GetCameraTranslation(int deltaX, int deltaY) { return Vector(-deltaX, 0, -deltaY); }
+};
+
+class SideView : public OrthagonalViewport
+{
+    public:
+        SideView(View* view) : OrthagonalViewport(view) {}
+
+    protected:
+        Vector GetCameraTranslation(int deltaX, int deltaY) { return Vector(0, deltaY, -deltaX); }
 };
 
 class PerspectiveViewport : public QWidget
@@ -49,12 +86,12 @@ class View : public QWidget
 
     public:
         View();
-        void SetScene(const Scene2D& scene);
 
         QSize minimumSizeHint() const;
         QSize sizeHint() const;
 
         void SetControler(ControlerPtr controler);
+        void MoveCamera(const Vector& moveVector);
 
     protected:
         void UpdateCameraViews();
@@ -62,14 +99,12 @@ class View : public QWidget
 
     private:
         PerspectiveViewport perspectiveView_;
-        OrthagonalViewport sideView_;
-        OrthagonalViewport topView_;
-        OrthagonalViewport frontView_;
+        FrontView frontView_;
+        SideView sideView_;
+        TopView topView_;
         QGridLayout layout;
 
         ControlerPtr controler_;
-        Scene2D scene_;
-
 };
 
 typedef std::shared_ptr<View> ViewPtr;

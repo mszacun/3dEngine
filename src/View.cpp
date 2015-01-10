@@ -2,10 +2,14 @@
 #include "Controler.h"
 #include <chrono>
 
-void OrthagonalViewport::DrawScene(QImage& scene, const QPoint& perspectiveCameraPosition)
+void OrthagonalViewport::DrawScene(QImage& scene, const Vector& perspectiveCameraPosition)
 {
     buffer_ = scene;
-    perspectiveCameraPosition_ = perspectiveCameraPosition;
+    int width = 500;
+    int height = 500;
+    int cameraX = (perspectiveCameraPosition.GetX() * (width / 2) + width / 2);
+    int cameraY = (perspectiveCameraPosition.GetY() * (height / 2) + height / 2);
+    cameraRect_ = QRect(cameraX - 5, cameraY - 5, 10, 10);
     update();
 }
 
@@ -14,6 +18,32 @@ void OrthagonalViewport::paintEvent(QPaintEvent* event)
     QPainter painter(this);
 
     painter.drawImage(0, 0, buffer_);
+    painter.fillRect(cameraRect_, QColor("lime"));
+}
+
+void OrthagonalViewport::mousePressEvent(QMouseEvent* event)
+{
+    cameraMovingFlag_ = cameraRect_.contains(event->x(), event->y());
+    lastMousePosition_ = event->pos();
+}
+
+void OrthagonalViewport::mouseReleaseEvent(QMouseEvent* event)
+{
+    cameraMovingFlag_ = false;
+}
+
+void OrthagonalViewport::mouseMoveEvent(QMouseEvent* event)
+{
+    if (cameraMovingFlag_)
+    {
+        int deltaX = event->x() - lastMousePosition_.x();
+        int deltaY = event->y() - lastMousePosition_.y();
+        lastMousePosition_ = event->pos();
+        Vector cameraMoveVector = GetCameraTranslation(deltaX, deltaY);
+        cameraMoveVector = cameraMoveVector * 0.01875;
+
+        view_->MoveCamera(cameraMoveVector);
+    }
 }
 
 void PerspectiveViewport::DrawScene(QImage& scene)
@@ -29,7 +59,7 @@ void PerspectiveViewport::paintEvent(QPaintEvent* event)
     painter.drawImage(0, 0, buffer_);
 }
 
-View::View()
+View::View() : frontView_(this), sideView_(this), topView_(this)
 {
     setFocusPolicy(Qt::ClickFocus);
     
@@ -41,9 +71,10 @@ View::View()
     setLayout(&layout);
 }
 
-void View::SetScene(const Scene2D& scene)
+void View::MoveCamera(const Vector& moveVector)
 {
-    scene_ = scene;
+    controler_->MoveCamera(moveVector);
+    UpdateCameraViews();
 }
 
 QSize View::minimumSizeHint() const
@@ -65,19 +96,18 @@ void View::SetControler(ControlerPtr controler)
 void View::UpdateCameraViews()
 {
     auto start = std::chrono::steady_clock::now();
-//    QPainter painter(this);
 
     QImage i = controler_->GetRenderedPerspectiveView();
     perspectiveView_.DrawScene(i);
 
-    i = controler_->GetFrontView();
-    frontView_.DrawScene(i, QPoint(0, 0));
+    OrthogonalProjection projection = controler_->GetFrontView();
+    frontView_.DrawScene(projection.renderedImage, projection.perspectiveCameraPosition);
 
-    i = controler_->GetSideView();
-    sideView_.DrawScene(i, QPoint(0, 0));
+    projection = controler_->GetSideView();
+    sideView_.DrawScene(projection.renderedImage, projection.perspectiveCameraPosition);
 
-    i = controler_->GetTopView();
-    topView_.DrawScene(i, QPoint(0, 0));
+    projection = controler_->GetTopView();
+    topView_.DrawScene(projection.renderedImage, projection.perspectiveCameraPosition);
 
     auto end = std::chrono::steady_clock::now();
 

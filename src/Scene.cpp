@@ -246,11 +246,11 @@ QImage Scene3D::RenderProjection(int width, int height, const PerspectiveCamera&
     return result;
 }
 
-QImage Scene3D::RenderProjection(int width, int height, const OrthogonalCamera& camera,
+OrthogonalProjection Scene3D::RenderProjection(int width, int height, const OrthogonalCamera& camera,
         Vector perspectiveCameraPosition)
 {
-    QImage result(width, height, QImage::Format_ARGB32);
-    QPainter painter(&result);
+    QImage renderedProjection(width, height, QImage::Format_ARGB32);
+    QPainter painter(&renderedProjection);
     OrthogonalCamera cameraCopy = camera;
 
     painter.fillRect(0, 0, width, height, QColor("grey"));
@@ -266,11 +266,7 @@ QImage Scene3D::RenderProjection(int width, int height, const OrthogonalCamera& 
     observedScene.DrawScene(painter, transformationMatrix, cameraCopy, InterpolateZLinearly);
     perspectiveCameraPosition = observedScene.points_[observedScene.points_.size() - 1];
 
-    int cameraX = (int) (perspectiveCameraPosition.GetX() * (width / 2) + width / 2);
-    int cameraY = (int) (perspectiveCameraPosition.GetY() * (height / 2) + height / 2);
-    painter.fillRect(cameraX - 5, cameraY - 5, 10, 10, QColor("lime"));
-
-    return result;
+    return { renderedProjection, perspectiveCameraPosition };
 }
 
 void Scene3D::AccumulateTransformation(const Matrix& transformationMatrix)
