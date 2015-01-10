@@ -65,9 +65,8 @@ void View::SetControler(ControlerPtr controler)
 void View::UpdateCameraViews()
 {
     auto start = std::chrono::steady_clock::now();
-//    QPainter painter(this);
 
-    QImage i = controler_->GetRenderedPerspectiveView();
+/*    QImage i = controler_->GetRenderedPerspectiveView();
     perspectiveView_.DrawScene(i);
 
     i = controler_->GetFrontView();
@@ -84,8 +83,30 @@ void View::UpdateCameraViews()
 
     auto dur = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
     std::cout << "Drawing frame: " << dur << std::endl;
-    std::cout << "FPS: " << 1000.0 / dur << std::endl;
+    std::cout << "FPS: " << 1000.0 / dur << std::endl;*/
 }
+
+void View::paintEvent(QPaintEvent* event)
+{
+    TriangleShadingInfo shadingInfo;
+    QPainter painter(this);
+
+    shadingInfo.projectedP1 = Vector(100, 100, 1);
+    shadingInfo.projectedP2 = Vector(95, 105, 1);
+    shadingInfo.projectedP3 = Vector(105, 105, 1);
+
+    InterpolateShader shader(shadingInfo, QColor(123, 124, 32), QColor(254, 34, 65), QColor(12, 53, 255));
+    QImage i(500, 500, QImage::Format_ARGB32);
+    QPainter p(&i);
+
+
+    Scene3D scene;
+    scene.DrawTriangle(shadingInfo.projectedP1, shadingInfo.projectedP2, shadingInfo.projectedP3,
+        p, shader, InterpolateZ);
+
+    painter.drawImage(100, 100, i);
+}
+
 
 void View::keyPressEvent(QKeyEvent* event)
 {

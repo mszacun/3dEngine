@@ -84,6 +84,17 @@ QColor GouraudShader::GetColorForPixel(const Vector& pixel) const
     return interpolator.Interpolate(Vector(pixel.GetX(), pixel.GetY(), 1));
 }
 
+InterpolateShader::InterpolateShader(const TriangleShadingInfo& shadingInfo, QColor c1, QColor c2, QColor c3): 
+    GouraudShader(shadingInfo)
+{
+    p1Color_ = c1;
+    p2Color_ = c2;
+    p3Color_ = c3;
+    interpolator.SetVector1(Vector((int) shadingInfo_.projectedP1.GetX(), (int) shadingInfo_.projectedP1.GetY(), 1), p1Color_);
+    interpolator.SetVector2(Vector((int) shadingInfo_.projectedP2.GetX(), (int) shadingInfo_.projectedP2.GetY(), 1), p2Color_);
+    interpolator.SetVector3(Vector((int) shadingInfo_.projectedP3.GetX(), (int) shadingInfo_.projectedP3.GetY(), 1), p3Color_);
+}
+
 PhongShader::PhongShader(const TriangleShadingInfo& shadingInfo) : 
     Shader(shadingInfo)
 {

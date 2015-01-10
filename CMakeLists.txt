@@ -7,7 +7,7 @@ add_definitions(${QT_DEFINITIONS})
 include_directories(${GTEST_INCLUDE_DIRS})
 enable_testing()
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -ggdb -Ofast")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -ggdb -pg")
 set(MOC_REQUIRED_HEADERS src/View.h)
 QT4_WRAP_CPP(HEADERS_MOCED ${MOC_REQUIRED_HEADERS})
 

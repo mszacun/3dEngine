@@ -62,12 +62,18 @@ class GouraudShader : public Shader
         GouraudShader(const TriangleShadingInfo& shadingInfo);
         QColor GetColorForPixel(const Vector& pixel) const override;
 
-    private:
+    protected:
         QColor p1Color_;
         QColor p2Color_;
         QColor p3Color_;
 
         Triangle3DInterpolator<QColor> interpolator;
+};
+
+class InterpolateShader : public GouraudShader
+{
+    public:
+        InterpolateShader(const TriangleShadingInfo& shadingInfo, QColor c1, QColor c2, QColor c3);
 };
 
 class PhongShader : public Shader

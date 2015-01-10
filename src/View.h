@@ -59,6 +59,7 @@ class View : public QWidget
     protected:
         void UpdateCameraViews();
         void keyPressEvent(QKeyEvent* event) override;
+        void paintEvent(QPaintEvent* event) override;
 
     private:
         PerspectiveViewport perspectiveView_;

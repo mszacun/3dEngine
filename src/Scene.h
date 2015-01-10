@@ -21,6 +21,7 @@ class Scene2D
 };
 
 typedef std::function<double(double, double, double)> ZInterpolator;
+double InterpolateZ(double betaz, double min, double max);
 
 class Scene3D
 {
