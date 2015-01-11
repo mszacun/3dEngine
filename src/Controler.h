@@ -26,6 +26,11 @@ class Controler
         void SetCameraZCoordinate(double z) { perspectiveCamera_.position.SetZ(z); }
         void SetCameraViewAngle(double angle) { perspectiveCamera_.SetViewAngle(angle); }
 
+        void SetShader(Shader* shader) { delete activeShader_; activeShader_ = shader; }
+        void SetFlatShader() { SetShader(new FlatShader); }
+        void SetGouroudShader() { SetShader(new GouraudShader); }
+        void SetPhongShader() { SetShader(new PhongShader); }
+
         void KeyPressed(int key);
 
     private:
@@ -35,6 +40,7 @@ class Controler
         Vector observerPosition_;
         double rotationAngle;
         PerspectiveCamera perspectiveCamera_;
+        Shader* activeShader_;
 };
 
 #endif

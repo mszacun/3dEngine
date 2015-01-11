@@ -50,9 +50,10 @@ class Scene3D
         void SetLightColor(const QColor& color);
         void SetAmbientLightColor(const QColor& color) { ambientLightColor_ = color; }
 
-        QImage RenderProjection(int width, int height, const PerspectiveCamera& camera);
+        QImage RenderProjection(int width, int height,
+                const PerspectiveCamera& camera, Shader& shader);
         OrthogonalProjection RenderProjection(int width, int height, const OrthogonalCamera& camera,
-            Vector perspectiveCameraPosition);
+            Vector perspectiveCameraPosition, Shader& shader);
 
         void DrawTriangleWithXParellGround(const Vector& p1, Vector p2,
             Vector p3, QPainter& painter, Shader& shader, const ZInterpolator& zinterpolator);
@@ -85,10 +86,11 @@ class Scene3D
             double aspect, double znear, double zfar) const;
 
         void DrawScene(QPainter& painter, const Matrix& transformationMatrix,
-                const Camera& camera, const ZInterpolator& zinterpolator);
+                const Camera& camera, const ZInterpolator& zinterpolator,
+                Shader& shader);
         void DrawProjectedTriangle(QPainter& painter, const Triangle3D& t,
             const Matrix& transformationMatrix, const Camera& camera,
-            const ZInterpolator& zinterpolator);
+            const ZInterpolator& zinterpolator, Shader& shader);
 
         void SortTriangles();
 

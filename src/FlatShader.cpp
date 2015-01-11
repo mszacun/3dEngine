@@ -3,18 +3,24 @@
 
 QColor operator*(const QColor& left, double right)
 {
-    return QColor(std::max(left.red() * right, 0.0), std::max(0.0, left.green() * right), std::max(0.0, left.blue() * right));
+    return QColor(std::max(left.red() * right, 0.0),
+            std::max(0.0, left.green() * right),
+            std::max(0.0, left.blue() * right));
 }
 
 QColor operator+(const QColor& left, const QColor& right)
 {
-    return QColor(std::min(left.red() + right.red(), 255), std::min(left.green() + right.green(), 255), std::min(left.blue() + right.blue(), 255));
+    return QColor(std::min(left.red() + right.red(), 255),
+            std::min(left.green() + right.green(), 255),
+            std::min(left.blue() + right.blue(), 255));
 }
 
-Shader::Shader(const TriangleShadingInfo& shadingInfo): shadingInfo_(shadingInfo)
+void Shader::InitShader(const TriangleShadingInfo& shadingInfo)
 {
+    shadingInfo_ = shadingInfo;
     shadingInfo_.lightColor.getRgb(lightRgb, lightRgb +1, lightRgb + 2, lightRgb + 3);
-    shadingInfo_.ambientLightColor.getRgb(ambientLightRgb, ambientLightRgb +1, ambientLightRgb + 2, ambientLightRgb + 3);
+    shadingInfo_.ambientLightColor.getRgb(ambientLightRgb, ambientLightRgb +1,
+            ambientLightRgb + 2, ambientLightRgb + 3);
 }
 
 int ClipRGB(int color) { return std::max(std::min(color, 255),0); }
@@ -46,9 +52,9 @@ QColor Shader::CalculatePhongModel(const Vector& point, const Vector& lightVecto
     return QColor(ClipRGB(result[0]), ClipRGB(result[1]), ClipRGB(result[2]));
 }
 
-FlatShader::FlatShader(const TriangleShadingInfo& shadingInfo) : 
-    Shader(shadingInfo)
+void FlatShader::InitShader(const TriangleShadingInfo& shadingInfo)
 {
+    Shader::InitShader(shadingInfo);
     double xCenter = (shadingInfo_.p1.GetX() + shadingInfo_.p2.GetX() + shadingInfo_.p3.GetX()) / 3;
     double yCenter = (shadingInfo_.p1.GetY() + shadingInfo_.p2.GetY() + shadingInfo_.p3.GetY()) / 3;
     double zCenter = (shadingInfo_.p1.GetZ() + shadingInfo_.p2.GetZ() + shadingInfo_.p3.GetZ()) / 3;
@@ -64,9 +70,9 @@ QColor FlatShader::GetColorForPixel(const Vector& pixel) const
     return calculatedColor_;
 }
 
-GouraudShader::GouraudShader(const TriangleShadingInfo& shadingInfo) : 
-    Shader(shadingInfo)
+void GouraudShader::InitShader(const TriangleShadingInfo& shadingInfo)
 {
+    Shader::InitShader(shadingInfo);
     p1Color_ = CalculatePhongModel(shadingInfo_.p1,
             (shadingInfo_.lightPosition - shadingInfo_.p1).Normalize(), shadingInfo_.p1Normal);            
     p2Color_ = CalculatePhongModel(shadingInfo_.p2,
@@ -84,9 +90,9 @@ QColor GouraudShader::GetColorForPixel(const Vector& pixel) const
     return interpolator.Interpolate(Vector(pixel.GetX(), pixel.GetY(), 1));
 }
 
-PhongShader::PhongShader(const TriangleShadingInfo& shadingInfo) : 
-    Shader(shadingInfo)
+void PhongShader::InitShader(const TriangleShadingInfo& shadingInfo)
 {
+    Shader::InitShader(shadingInfo);
     interpolator.SetVector1(Vector(shadingInfo_.projectedP1.GetX(), shadingInfo_.projectedP1.GetY(), 1),
             shadingInfo_.p1Normal);
     interpolator.SetVector2(Vector(shadingInfo_.projectedP2.GetX(), shadingInfo_.projectedP2.GetY(), 1),

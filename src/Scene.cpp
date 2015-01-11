@@ -183,7 +183,7 @@ void Scene3D::DrawTriangle(const Vector& p1, const Vector& p2, const Vector& p3,
 
 void Scene3D::DrawProjectedTriangle(QPainter& painter, const Triangle3D& t,
         const Matrix& transformationMatrix, const Camera& camera,
-        const ZInterpolator& zinterpolator)
+        const ZInterpolator& zinterpolator, Shader& shader)
 {
     Triangle2D t2 = ProjectTriangle(t, transformationMatrix);
     TriangleShadingInfo shadingInfo;
@@ -207,7 +207,7 @@ void Scene3D::DrawProjectedTriangle(QPainter& painter, const Triangle3D& t,
     shadingInfo.lightColor = lightColor_;
     shadingInfo.ambientLightColor = ambientLightColor_;
 
-    PhongShader shader(shadingInfo);
+    shader.InitShader(shadingInfo);
     DrawTriangle(t2.p1_, t2.p2_, t2.p3_, painter, shader, zinterpolator);
 }
 
@@ -220,13 +220,15 @@ void Scene3D::PrintProjectInfo(const Triangle3D& t, const Triangle2D& t2) const
 }
 
 void Scene3D::DrawScene(QPainter& painter, const Matrix& transformationMatrix,
-    const Camera& camera, const ZInterpolator& zinterpolator)
+    const Camera& camera, const ZInterpolator& zinterpolator, Shader& shader)
 {
     for (const Triangle3D& t : triangles_)
-        DrawProjectedTriangle(painter, t, transformationMatrix, camera, zinterpolator);
+        DrawProjectedTriangle(painter, t, transformationMatrix, camera,
+                zinterpolator, shader);
 }
 
-QImage Scene3D::RenderProjection(int width, int height, const PerspectiveCamera& camera)
+QImage Scene3D::RenderProjection(int width, int height,
+        const PerspectiveCamera& camera, Shader& shader)
 {
     QImage result(width, height, QImage::Format_ARGB32);
     QPainter painter(&result);
@@ -241,13 +243,14 @@ QImage Scene3D::RenderProjection(int width, int height, const PerspectiveCamera&
 
     Matrix transformationMatrix = Matrix::CreatePerspectiveProjectionMatrix(width, height);
 
-    observedScene.DrawScene(painter, transformationMatrix, cameraCopy, InterpolateZ);
+    observedScene.DrawScene(painter, transformationMatrix, cameraCopy,
+            InterpolateZ, shader);
 
     return result;
 }
 
 OrthogonalProjection Scene3D::RenderProjection(int width, int height, const OrthogonalCamera& camera,
-        Vector perspectiveCameraPosition)
+        Vector perspectiveCameraPosition, Shader& shader)
 {
     QImage renderedProjection(width, height, QImage::Format_ARGB32);
     QPainter painter(&renderedProjection);
@@ -263,7 +266,8 @@ OrthogonalProjection Scene3D::RenderProjection(int width, int height, const Orth
 
     Matrix transformationMatrix = Matrix::CreateOrthogonalProjectionMatrix(width, height);
 
-    observedScene.DrawScene(painter, transformationMatrix, cameraCopy, InterpolateZLinearly);
+    observedScene.DrawScene(painter, transformationMatrix, cameraCopy,
+            InterpolateZLinearly, shader);
     perspectiveCameraPosition = observedScene.points_[observedScene.points_.size() - 1];
 
     return { renderedProjection, perspectiveCameraPosition };

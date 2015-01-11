@@ -87,6 +87,7 @@ ConfigurationPanel::ConfigurationPanel(View* view) : xCameraPostitionLabel_("X: 
     shadowsTypeRadioButtonsLayout_.addWidget(&gouroudShadingRadioButton_);
     shadowsTypeRadioButtonsLayout_.addWidget(&phongShadingRadioButton_);
     shadowsTypeRadioButtons_.setLayout(&shadowsTypeRadioButtonsLayout_);
+    phongShadingRadioButton_.setChecked(true);
 
     cameraViewAngleControlsLayout_.addWidget(&cameraViewAngleLabel_);
     cameraViewAngleControlsLayout_.addWidget(&cameraViewAngleSlider_);
@@ -111,6 +112,13 @@ ConfigurationPanel::ConfigurationPanel(View* view) : xCameraPostitionLabel_("X: 
             this, SLOT(OnZCameraPositionEntered()));
     QObject::connect(&cameraViewAngleSlider_, SIGNAL(sliderMoved(int)),
             this, SLOT(OnViewAngleSliderMoved(int)));
+
+    QObject::connect(&flatShadingRadioButton_, SIGNAL(toggled(bool)),
+            this, SLOT(OnShadowingTypeChanged(bool)));
+    QObject::connect(&gouroudShadingRadioButton_, SIGNAL(toggled(bool)),
+            this, SLOT(OnShadowingTypeChanged(bool)));
+    QObject::connect(&phongShadingRadioButton_, SIGNAL(toggled(bool)),
+            this, SLOT(OnShadowingTypeChanged(bool)));
 
     setLayout(&mainLayout_);
 }
@@ -143,6 +151,26 @@ void ConfigurationPanel::OnZCameraPositionEntered()
 void ConfigurationPanel::OnViewAngleSliderMoved(int value)
 {
     controler_->SetCameraViewAngle(DegToRad(value));
+    view_->UpdateCameraViews();
+}
+
+void ConfigurationPanel::OnShadowingTypeChanged(bool checked)
+{
+    if (flatShadingRadioButton_.isChecked())
+    {
+        controler_->SetFlatShader();
+        std::cout << "Flat" << std::endl;
+    }
+    if (gouroudShadingRadioButton_.isChecked())
+    {
+        controler_->SetGouroudShader();
+        std::cout << "Gouroud" << std::endl;
+    }
+    if (phongShadingRadioButton_.isChecked())
+    {
+        controler_->SetPhongShader();
+        std::cout << "Phong" << std::endl;
+    }
     view_->UpdateCameraViews();
 }
 

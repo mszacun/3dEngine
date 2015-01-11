@@ -104,6 +104,7 @@ class ConfigurationPanel : public QWidget
         void OnYCameraPositionEntered();
         void OnZCameraPositionEntered();
         void OnViewAngleSliderMoved(int value);
+        void OnShadowingTypeChanged(bool checked);
 
     private:
         QGridLayout mainLayout_;

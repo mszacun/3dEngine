@@ -7,7 +7,7 @@ int ORTHOGONAL_CAMERA_HEIGHT = 5;
 
 Controler::Controler(const Scene3D& scene) : scene_(scene), observerPosition_(0, 0, -10),
     rotationAngle(0), perspectiveCamera_(observerPosition_, Vector(0, 1, 0),
-            Vector(0, 0, 0), 3, 20, 0.78)
+            Vector(0, 0, 0), 3, 20, 0.78), activeShader_(new PhongShader)
 {
     scene_.SetLightPosition(Vector(30, -50, -4));
     scene_.SetAmbientLightColor(QColor(0, 0, 0));
@@ -23,7 +23,8 @@ OrthogonalProjection Controler::GetFrontView()
     OrthogonalCamera cam(Vector(0, 0, -5), Vector(0, 1, 0),
             Vector(0, 0, 0), 3, 20, ORTHOGONAL_CAMERA_WIDTH, ORTHOGONAL_CAMERA_HEIGHT);
 
-    return scene_.RenderProjection(SCREEN_WIDTH, SCREEN_WIDTH, cam, observerPosition_);
+    return scene_.RenderProjection(SCREEN_WIDTH, SCREEN_WIDTH, cam,
+            observerPosition_, *activeShader_);
 }
 
 OrthogonalProjection Controler::GetSideView()
@@ -31,7 +32,8 @@ OrthogonalProjection Controler::GetSideView()
     OrthogonalCamera cam(Vector(-5, 0, 0), Vector(0, 1, 0),
             Vector(0, 0, 0), 3, 20, ORTHOGONAL_CAMERA_WIDTH, ORTHOGONAL_CAMERA_HEIGHT);
 
-    return scene_.RenderProjection(SCREEN_WIDTH, SCREEN_WIDTH, cam, observerPosition_);
+    return scene_.RenderProjection(SCREEN_WIDTH, SCREEN_WIDTH, cam,
+            observerPosition_, *activeShader_);
 }
 
 OrthogonalProjection Controler::GetTopView()
@@ -39,13 +41,14 @@ OrthogonalProjection Controler::GetTopView()
     OrthogonalCamera cam(Vector(0, 5, 0), Vector(0, 1, 0),
             Vector(0, 0, 0), 3, 20, ORTHOGONAL_CAMERA_WIDTH, ORTHOGONAL_CAMERA_HEIGHT);
 
-    return scene_.RenderProjection(SCREEN_WIDTH, SCREEN_WIDTH, cam, observerPosition_);
+    return scene_.RenderProjection(SCREEN_WIDTH, SCREEN_WIDTH, cam,
+            observerPosition_, *activeShader_);
 }
 
 QImage Controler::GetRenderedPerspectiveView()
 {
     QImage result = scene_.RenderProjection(SCREEN_WIDTH, SCREEN_WIDTH,
-            perspectiveCamera_);
+            perspectiveCamera_, *activeShader_);
 
     return result;
 }

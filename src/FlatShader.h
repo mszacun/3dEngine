@@ -33,7 +33,8 @@ struct TriangleShadingInfo
 class Shader
 {
     public:
-        Shader(const TriangleShadingInfo& shadingInfo);
+        virtual ~Shader() {}
+        virtual void InitShader(const TriangleShadingInfo& shadingInfo);
         virtual QColor GetColorForPixel(const Vector& pixel) const = 0;
 
     protected:
@@ -49,7 +50,7 @@ class Shader
 class FlatShader : public Shader
 {
     public:
-        FlatShader(const TriangleShadingInfo& shadingInfo);
+        virtual void InitShader(const TriangleShadingInfo& shadingInfo) override;
         QColor GetColorForPixel(const Vector& pixel) const override;
 
     protected:
@@ -59,7 +60,7 @@ class FlatShader : public Shader
 class GouraudShader : public Shader
 {
     public:
-        GouraudShader(const TriangleShadingInfo& shadingInfo);
+        virtual void InitShader(const TriangleShadingInfo& shadingInfo) override;
         QColor GetColorForPixel(const Vector& pixel) const override;
 
     private:
@@ -73,7 +74,7 @@ class GouraudShader : public Shader
 class PhongShader : public Shader
 {
     public:
-        PhongShader(const TriangleShadingInfo& shadingInfo);
+        virtual void InitShader(const TriangleShadingInfo& shadingInfo) override;
         QColor GetColorForPixel(const Vector& pixel) const override;
 
     private:
