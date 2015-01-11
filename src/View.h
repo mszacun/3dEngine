@@ -94,7 +94,7 @@ class ConfigurationPanel : public QWidget
     Q_OBJECT
 
     public:
-        ConfigurationPanel();
+        ConfigurationPanel(View* view);
         void SetControler(ControlerPtr controler) { controler_ = controler; }
 
         void UpdateCameraParameters(const PerspectiveCamera& camera);
@@ -103,6 +103,7 @@ class ConfigurationPanel : public QWidget
         void OnXCameraPositionEntered();
         void OnYCameraPositionEntered();
         void OnZCameraPositionEntered();
+        void OnViewAngleSliderMoved(int value);
 
     private:
         QGridLayout mainLayout_;
@@ -115,6 +116,8 @@ class ConfigurationPanel : public QWidget
         QLabel zCameraPostitionLabel_;
         QLineEdit zCameraPostitionEdit_;
 
+        QGroupBox cameraViewAngleControls_;
+        QHBoxLayout cameraViewAngleControlsLayout_;
         QLabel cameraViewAngleLabel_;
         QSlider cameraViewAngleSlider_;
 
@@ -128,6 +131,8 @@ class ConfigurationPanel : public QWidget
         QPushButton saveFileButton_;
 
         ControlerPtr controler_;
+
+        View* view_;
 };
 
 class View : public QWidget
@@ -142,9 +147,9 @@ class View : public QWidget
 
         void SetControler(ControlerPtr controler);
         void MoveCamera(const Vector& moveVector);
+        void UpdateCameraViews();
 
     protected:
-        void UpdateCameraViews();
         void keyPressEvent(QKeyEvent* event) override;
 
     private:

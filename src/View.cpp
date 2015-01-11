@@ -52,6 +52,16 @@ void PerspectiveViewport::DrawScene(QImage& scene)
     update();
 }
 
+int RadToDeg(double rad)
+{
+    return (int) (rad * (180 / M_PI));
+}
+
+double DegToRad(int deg)
+{
+    return deg * (M_PI / 180);
+}
+
 void PerspectiveViewport::paintEvent(QPaintEvent* event)
 {
     QPainter painter(this);
@@ -59,15 +69,15 @@ void PerspectiveViewport::paintEvent(QPaintEvent* event)
     painter.drawImage(0, 0, buffer_);
 }
 
-ConfigurationPanel::ConfigurationPanel() : xCameraPostitionLabel_("X: "),
+ConfigurationPanel::ConfigurationPanel(View* view) : xCameraPostitionLabel_("X: "),
     yCameraPostitionLabel_("Y: "), zCameraPostitionLabel_("Z: "),
-    cameraViewAngleLabel_("View angle: "), cameraViewAngleSlider_(Qt::Horizontal),
+    cameraViewAngleControls_("View angle: "), cameraViewAngleSlider_(Qt::Horizontal),
     shadowsTypeRadioButtons_("Shader alghorithm: "), flatShadingRadioButton_("Flat Shading"),
     gouroudShadingRadioButton_("Gouraud shading"), phongShadingRadioButton_("Phong shading"),
-    openFileButton_("Open file"),
-    saveFileButton_("Save file")
+    openFileButton_("Open file"), saveFileButton_("Save file"), view_(view)
 {
     coordinatesValidator_.setRange(-20, 20, 10);
+    cameraViewAngleSlider_.setRange(1, 89);
 
     xCameraPostitionEdit_.setValidator(&coordinatesValidator_);
     yCameraPostitionEdit_.setValidator(&coordinatesValidator_);
@@ -78,17 +88,20 @@ ConfigurationPanel::ConfigurationPanel() : xCameraPostitionLabel_("X: "),
     shadowsTypeRadioButtonsLayout_.addWidget(&phongShadingRadioButton_);
     shadowsTypeRadioButtons_.setLayout(&shadowsTypeRadioButtonsLayout_);
 
+    cameraViewAngleControlsLayout_.addWidget(&cameraViewAngleLabel_);
+    cameraViewAngleControlsLayout_.addWidget(&cameraViewAngleSlider_);
+    cameraViewAngleControls_.setLayout(&cameraViewAngleControlsLayout_);
+
     mainLayout_.addWidget(&xCameraPostitionLabel_, 0, 0);
     mainLayout_.addWidget(&xCameraPostitionEdit_, 1 ,0);
     mainLayout_.addWidget(&yCameraPostitionLabel_, 2, 0);
     mainLayout_.addWidget(&yCameraPostitionEdit_, 3, 0);
     mainLayout_.addWidget(&zCameraPostitionLabel_, 4, 0);
     mainLayout_.addWidget(&zCameraPostitionEdit_, 5, 0);
-    mainLayout_.addWidget(&cameraViewAngleLabel_, 6, 0);
-    mainLayout_.addWidget(&cameraViewAngleSlider_, 7, 0);
-    mainLayout_.addWidget(&shadowsTypeRadioButtons_, 8, 0);
-    mainLayout_.addWidget(&openFileButton_, 9, 0);
-    mainLayout_.addWidget(&saveFileButton_, 10, 0);
+    mainLayout_.addWidget(&cameraViewAngleControls_, 6, 0);
+    mainLayout_.addWidget(&shadowsTypeRadioButtons_, 7, 0);
+    mainLayout_.addWidget(&openFileButton_, 8, 0);
+    mainLayout_.addWidget(&saveFileButton_, 9, 0);
 
     QObject::connect(&xCameraPostitionEdit_, SIGNAL(returnPressed()),
             this, SLOT(OnXCameraPositionEntered()));
@@ -96,6 +109,8 @@ ConfigurationPanel::ConfigurationPanel() : xCameraPostitionLabel_("X: "),
             this, SLOT(OnYCameraPositionEntered()));
     QObject::connect(&zCameraPostitionEdit_, SIGNAL(returnPressed()),
             this, SLOT(OnZCameraPositionEntered()));
+    QObject::connect(&cameraViewAngleSlider_, SIGNAL(sliderMoved(int)),
+            this, SLOT(OnViewAngleSliderMoved(int)));
 
     setLayout(&mainLayout_);
 }
@@ -105,6 +120,9 @@ void ConfigurationPanel::UpdateCameraParameters(const PerspectiveCamera& camera)
     xCameraPostitionEdit_.setText(std::to_string(camera.position.GetX()).c_str());
     yCameraPostitionEdit_.setText(std::to_string(camera.position.GetY()).c_str());
     zCameraPostitionEdit_.setText(std::to_string(camera.position.GetZ()).c_str());
+
+    cameraViewAngleLabel_.setText(std::to_string(RadToDeg(camera.GetViewAngle())).c_str());
+    cameraViewAngleSlider_.setValue(RadToDeg(camera.GetViewAngle()));
 }
 
 void ConfigurationPanel::OnXCameraPositionEntered()
@@ -122,7 +140,14 @@ void ConfigurationPanel::OnZCameraPositionEntered()
     controler_->SetCameraZCoordinate(std::stod(zCameraPostitionEdit_.text().toLocal8Bit().data()));
 }
 
-View::View() : frontView_(this), sideView_(this), topView_(this)
+void ConfigurationPanel::OnViewAngleSliderMoved(int value)
+{
+    controler_->SetCameraViewAngle(DegToRad(value));
+    view_->UpdateCameraViews();
+}
+
+View::View() : frontView_(this), sideView_(this), topView_(this),
+    configurationPanel_(this)
 {
     setFocusPolicy(Qt::ClickFocus);
     

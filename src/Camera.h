@@ -34,6 +34,9 @@ class PerspectiveCamera : public Camera
 
         double GetMaxX() const override { return (zmax * std::tan(viewAngle_ / 2)); }
         double GetMaxY() const override { return (zmax * std::tan(viewAngle_ / 2)); }
+        double GetViewAngle() const { return viewAngle_; }
+
+        void SetViewAngle(double angle) { viewAngle_ = angle; }
 
     protected:
         double viewAngle_;

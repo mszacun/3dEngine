@@ -24,6 +24,7 @@ class Controler
         void SetCameraXCoordinate(double x) { perspectiveCamera_.position.SetX(x); }
         void SetCameraYCoordinate(double y) { perspectiveCamera_.position.SetY(y); }
         void SetCameraZCoordinate(double z) { perspectiveCamera_.position.SetZ(z); }
+        void SetCameraViewAngle(double angle) { perspectiveCamera_.SetViewAngle(angle); }
 
         void KeyPressed(int key);
 
