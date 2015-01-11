@@ -1,11 +1,13 @@
 #include "FlatShader.h"
 #include <iostream>
 
+int ClipRGB(int color) { return std::max(std::min(color, 255),0); }
+
 QColor operator*(const QColor& left, double right)
 {
-    return QColor(std::max(left.red() * right, 0.0),
-            std::max(0.0, left.green() * right),
-            std::max(0.0, left.blue() * right));
+    return QColor(ClipRGB(left.red() * right),
+            ClipRGB(left.green() * right),
+            ClipRGB(left.blue() * right));
 }
 
 QColor operator+(const QColor& left, const QColor& right)
@@ -22,8 +24,6 @@ void Shader::InitShader(const TriangleShadingInfo& shadingInfo)
     shadingInfo_.ambientLightColor.getRgb(ambientLightRgb, ambientLightRgb +1,
             ambientLightRgb + 2, ambientLightRgb + 3);
 }
-
-int ClipRGB(int color) { return std::max(std::min(color, 255),0); }
 
 QColor Shader::CalculatePhongModel(const Vector& point, const Vector& lightVector,
        const Vector& normal) const
