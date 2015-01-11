@@ -59,6 +59,41 @@ void PerspectiveViewport::paintEvent(QPaintEvent* event)
     painter.drawImage(0, 0, buffer_);
 }
 
+ConfigurationPanel::ConfigurationPanel() : xCameraPostitionLabel_("X: "),
+    yCameraPostitionLabel_("Y: "), zCameraPostitionLabel_("Z: "),
+    cameraViewAngleLabel_("View angle: "), cameraViewAngleSlider_(Qt::Horizontal),
+    shadowsTypeRadioButtons_("Shader alghorithm: "), flatShadingRadioButton_("Flat Shading"),
+    gouroudShadingRadioButton_("Gouraud shading"), phongShadingRadioButton_("Phong shading"),
+    openFileButton_("Open file"),
+    saveFileButton_("Save file")
+{
+    shadowsTypeRadioButtonsLayout_.addWidget(&flatShadingRadioButton_);
+    shadowsTypeRadioButtonsLayout_.addWidget(&gouroudShadingRadioButton_);
+    shadowsTypeRadioButtonsLayout_.addWidget(&phongShadingRadioButton_);
+    shadowsTypeRadioButtons_.setLayout(&shadowsTypeRadioButtonsLayout_);
+
+    mainLayout_.addWidget(&xCameraPostitionLabel_, 0, 0);
+    mainLayout_.addWidget(&xCameraPostitionEdit_, 1 ,0);
+    mainLayout_.addWidget(&yCameraPostitionLabel_, 2, 0);
+    mainLayout_.addWidget(&yCameraPostitionEdit_, 3, 0);
+    mainLayout_.addWidget(&zCameraPostitionLabel_, 4, 0);
+    mainLayout_.addWidget(&zCameraPostitionEdit_, 5, 0);
+    mainLayout_.addWidget(&cameraViewAngleLabel_, 6, 0);
+    mainLayout_.addWidget(&cameraViewAngleSlider_, 7, 0);
+    mainLayout_.addWidget(&shadowsTypeRadioButtons_, 8, 0);
+    mainLayout_.addWidget(&openFileButton_, 9, 0);
+    mainLayout_.addWidget(&saveFileButton_, 10, 0);
+
+    setLayout(&mainLayout_);
+}
+
+void ConfigurationPanel::UpdateCameraParameters(const PerspectiveCamera& camera)
+{
+    xCameraPostitionEdit_.setText(std::to_string(camera.position.GetX()).c_str());
+    yCameraPostitionEdit_.setText(std::to_string(camera.position.GetY()).c_str());
+    zCameraPostitionEdit_.setText(std::to_string(camera.position.GetZ()).c_str());
+}
+
 View::View() : frontView_(this), sideView_(this), topView_(this)
 {
     setFocusPolicy(Qt::ClickFocus);
@@ -67,6 +102,10 @@ View::View() : frontView_(this), sideView_(this), topView_(this)
     layout.addWidget(&frontView_, 0, 1);
     layout.addWidget(&sideView_, 1, 1);
     layout.addWidget(&topView_, 1, 0);
+    layout.addWidget(&configurationPanel_, 0, 2, 2, 1);
+
+    layout.setColumnMinimumWidth(0, 500);
+    layout.setColumnMinimumWidth(1, 500);
 
     setLayout(&layout);
 }
@@ -108,6 +147,8 @@ void View::UpdateCameraViews()
 
     projection = controler_->GetTopView();
     topView_.DrawScene(projection.renderedImage, projection.perspectiveCameraPosition);
+
+    configurationPanel_.UpdateCameraParameters(controler_->GetPerspectiveCamera());
 
     auto end = std::chrono::steady_clock::now();
 

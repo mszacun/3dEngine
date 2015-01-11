@@ -23,7 +23,7 @@ int main(int argc, char** argv)
         scene.SetLightColor(QColor("white"));
 
         QWidget window;
-        window.resize(500, 500);
+        window.resize(1200, 700);
         window.show();
 
         ViewPtr view = std::make_shared<View>();

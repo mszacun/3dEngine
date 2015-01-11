@@ -6,7 +6,8 @@ int ORTHOGONAL_CAMERA_WIDTH = 5;
 int ORTHOGONAL_CAMERA_HEIGHT = 5;
 
 Controler::Controler(const Scene3D& scene) : scene_(scene), observerPosition_(0, 0, -10),
-    rotationAngle(0)
+    rotationAngle(0), perspectiveCamera_(observerPosition_, Vector(0, 1, 0),
+            Vector(0, 0, 0), 3, 20, 0.78)
 {
     scene_.SetLightPosition(Vector(30, -50, -4));
     scene_.SetAmbientLightColor(QColor(0, 0, 0));
@@ -43,10 +44,8 @@ OrthogonalProjection Controler::GetTopView()
 
 QImage Controler::GetRenderedPerspectiveView()
 {
-    PerspectiveCamera cam(observerPosition_, Vector(0, 1, 0),
-            Vector(0, 0, 0), 3, 20, 0.78);
-
-    QImage result = scene_.RenderProjection(SCREEN_WIDTH, SCREEN_WIDTH, cam);
+    QImage result = scene_.RenderProjection(SCREEN_WIDTH, SCREEN_WIDTH,
+            perspectiveCamera_);
 
     return result;
 }
@@ -54,18 +53,19 @@ QImage Controler::GetRenderedPerspectiveView()
 void Controler::MoveCamera(const Vector& moveVector)
 {
     observerPosition_ = observerPosition_ + moveVector;
+    perspectiveCamera_.position = observerPosition_;
 }
 
 void Controler::KeyPressed(int key)
 {
     switch (key)
     {
-        case Qt::Key_W: observerPosition_.SetZ(observerPosition_.GetZ() + 0.1); break;
-        case Qt::Key_S: observerPosition_.SetZ(observerPosition_.GetZ() - 0.1); break;
-        case Qt::Key_A: observerPosition_.SetX(observerPosition_.GetX() - 0.1); break;
-        case Qt::Key_D: observerPosition_.SetX(observerPosition_.GetX() + 0.1); break;
-        case Qt::Key_Down: observerPosition_.SetY(observerPosition_.GetY() - 0.1); break;
-        case Qt::Key_Up: observerPosition_.SetY(observerPosition_.GetY() + 0.1); break;
+        case Qt::Key_W: MoveCamera(Vector(0, 0, 0.1)); break;
+        case Qt::Key_S: MoveCamera(Vector(0, 0, -0.1)); break;
+        case Qt::Key_A: MoveCamera(Vector(-0.1, 0, 0)); break;
+        case Qt::Key_D: MoveCamera(Vector(0.1, 0, 0)); break;
+        case Qt::Key_Down: MoveCamera(Vector(0, -0.1, 0)); break;
+        case Qt::Key_Up: MoveCamera(Vector(0, 0.1, 0)); break;
     }
 }
 

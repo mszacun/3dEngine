@@ -18,6 +18,7 @@ class Controler
         OrthogonalProjection GetSideView();
         OrthogonalProjection GetTopView();
         QImage GetRenderedPerspectiveView();
+        const PerspectiveCamera& GetPerspectiveCamera() { return perspectiveCamera_; }
 
         void MoveCamera(const Vector& moveVector);
 
@@ -29,6 +30,7 @@ class Controler
 
         Vector observerPosition_;
         double rotationAngle;
+        PerspectiveCamera perspectiveCamera_;
 };
 
 #endif

@@ -3,8 +3,15 @@
 
 #include <QWidget>
 #include <QPainter>
+#include <QLabel>
+#include <QGroupBox>
+#include <QButtonGroup>
+#include <QRadioButton>
 #include <QKeyEvent>
 #include <QGridLayout>
+#include <QLineEdit>
+#include <QPushButton>
+#include <QSlider>
 #include <memory>
 #include <cassert>
 
@@ -80,6 +87,41 @@ class PerspectiveViewport : public QWidget
         QImage buffer_;
 };
 
+class ConfigurationPanel : public QWidget
+{
+    Q_OBJECT
+
+    public:
+        ConfigurationPanel();
+        void SetControler(ControlerPtr controler) { controler_ = controler; }
+
+        void UpdateCameraParameters(const PerspectiveCamera& camera);
+
+    private:
+        QGridLayout mainLayout_;
+
+        QLabel xCameraPostitionLabel_;
+        QLineEdit xCameraPostitionEdit_;
+        QLabel yCameraPostitionLabel_;
+        QLineEdit yCameraPostitionEdit_;
+        QLabel zCameraPostitionLabel_;
+        QLineEdit zCameraPostitionEdit_;
+
+        QLabel cameraViewAngleLabel_;
+        QSlider cameraViewAngleSlider_;
+
+        QGroupBox shadowsTypeRadioButtons_;
+        QVBoxLayout shadowsTypeRadioButtonsLayout_;
+        QRadioButton flatShadingRadioButton_;
+        QRadioButton gouroudShadingRadioButton_;
+        QRadioButton phongShadingRadioButton_;
+
+        QPushButton openFileButton_;
+        QPushButton saveFileButton_;
+
+        ControlerPtr controler_;
+};
+
 class View : public QWidget
 {
     Q_OBJECT
@@ -102,6 +144,7 @@ class View : public QWidget
         FrontView frontView_;
         SideView sideView_;
         TopView topView_;
+        ConfigurationPanel configurationPanel_;
         QGridLayout layout;
 
         ControlerPtr controler_;
