@@ -21,6 +21,9 @@ class Controler
         const PerspectiveCamera& GetPerspectiveCamera() { return perspectiveCamera_; }
 
         void MoveCamera(const Vector& moveVector);
+        void SetCameraXCoordinate(double x) { perspectiveCamera_.position.SetX(x); }
+        void SetCameraYCoordinate(double y) { perspectiveCamera_.position.SetY(y); }
+        void SetCameraZCoordinate(double z) { perspectiveCamera_.position.SetZ(z); }
 
         void KeyPressed(int key);
 

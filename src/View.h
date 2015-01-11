@@ -10,6 +10,7 @@
 #include <QKeyEvent>
 #include <QGridLayout>
 #include <QLineEdit>
+#include <QDoubleValidator>
 #include <QPushButton>
 #include <QSlider>
 #include <memory>
@@ -50,6 +51,7 @@ class FrontView : public OrthagonalViewport
 {
     public:
         FrontView(View* view) : OrthagonalViewport(view) {}
+
     protected:
         Vector GetCameraTranslation(int deltaX, int deltaY) { return Vector(deltaX, deltaY, 0); }
 };
@@ -97,9 +99,15 @@ class ConfigurationPanel : public QWidget
 
         void UpdateCameraParameters(const PerspectiveCamera& camera);
 
+    public slots:
+        void OnXCameraPositionEntered();
+        void OnYCameraPositionEntered();
+        void OnZCameraPositionEntered();
+
     private:
         QGridLayout mainLayout_;
 
+        QDoubleValidator coordinatesValidator_;
         QLabel xCameraPostitionLabel_;
         QLineEdit xCameraPostitionEdit_;
         QLabel yCameraPostitionLabel_;

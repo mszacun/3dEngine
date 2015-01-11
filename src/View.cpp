@@ -67,6 +67,12 @@ ConfigurationPanel::ConfigurationPanel() : xCameraPostitionLabel_("X: "),
     openFileButton_("Open file"),
     saveFileButton_("Save file")
 {
+    coordinatesValidator_.setRange(-20, 20, 10);
+
+    xCameraPostitionEdit_.setValidator(&coordinatesValidator_);
+    yCameraPostitionEdit_.setValidator(&coordinatesValidator_);
+    zCameraPostitionEdit_.setValidator(&coordinatesValidator_);
+
     shadowsTypeRadioButtonsLayout_.addWidget(&flatShadingRadioButton_);
     shadowsTypeRadioButtonsLayout_.addWidget(&gouroudShadingRadioButton_);
     shadowsTypeRadioButtonsLayout_.addWidget(&phongShadingRadioButton_);
@@ -84,6 +90,13 @@ ConfigurationPanel::ConfigurationPanel() : xCameraPostitionLabel_("X: "),
     mainLayout_.addWidget(&openFileButton_, 9, 0);
     mainLayout_.addWidget(&saveFileButton_, 10, 0);
 
+    QObject::connect(&xCameraPostitionEdit_, SIGNAL(returnPressed()),
+            this, SLOT(OnXCameraPositionEntered()));
+    QObject::connect(&yCameraPostitionEdit_, SIGNAL(returnPressed()),
+            this, SLOT(OnYCameraPositionEntered()));
+    QObject::connect(&zCameraPostitionEdit_, SIGNAL(returnPressed()),
+            this, SLOT(OnZCameraPositionEntered()));
+
     setLayout(&mainLayout_);
 }
 
@@ -92,6 +105,21 @@ void ConfigurationPanel::UpdateCameraParameters(const PerspectiveCamera& camera)
     xCameraPostitionEdit_.setText(std::to_string(camera.position.GetX()).c_str());
     yCameraPostitionEdit_.setText(std::to_string(camera.position.GetY()).c_str());
     zCameraPostitionEdit_.setText(std::to_string(camera.position.GetZ()).c_str());
+}
+
+void ConfigurationPanel::OnXCameraPositionEntered()
+{
+    controler_->SetCameraXCoordinate(std::stod(xCameraPostitionEdit_.text().toLocal8Bit().data()));
+}
+
+void ConfigurationPanel::OnYCameraPositionEntered()
+{
+    controler_->SetCameraYCoordinate(std::stod(yCameraPostitionEdit_.text().toLocal8Bit().data()));
+}
+
+void ConfigurationPanel::OnZCameraPositionEntered()
+{
+    controler_->SetCameraZCoordinate(std::stod(zCameraPostitionEdit_.text().toLocal8Bit().data()));
 }
 
 View::View() : frontView_(this), sideView_(this), topView_(this)
@@ -118,7 +146,7 @@ void View::MoveCamera(const Vector& moveVector)
 
 QSize View::minimumSizeHint() const
 {
-    return QSize(1000, 1000);
+    return QSize(1300, 1000);
 }
 
 QSize View::sizeHint() const
@@ -129,6 +157,7 @@ QSize View::sizeHint() const
 void View::SetControler(ControlerPtr controler)
 {
     controler_ = controler;
+    configurationPanel_.SetControler(controler);
     UpdateCameraViews();
 }
 
