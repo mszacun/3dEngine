@@ -46,3 +46,28 @@ Triangle3D ObjDeserializer::ParseTriangle(const std::string& triangleInfo) const
 
     return Triangle3D(std::stoi(p1) - 1, std::stoi(p2) - 1, std::stoi(p3) - 1);
 }
+
+void ObjSerializer::SaveToFile(const std::string& path, const ObjFile& objFile)
+{
+    file_.open(path);
+
+    for (const Vector& v : objFile.scene.GetPoints())
+        SavePoint(v, "v");
+
+    for (const Triangle3D& t : objFile.scene.GetTriangles())
+        SaveTriangle(t);
+
+    SavePoint(objFile.cameraPosition, "c");
+
+    file_.close();
+}
+
+void ObjSerializer::SavePoint(const Vector& vertex, const std::string& prefix)
+{
+    file_ << prefix << " " << vertex.GetX() << " " << vertex.GetY() << " " << vertex.GetZ() << std::endl;
+}
+
+void ObjSerializer::SaveTriangle(const Triangle3D& t)
+{
+    file_ << "f " << t.GetP1() + 1 << " " << t.GetP2() + 1 << " " << t.GetP3() + 1 << std::endl;
+}

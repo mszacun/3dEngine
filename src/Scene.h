@@ -38,8 +38,9 @@ class Scene3D
         void AddTriangle(const int& p1, const int& p2, const int& p3);
         void AddTriangle(Triangle3D& triangle);
 
-        std::vector<Vector> GetPoints() const { return points_; }
-        std::vector<Triangle3D> GetTriangles() const { return triangles_; }
+        const std::vector<Vector>& GetPoints() const { return points_; }
+        const std::vector<Triangle3D>& GetTriangles() const { return triangles_; }
+
 
         Vector CalculateNormal(const Triangle3D& triangle) const;
         Vector CalculatePointNormal(unsigned int pointNumber) const;

@@ -22,4 +22,16 @@ class ObjDeserializer
 
 };
 
+class ObjSerializer
+{
+    public:
+        void SaveToFile(const std::string& path, const ObjFile& objFile);
+
+        void SavePoint(const Vector& vertex, const std::string& prefix);
+        void SaveTriangle(const Triangle3D& t);
+
+    private:
+        std::ofstream file_;
+};
+
 #endif
