@@ -5,8 +5,8 @@ int SCREEN_HEIGHT = 500;
 int ORTHOGONAL_CAMERA_WIDTH = 5;
 int ORTHOGONAL_CAMERA_HEIGHT = 5;
 
-Controler::Controler(const Scene3D& scene) : scene_(scene), observerPosition_(0, 0, -10),
-    rotationAngle(0), perspectiveCamera_(observerPosition_, Vector(0, 1, 0),
+Controler::Controler(const Scene3D& scene) : scene_(scene),
+    rotationAngle(0), perspectiveCamera_(Vector(0, 0, -10), Vector(0, 1, 0),
             Vector(0, 0, 0), 3, 20, 0.78), activeShader_(new PhongShader)
 {
     scene_.SetLightPosition(Vector(30, -50, -4));
@@ -55,8 +55,7 @@ QImage Controler::GetRenderedPerspectiveView()
 
 void Controler::MoveCamera(const Vector& moveVector)
 {
-    observerPosition_ = observerPosition_ + moveVector;
-    perspectiveCamera_.position = observerPosition_;
+    perspectiveCamera_.position = perspectiveCamera_.position + moveVector;
 }
 
 

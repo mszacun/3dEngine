@@ -22,6 +22,7 @@ class Controler
 
         void MoveCamera(const Vector& moveVector);
         void MoveTargetPoint(const Vector& moveVector);
+        void SetCameraPosition(const Vector& position) { perspectiveCamera_.position = position; }
         void SetCameraXCoordinate(double x) { perspectiveCamera_.position.SetX(x); }
         void SetCameraYCoordinate(double y) { perspectiveCamera_.position.SetY(y); }
         void SetCameraZCoordinate(double z) { perspectiveCamera_.position.SetZ(z); }
@@ -38,7 +39,6 @@ class Controler
         ViewWeakPtr view_;
         Scene3D scene_;
 
-        Vector observerPosition_;
         double rotationAngle;
         PerspectiveCamera perspectiveCamera_;
         Shader* activeShader_;

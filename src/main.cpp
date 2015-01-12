@@ -17,7 +17,8 @@ int main(int argc, char** argv)
         QApplication app (argc, argv);
 
         ObjDeserializer deserializer;
-        Scene3D scene = deserializer.ParseFile("scene.obj");
+        ObjFile parsedFile = deserializer.ParseFile("scene.obj");
+        Scene3D scene = parsedFile.scene;
 
         scene.RecalculateNormals();
         scene.SetLightColor(QColor("white"));
@@ -29,9 +30,10 @@ int main(int argc, char** argv)
         ViewPtr view = std::make_shared<View>();
         ControlerPtr controler = std::make_shared<Controler>(scene);
 
+        controler->SetCameraPosition(parsedFile.cameraPosition);
+
         view->SetControler(controler);
         controler->SetView(view);
-
 
         QLayout* layout = new QVBoxLayout;
         layout->addWidget(view.get());

@@ -1,10 +1,11 @@
 #include "ObjDeserializer.h"
 
-Scene3D ObjDeserializer::ParseFile(const std::string& filename) const
+ObjFile ObjDeserializer::ParseFile(const std::string& filename) const
 {
     Scene3D result;
     std::ifstream file(filename);
     std::string line;
+    Vector cameraPosition(0, 0, -10);
 
     while (std::getline(file, line))
     {
@@ -15,12 +16,14 @@ Scene3D ObjDeserializer::ParseFile(const std::string& filename) const
             Triangle3D parsedTriangle = ParseTriangle(line);
             result.AddTriangle(parsedTriangle);
         }
+        if (line[0] == 'c')
+            cameraPosition = ParseVertex(line);
     }
 
     file.close();
 
     result.RecalculateNormals();
-    return result;
+    return { result, cameraPosition };
 }
 
 Vector ObjDeserializer::ParseVertex(const std::string& vertexInfo) const

@@ -62,7 +62,7 @@ TEST(ObjDeserializerTests, ShouldParseObjFile)
         Triangle3D(1, 2, 3)
     };
 
-    Scene3D deserializedScene = deserializer.ParseFile(testObjFilePath);
+    Scene3D deserializedScene = deserializer.ParseFile(testObjFilePath).scene;
 
     EXPECT_TRUE(VectorsEqual(deserializedScene.GetPoints(), expectedPoints));
     EXPECT_TRUE(VectorsEqual(deserializedScene.GetTriangles(), expectedTriangles));
