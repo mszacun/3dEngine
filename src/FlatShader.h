@@ -87,7 +87,8 @@ class PhongShader : public Shader
         QColor GetColorForPixel(const Vector& pixel) const override;
 
     private:
-        Triangle3DInterpolator<Vector> interpolator;
+        Triangle3DInterpolator<Vector> normalInterpolator;
+        Triangle3DInterpolator<Vector> lightVectorInterpolator;
 };
 
 #endif
