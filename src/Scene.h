@@ -15,7 +15,7 @@
 struct OrthogonalProjection
 {
     QImage renderedImage;
-    Vector perspectiveCameraPosition;
+    PerspectiveCameraFrustrum perspectiveCameraFrustrum;
 };
 
 class Scene2D
@@ -53,7 +53,7 @@ class Scene3D
         QImage RenderProjection(int width, int height,
                 const PerspectiveCamera& camera, Shader& shader);
         OrthogonalProjection RenderProjection(int width, int height, const OrthogonalCamera& camera,
-            Vector perspectiveCameraPosition, Shader& shader);
+            Shader& shader, PerspectiveCameraFrustrum frustrum);
 
         void DrawTriangleWithXParellGround(const Vector& p1, Vector p2,
             Vector p3, QPainter& painter, Shader& shader, const ZInterpolator& zinterpolator);

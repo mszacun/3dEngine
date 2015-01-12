@@ -2,14 +2,16 @@
 #include "Controler.h"
 #include <chrono>
 
-void OrthagonalViewport::DrawScene(QImage& scene, const Vector& perspectiveCameraPosition)
+void OrthagonalViewport::DrawScene(QImage& scene,
+        const PerspectiveCameraFrustrum& frustrum)
 {
     buffer_ = scene;
-    int width = 500;
-    int height = 500;
-    int cameraX = (perspectiveCameraPosition.GetX() * (width / 2) + width / 2);
-    int cameraY = (perspectiveCameraPosition.GetY() * (height / 2) + height / 2);
+    int width = VIEWPORT_WIDTH;
+    int height = VIEWPORT_HEIGHT;
+    int cameraX = (frustrum.cameraPosition.GetX() * (width / 2) + width / 2);
+    int cameraY = (frustrum.cameraPosition.GetY() * (height / 2) + height / 2);
     cameraRect_ = QRect(cameraX - 5, cameraY - 5, 10, 10);
+    frustrum_ = frustrum;
     update();
 }
 
@@ -19,6 +21,7 @@ void OrthagonalViewport::paintEvent(QPaintEvent* event)
 
     painter.drawImage(0, 0, buffer_);
     painter.fillRect(cameraRect_, QColor("lime"));
+    DrawPerspectiveCameraFrustrum(painter, frustrum_);
 }
 
 void OrthagonalViewport::mousePressEvent(QMouseEvent* event)
@@ -44,6 +47,33 @@ void OrthagonalViewport::mouseMoveEvent(QMouseEvent* event)
 
         view_->MoveCamera(cameraMoveVector);
     }
+}
+
+void OrthagonalViewport::DrawPerspectiveCameraFrustrum(QPainter& painter,
+        const PerspectiveCameraFrustrum& frustrum)
+{
+    int width = VIEWPORT_WIDTH;
+    int height = VIEWPORT_HEIGHT;
+
+    int cameraX = (frustrum_.cameraPosition.GetX() * (width / 2) + width / 2);
+    int cameraY = (frustrum_.cameraPosition.GetY() * (height / 2) + height / 2);
+
+    int leftUpperX = (frustrum_.leftTop.GetX() * (width / 2) + width / 2);
+    int leftUpperY = (frustrum_.leftTop.GetY() * (height / 2) + height / 2);
+    int rightBottomX = (frustrum_.rightBottom.GetX() * (width / 2) + width / 2);
+    int rightBottomY = (frustrum_.rightBottom.GetY() * (height / 2) + height / 2);
+
+    QPen penHLines(QColor("#0e5a77"));
+    painter.setPen(penHLines);
+    painter.drawLine(leftUpperX, leftUpperY, rightBottomX, leftUpperY);
+    painter.drawLine(rightBottomX, leftUpperY, rightBottomX, rightBottomY);
+    painter.drawLine(rightBottomX, rightBottomY, leftUpperX, rightBottomY);
+    painter.drawLine(leftUpperX, rightBottomY, leftUpperX, leftUpperY);
+
+    painter.drawLine(leftUpperX, leftUpperY, cameraX, cameraY);
+    painter.drawLine(rightBottomX, leftUpperY, cameraX, cameraY);
+    painter.drawLine(rightBottomX, rightBottomY, cameraX, cameraY);
+    painter.drawLine(leftUpperX, rightBottomY, cameraX, cameraY);
 }
 
 void PerspectiveViewport::DrawScene(QImage& scene)
@@ -185,8 +215,8 @@ View::View() : frontView_(this), sideView_(this), topView_(this),
     layout.addWidget(&topView_, 1, 0);
     layout.addWidget(&configurationPanel_, 0, 2, 2, 1);
 
-    layout.setColumnMinimumWidth(0, 500);
-    layout.setColumnMinimumWidth(1, 500);
+    layout.setColumnMinimumWidth(0, VIEWPORT_WIDTH);
+    layout.setColumnMinimumWidth(1, VIEWPORT_HEIGHT);
 
     setLayout(&layout);
 }
@@ -222,13 +252,13 @@ void View::UpdateCameraViews()
     perspectiveView_.DrawScene(i);
 
     OrthogonalProjection projection = controler_->GetFrontView();
-    frontView_.DrawScene(projection.renderedImage, projection.perspectiveCameraPosition);
+    frontView_.DrawScene(projection.renderedImage, projection.perspectiveCameraFrustrum);
 
     projection = controler_->GetSideView();
-    sideView_.DrawScene(projection.renderedImage, projection.perspectiveCameraPosition);
+    sideView_.DrawScene(projection.renderedImage, projection.perspectiveCameraFrustrum);
 
     projection = controler_->GetTopView();
-    topView_.DrawScene(projection.renderedImage, projection.perspectiveCameraPosition);
+    topView_.DrawScene(projection.renderedImage, projection.perspectiveCameraFrustrum);
 
     configurationPanel_.UpdateCameraParameters(controler_->GetPerspectiveCamera());
 

@@ -22,13 +22,16 @@ class Controler;
 class View;
 typedef std::shared_ptr<Controler> ControlerPtr;
 
+#define VIEWPORT_WIDTH 500
+#define VIEWPORT_HEIGHT 500
+
 class OrthagonalViewport : public QWidget
 {
     Q_OBJECT
 
     public:
         OrthagonalViewport(View* view) : view_(view), cameraMovingFlag_(false) {}
-        void DrawScene(QImage& scene, const Vector& perspectiveCameraPosition);
+        void DrawScene(QImage& scene, const PerspectiveCameraFrustrum& frustrum);
 
     protected:
         void paintEvent(QPaintEvent* event) override;
@@ -37,6 +40,7 @@ class OrthagonalViewport : public QWidget
         void mouseMoveEvent(QMouseEvent* event) override;
 
         virtual Vector GetCameraTranslation(int deltaX, int deltaY) = 0;
+        void DrawPerspectiveCameraFrustrum(QPainter& p, const PerspectiveCameraFrustrum& frustrum);
 
         View* view_;
 
@@ -44,6 +48,7 @@ class OrthagonalViewport : public QWidget
         QPoint lastMousePosition_;
 
         QRect cameraRect_;
+        PerspectiveCameraFrustrum frustrum_;
         QImage buffer_;
 };
 

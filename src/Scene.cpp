@@ -250,7 +250,7 @@ QImage Scene3D::RenderProjection(int width, int height,
 }
 
 OrthogonalProjection Scene3D::RenderProjection(int width, int height, const OrthogonalCamera& camera,
-        Vector perspectiveCameraPosition, Shader& shader)
+        Shader& shader, PerspectiveCameraFrustrum frustrum)
 {
     QImage renderedProjection(width, height, QImage::Format_ARGB32);
     QPainter painter(&renderedProjection);
@@ -260,7 +260,12 @@ OrthogonalProjection Scene3D::RenderProjection(int width, int height, const Orth
     ClearZBuffer(zBuffer_);
 
     Scene3D observedScene(*this);
-    observedScene.AddPoint(perspectiveCameraPosition);
+
+    // add aditional vertexes
+    observedScene.AddPoint(frustrum.leftTop);
+    observedScene.AddPoint(frustrum.rightBottom);
+    observedScene.AddPoint(frustrum.cameraPosition);
+
     observedScene.ViewTransform(cameraCopy);
     observedScene.SortTriangles();
 
@@ -268,9 +273,12 @@ OrthogonalProjection Scene3D::RenderProjection(int width, int height, const Orth
 
     observedScene.DrawScene(painter, transformationMatrix, cameraCopy,
             InterpolateZLinearly, shader);
-    perspectiveCameraPosition = observedScene.points_[observedScene.points_.size() - 1];
 
-    return { renderedProjection, perspectiveCameraPosition };
+    frustrum.cameraPosition = observedScene.points_[observedScene.points_.size() - 1];
+    frustrum.rightBottom = observedScene.points_[observedScene.points_.size() - 2];
+    frustrum.leftTop = observedScene.points_[observedScene.points_.size() - 3];
+
+    return { renderedProjection, frustrum };
 }
 
 void Scene3D::AccumulateTransformation(const Matrix& transformationMatrix)

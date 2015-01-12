@@ -24,6 +24,13 @@ class Camera
         virtual double GetMaxY() const = 0;
 };
 
+struct PerspectiveCameraFrustrum
+{
+    Vector leftTop;
+    Vector rightBottom;
+    Vector cameraPosition;
+};
+
 class PerspectiveCamera : public Camera
 {
     public:
@@ -37,6 +44,8 @@ class PerspectiveCamera : public Camera
         double GetViewAngle() const { return viewAngle_; }
 
         void SetViewAngle(double angle) { viewAngle_ = angle; }
+
+        PerspectiveCameraFrustrum CalculateFrustrum() const;
 
     protected:
         double viewAngle_;

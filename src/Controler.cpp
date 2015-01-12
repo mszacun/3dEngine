@@ -24,7 +24,7 @@ OrthogonalProjection Controler::GetFrontView()
             Vector(0, 0, 0), 3, 20, ORTHOGONAL_CAMERA_WIDTH, ORTHOGONAL_CAMERA_HEIGHT);
 
     return scene_.RenderProjection(SCREEN_WIDTH, SCREEN_WIDTH, cam,
-            observerPosition_, *activeShader_);
+            *activeShader_, perspectiveCamera_.CalculateFrustrum());
 }
 
 OrthogonalProjection Controler::GetSideView()
@@ -33,7 +33,7 @@ OrthogonalProjection Controler::GetSideView()
             Vector(0, 0, 0), 3, 20, ORTHOGONAL_CAMERA_WIDTH, ORTHOGONAL_CAMERA_HEIGHT);
 
     return scene_.RenderProjection(SCREEN_WIDTH, SCREEN_WIDTH, cam,
-            observerPosition_, *activeShader_);
+            *activeShader_, perspectiveCamera_.CalculateFrustrum());
 }
 
 OrthogonalProjection Controler::GetTopView()
@@ -42,7 +42,7 @@ OrthogonalProjection Controler::GetTopView()
             Vector(0, 0, 0), 3, 20, ORTHOGONAL_CAMERA_WIDTH, ORTHOGONAL_CAMERA_HEIGHT);
 
     return scene_.RenderProjection(SCREEN_WIDTH, SCREEN_WIDTH, cam,
-            observerPosition_, *activeShader_);
+            *activeShader_, perspectiveCamera_.CalculateFrustrum());
 }
 
 QImage Controler::GetRenderedPerspectiveView()
