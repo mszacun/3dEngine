@@ -167,6 +167,9 @@ ConfigurationPanel::ConfigurationPanel(View* view) : xCameraPostitionLabel_("X: 
     QObject::connect(&phongShadingRadioButton_, SIGNAL(toggled(bool)),
             this, SLOT(OnShadowingTypeChanged(bool)));
 
+    QObject::connect(&saveFileButton_, SIGNAL(clicked(bool)),
+            this, SLOT(OnSaveButtonClicked(bool)));
+
     setLayout(&mainLayout_);
 }
 
@@ -219,6 +222,14 @@ void ConfigurationPanel::OnShadowingTypeChanged(bool checked)
         std::cout << "Phong" << std::endl;
     }
     view_->UpdateCameraViews();
+}
+
+void ConfigurationPanel::OnSaveButtonClicked(bool checked)
+{
+     QString fileName = QFileDialog::getSaveFileName(this, "Save File",
+        "/tmp/", "Obj file (*.obj)");
+
+     controler_->SaveSceneToObjFile(fileName.toStdString());
 }
 
 View::View() : frontView_(this), sideView_(this), topView_(this),

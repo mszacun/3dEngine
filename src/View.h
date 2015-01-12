@@ -11,6 +11,7 @@
 #include <QGridLayout>
 #include <QLineEdit>
 #include <QDoubleValidator>
+#include <QFileDialog>
 #include <QPushButton>
 #include <QSlider>
 #include <memory>
@@ -112,6 +113,7 @@ class ConfigurationPanel : public QWidget
         void OnZCameraPositionEntered();
         void OnViewAngleSliderMoved(int value);
         void OnShadowingTypeChanged(bool checked);
+        void OnSaveButtonClicked(bool checked);
 
     private:
         QGridLayout mainLayout_;

@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "Scene.h"
+#include "ObjDeserializer.h"
 
 class View;
 typedef std::weak_ptr<View> ViewWeakPtr;
@@ -32,6 +33,8 @@ class Controler
         void SetFlatShader() { SetShader(new FlatShader); }
         void SetGouroudShader() { SetShader(new GouraudShader); }
         void SetPhongShader() { SetShader(new PhongShader); }
+
+        void SaveSceneToObjFile(const std::string& path);
 
         void KeyPressed(int key);
 

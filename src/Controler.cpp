@@ -63,6 +63,18 @@ void Controler::MoveTargetPoint(const Vector& moveVector)
 {
     perspectiveCamera_.target = perspectiveCamera_.target + moveVector;
 }
+
+void Controler::SaveSceneToObjFile(const std::string& path)
+{
+    ObjSerializer serializer;
+    ObjFile objFile;
+
+    objFile.scene = scene_;
+    objFile.cameraPosition = perspectiveCamera_.position;
+
+    serializer.SaveToFile(path, objFile);
+}
+
 void Controler::KeyPressed(int key)
 {
     switch (key)
