@@ -29,6 +29,7 @@ struct PerspectiveCameraFrustrum
     Vector leftTop;
     Vector rightBottom;
     Vector cameraPosition;
+    Vector target;
 };
 
 class PerspectiveCamera : public Camera

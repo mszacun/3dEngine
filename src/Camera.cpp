@@ -18,5 +18,5 @@ PerspectiveCameraFrustrum PerspectiveCamera::CalculateFrustrum() const
     Vector leftTop = C - u *  zmax * std::tan(viewAngle_ / 2);
     Vector rightBottom = B - upDirection *  zmax * std::tan(viewAngle_ / 2);
 
-    return { leftTop, rightBottom, position };
+    return { leftTop, rightBottom, position, target };
 }

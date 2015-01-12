@@ -59,6 +59,11 @@ void Controler::MoveCamera(const Vector& moveVector)
     perspectiveCamera_.position = observerPosition_;
 }
 
+
+void Controler::MoveTargetPoint(const Vector& moveVector)
+{
+    perspectiveCamera_.target = perspectiveCamera_.target + moveVector;
+}
 void Controler::KeyPressed(int key)
 {
     switch (key)

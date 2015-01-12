@@ -10,7 +10,10 @@ void OrthagonalViewport::DrawScene(QImage& scene,
     int height = VIEWPORT_HEIGHT;
     int cameraX = (frustrum.cameraPosition.GetX() * (width / 2) + width / 2);
     int cameraY = (frustrum.cameraPosition.GetY() * (height / 2) + height / 2);
+    int targetPointX = (frustrum.target.GetX() * (width / 2) + width / 2);
+    int targetPointY = (frustrum.target.GetY() * (height / 2) + height / 2);
     cameraRect_ = QRect(cameraX - 5, cameraY - 5, 10, 10);
+    targetPointRect_ = QRect(targetPointX - 5, targetPointY - 5, 10, 10);
     frustrum_ = frustrum;
     update();
 }
@@ -20,19 +23,23 @@ void OrthagonalViewport::paintEvent(QPaintEvent* event)
     QPainter painter(this);
 
     painter.drawImage(0, 0, buffer_);
-    painter.fillRect(cameraRect_, QColor("lime"));
     DrawPerspectiveCameraFrustrum(painter, frustrum_);
+    painter.setBrush(Qt::yellow);
+    painter.drawEllipse(targetPointRect_);
+    painter.fillRect(cameraRect_, QColor("lime"));
 }
 
 void OrthagonalViewport::mousePressEvent(QMouseEvent* event)
 {
     cameraMovingFlag_ = cameraRect_.contains(event->x(), event->y());
+    targetPointMovingFlag_ = targetPointRect_.contains(event->x(), event->y());
     lastMousePosition_ = event->pos();
 }
 
 void OrthagonalViewport::mouseReleaseEvent(QMouseEvent* event)
 {
     cameraMovingFlag_ = false;
+    targetPointMovingFlag_ = false;
 }
 
 void OrthagonalViewport::mouseMoveEvent(QMouseEvent* event)
@@ -46,6 +53,16 @@ void OrthagonalViewport::mouseMoveEvent(QMouseEvent* event)
         cameraMoveVector = cameraMoveVector * 0.01875;
 
         view_->MoveCamera(cameraMoveVector);
+    }
+    if (targetPointMovingFlag_)
+    {
+        int deltaX = event->x() - lastMousePosition_.x();
+        int deltaY = event->y() - lastMousePosition_.y();
+        lastMousePosition_ = event->pos();
+        Vector cameraMoveVector = GetCameraTranslation(deltaX, deltaY);
+        cameraMoveVector = cameraMoveVector * 0.01875;
+
+        view_->MoveTargetPoint(cameraMoveVector);
     }
 }
 
@@ -224,6 +241,12 @@ View::View() : frontView_(this), sideView_(this), topView_(this),
 void View::MoveCamera(const Vector& moveVector)
 {
     controler_->MoveCamera(moveVector);
+    UpdateCameraViews();
+}
+
+void View::MoveTargetPoint(const Vector& moveVector)
+{
+    controler_->MoveTargetPoint(moveVector);
     UpdateCameraViews();
 }
 

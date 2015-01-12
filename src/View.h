@@ -45,8 +45,10 @@ class OrthagonalViewport : public QWidget
         View* view_;
 
         bool cameraMovingFlag_;
+        bool targetPointMovingFlag_;
         QPoint lastMousePosition_;
 
+        QRect targetPointRect_;
         QRect cameraRect_;
         PerspectiveCameraFrustrum frustrum_;
         QImage buffer_;
@@ -153,6 +155,7 @@ class View : public QWidget
 
         void SetControler(ControlerPtr controler);
         void MoveCamera(const Vector& moveVector);
+        void MoveTargetPoint(const Vector& moveVector);
         void UpdateCameraViews();
 
     protected:

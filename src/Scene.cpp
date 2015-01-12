@@ -262,6 +262,7 @@ OrthogonalProjection Scene3D::RenderProjection(int width, int height, const Orth
     Scene3D observedScene(*this);
 
     // add aditional vertexes
+    observedScene.AddPoint(frustrum.target);
     observedScene.AddPoint(frustrum.leftTop);
     observedScene.AddPoint(frustrum.rightBottom);
     observedScene.AddPoint(frustrum.cameraPosition);
@@ -277,6 +278,7 @@ OrthogonalProjection Scene3D::RenderProjection(int width, int height, const Orth
     frustrum.cameraPosition = observedScene.points_[observedScene.points_.size() - 1];
     frustrum.rightBottom = observedScene.points_[observedScene.points_.size() - 2];
     frustrum.leftTop = observedScene.points_[observedScene.points_.size() - 3];
+    frustrum.target = observedScene.points_[observedScene.points_.size() - 4];
 
     return { renderedProjection, frustrum };
 }
