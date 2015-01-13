@@ -169,6 +169,8 @@ ConfigurationPanel::ConfigurationPanel(View* view) : xCameraPostitionLabel_("X: 
 
     QObject::connect(&saveFileButton_, SIGNAL(clicked(bool)),
             this, SLOT(OnSaveButtonClicked(bool)));
+    QObject::connect(&openFileButton_, SIGNAL(clicked(bool)),
+            this, SLOT(OnOpenButtonClicked(bool)));
 
     setLayout(&mainLayout_);
 }
@@ -226,10 +228,19 @@ void ConfigurationPanel::OnShadowingTypeChanged(bool checked)
 
 void ConfigurationPanel::OnSaveButtonClicked(bool checked)
 {
-     QString fileName = QFileDialog::getSaveFileName(this, "Save File",
+    QString fileName = QFileDialog::getSaveFileName(this, "Save File",
         "/tmp/", "Obj file (*.obj)");
 
-     controler_->SaveSceneToObjFile(fileName.toStdString());
+    controler_->SaveSceneToObjFile(fileName.toStdString());
+}
+
+void ConfigurationPanel::OnOpenButtonClicked(bool checked)
+{
+    QString fileName = QFileDialog::getOpenFileName(this, "Save File",
+        "/tmp/", "Obj file (*.obj)");
+
+    controler_->LoadObjFile(fileName.toStdString());
+    view_->UpdateCameraViews();
 }
 
 View::View() : frontView_(this), sideView_(this), topView_(this),
@@ -280,6 +291,9 @@ void View::SetControler(ControlerPtr controler)
 
 void View::UpdateCameraViews()
 {
+    if (!controler_->HasScene())
+        return;
+
     auto start = std::chrono::steady_clock::now();
 
     QImage i = controler_->GetRenderedPerspectiveView();

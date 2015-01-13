@@ -16,23 +16,15 @@ int main(int argc, char** argv)
 
         QApplication app (argc, argv);
 
-        ObjDeserializer deserializer;
-        ObjFile parsedFile = deserializer.ParseFile("scene.obj");
-        Scene3D scene = parsedFile.scene;
-
-        scene.RecalculateNormals();
-        scene.SetLightColor(QColor("white"));
-
-        scene.SetAmbientLightColor(QColor(50, 50, 50));
-
         QWidget window;
         window.resize(1200, 700);
         window.show();
 
         ViewPtr view = std::make_shared<View>();
-        ControlerPtr controler = std::make_shared<Controler>(scene);
+        ControlerPtr controler = std::make_shared<Controler>();
 
-        controler->SetCameraPosition(parsedFile.cameraPosition);
+        if (argc > 1)
+            controler->LoadObjFile(argv[1]);
 
         view->SetControler(controler);
         controler->SetView(view);
@@ -41,7 +33,6 @@ int main(int argc, char** argv)
         layout->addWidget(view.get());
 
         window.setLayout(layout);
-
 
         return app.exec();
 }

@@ -8,9 +8,8 @@
 
 struct ObjFile
 {
-    Scene3D scene;
+    ScenePtr scene;
     Vector cameraPosition;
-    MaterialPtr material;
 };
 
 class ObjDeserializer
@@ -20,7 +19,7 @@ class ObjDeserializer
 
         Vector ParseVertex(const std::string& vertexInfo) const;
         void ParseTextureCoordinates(const std::string& textureInfo,
-                Scene3D& scene, int triangleNumber) const;
+                ScenePtr scene, int triangleNumber) const;
         Triangle3D ParseTriangle(const std::string& triangleInfo) const;
 
 };

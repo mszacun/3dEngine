@@ -114,6 +114,7 @@ class ConfigurationPanel : public QWidget
         void OnViewAngleSliderMoved(int value);
         void OnShadowingTypeChanged(bool checked);
         void OnSaveButtonClicked(bool checked);
+        void OnOpenButtonClicked(bool checked);
 
     private:
         QGridLayout mainLayout_;

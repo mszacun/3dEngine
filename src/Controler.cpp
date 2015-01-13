@@ -5,12 +5,10 @@ int SCREEN_HEIGHT = 500;
 int ORTHOGONAL_CAMERA_WIDTH = 5;
 int ORTHOGONAL_CAMERA_HEIGHT = 5;
 
-Controler::Controler(const Scene3D& scene) : scene_(scene),
+Controler::Controler() : scene_(nullptr),
     rotationAngle(0), perspectiveCamera_(Vector(0, 0, -10), Vector(0, 1, 0),
             Vector(0, 0, 0), 3, 20, 0.78), activeShader_(new PhongShader)
 {
-    scene_.SetLightPosition(Vector(30, -50, -4));
-    scene_.SetAmbientLightColor(QColor(0, 0, 0));
 }
 
 void Controler::SetView(ViewWeakPtr view)
@@ -23,7 +21,7 @@ OrthogonalProjection Controler::GetFrontView()
     OrthogonalCamera cam(Vector(0, 0, -5), Vector(0, 1, 0),
             Vector(0, 0, 0), 3, 20, ORTHOGONAL_CAMERA_WIDTH, ORTHOGONAL_CAMERA_HEIGHT);
 
-    return scene_.RenderProjection(SCREEN_WIDTH, SCREEN_WIDTH, cam,
+    return scene_->RenderProjection(SCREEN_WIDTH, SCREEN_WIDTH, cam,
             *activeShader_, perspectiveCamera_.CalculateFrustrum());
 }
 
@@ -32,7 +30,7 @@ OrthogonalProjection Controler::GetSideView()
     OrthogonalCamera cam(Vector(-5, 0, 0), Vector(0, 1, 0),
             Vector(0, 0, 0), 3, 20, ORTHOGONAL_CAMERA_WIDTH, ORTHOGONAL_CAMERA_HEIGHT);
 
-    return scene_.RenderProjection(SCREEN_WIDTH, SCREEN_WIDTH, cam,
+    return scene_->RenderProjection(SCREEN_WIDTH, SCREEN_WIDTH, cam,
             *activeShader_, perspectiveCamera_.CalculateFrustrum());
 }
 
@@ -41,13 +39,13 @@ OrthogonalProjection Controler::GetTopView()
     OrthogonalCamera cam(Vector(0, 5, 0), Vector(0, 1, 0),
             Vector(0, 0, 0), 3, 20, ORTHOGONAL_CAMERA_WIDTH, ORTHOGONAL_CAMERA_HEIGHT);
 
-    return scene_.RenderProjection(SCREEN_WIDTH, SCREEN_WIDTH, cam,
+    return scene_->RenderProjection(SCREEN_WIDTH, SCREEN_WIDTH, cam,
             *activeShader_, perspectiveCamera_.CalculateFrustrum());
 }
 
 QImage Controler::GetRenderedPerspectiveView()
 {
-    QImage result = scene_.RenderProjection(SCREEN_WIDTH, SCREEN_WIDTH,
+    QImage result = scene_->RenderProjection(SCREEN_WIDTH, SCREEN_WIDTH,
             perspectiveCamera_, *activeShader_);
 
     return result;
@@ -73,6 +71,15 @@ void Controler::SaveSceneToObjFile(const std::string& path)
     objFile.cameraPosition = perspectiveCamera_.position;
 
     serializer.SaveToFile(path, objFile);
+}
+
+void Controler::LoadObjFile(const std::string& path)
+{
+    ObjDeserializer deserializer;
+    ObjFile parsedFile = deserializer.ParseFile(path);
+
+    SetScene(parsedFile.scene);
+    SetCameraPosition(parsedFile.cameraPosition);
 }
 
 void Controler::KeyPressed(int key)

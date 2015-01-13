@@ -12,7 +12,7 @@ typedef std::weak_ptr<View> ViewWeakPtr;
 class Controler
 {
     public:
-        Controler(const Scene3D& scene);
+        Controler();
         void SetView(ViewWeakPtr view);
 
         OrthogonalProjection GetFrontView();
@@ -20,6 +20,9 @@ class Controler
         OrthogonalProjection GetTopView();
         QImage GetRenderedPerspectiveView();
         const PerspectiveCamera& GetPerspectiveCamera() { return perspectiveCamera_; }
+
+        void SetScene(ScenePtr scene) { scene_ = scene; }
+        bool HasScene() { return scene_ != nullptr; }
 
         void MoveCamera(const Vector& moveVector);
         void MoveTargetPoint(const Vector& moveVector);
@@ -35,12 +38,13 @@ class Controler
         void SetPhongShader() { SetShader(new PhongShader); }
 
         void SaveSceneToObjFile(const std::string& path);
+        void LoadObjFile(const std::string& path);
 
         void KeyPressed(int key);
 
     private:
         ViewWeakPtr view_;
-        Scene3D scene_;
+        ScenePtr scene_;
 
         double rotationAngle;
         PerspectiveCamera perspectiveCamera_;

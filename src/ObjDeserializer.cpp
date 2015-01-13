@@ -2,21 +2,26 @@
 
 ObjFile ObjDeserializer::ParseFile(const std::string& filename) const
 {
-    Scene3D result;
+    ScenePtr result = std::make_shared<Scene3D>();
     std::ifstream file(filename);
     std::string line;
     Vector cameraPosition(0, 0, -10);
     int textureTriangleNumber = 0;
     bool isTexturePresent = false;
 
+    // default values
+    result->SetLightColor(QColor("white"));
+    result->SetAmbientLightColor(QColor("black"));
+    result->SetLightPosition(Vector(30, -50, -4));
+
     while (std::getline(file, line))
     {
         if (line[0] == 'v')
-            result.AddPoint(ParseVertex(line));
+            result->AddPoint(ParseVertex(line));
         if (line[0] == 'f')
         {
             Triangle3D parsedTriangle = ParseTriangle(line);
-            result.AddTriangle(parsedTriangle);
+            result->AddTriangle(parsedTriangle);
         }
         if (line[0] == 'c')
             cameraPosition = ParseVertex(line);
@@ -38,10 +43,8 @@ ObjFile ObjDeserializer::ParseFile(const std::string& filename) const
     }
     else
         material = std::make_shared<Material>();
-    result.SetMaterial(material);
+    result->SetMaterial(material);
 
-
-    result.RecalculateNormals();
     return { result, cameraPosition };
 }
 
@@ -56,7 +59,7 @@ Vector ObjDeserializer::ParseVertex(const std::string& vertexInfo) const
     return Vector(x, y, z);
 }
 
-void ObjDeserializer::ParseTextureCoordinates(const std::string& textureInfo, Scene3D& scene, int n) const
+void ObjDeserializer::ParseTextureCoordinates(const std::string& textureInfo, ScenePtr scene, int n) const
 {
     std::stringstream stream(textureInfo);
     std::string t;
@@ -64,7 +67,7 @@ void ObjDeserializer::ParseTextureCoordinates(const std::string& textureInfo, Sc
 
     stream >> t >> x1 >> y1 >> x2 >> y2 >> x3 >> y3;
 
-    scene.AddTexture(n, Vector(x1, y1, 0), Vector(x2, y2, 0), Vector(x3, y3, 0));
+    scene->AddTexture(n, Vector(x1, y1, 0), Vector(x2, y2, 0), Vector(x3, y3, 0));
 }
 
 Triangle3D ObjDeserializer::ParseTriangle(const std::string& triangleInfo) const
@@ -81,13 +84,13 @@ void ObjSerializer::SaveToFile(const std::string& path, const ObjFile& objFile)
 {
     file_.open(path);
 
-    for (const Vector& v : objFile.scene.GetPoints())
+    for (const Vector& v : objFile.scene->GetPoints())
         SavePoint(v, "v");
 
-    for (const Triangle3D& t : objFile.scene.GetTriangles())
+    for (const Triangle3D& t : objFile.scene->GetTriangles())
     {
         SaveTriangle(t);
-        if (!objFile.scene.GetMaterial()->IsConstant())
+        if (!objFile.scene->GetMaterial()->IsConstant())
             SaveTexture(t);
     }
 

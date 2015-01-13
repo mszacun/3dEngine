@@ -102,4 +102,6 @@ class Scene3D
         void ViewTransform(Camera& camera);
 };
 
+typedef std::shared_ptr<Scene3D> ScenePtr;
+
 #endif
