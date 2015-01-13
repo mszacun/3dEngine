@@ -7,6 +7,7 @@ ObjFile ObjDeserializer::ParseFile(const std::string& filename) const
     std::string line;
     Vector cameraPosition(0, 0, -10);
     int textureTriangleNumber = 0;
+    bool isTexturePresent = false;
 
     while (std::getline(file, line))
     {
@@ -20,10 +21,25 @@ ObjFile ObjDeserializer::ParseFile(const std::string& filename) const
         if (line[0] == 'c')
             cameraPosition = ParseVertex(line);
         if (line[0] == 't')
+        {
             ParseTextureCoordinates(line, result,  textureTriangleNumber++);
+            isTexturePresent = true;
+        }
     }
 
     file.close();
+
+    MaterialPtr material;
+    if (isTexturePresent)
+    {
+        QImage image;
+        image.load("texture.jpg");
+        material = std::make_shared<ImageTextureMaterial>(image);
+    }
+    else
+        material = std::make_shared<Material>();
+    result.SetMaterial(material);
+
 
     result.RecalculateNormals();
     return { result, cameraPosition };

@@ -20,6 +20,7 @@ class Material
         // 0 <= GetSpecular() <= 1
         virtual double GetSpecular(int component, const Vector& point) const { return 1; }
         virtual int GetOwnLigth(int component, const Vector& point) const { return 0; }
+        virtual bool IsConstant() const { return true; }
 
     private:
 };
@@ -45,6 +46,7 @@ class ImageTextureMaterial : public Material
         ImageTextureMaterial(const QImage& image);
 
         virtual double GetDiffuse(int component, const Vector& point) const override;
+        bool IsConstant() const override { return false; }
 
     private:
         ImageSource source_;
