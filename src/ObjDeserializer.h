@@ -18,6 +18,8 @@ class ObjDeserializer
         ObjFile ParseFile(const std::string& filename) const;
 
         Vector ParseVertex(const std::string& vertexInfo) const;
+        void ParseTextureCoordinates(const std::string& textureInfo,
+                Scene3D& scene, int triangleNumber) const;
         Triangle3D ParseTriangle(const std::string& triangleInfo) const;
 
 };

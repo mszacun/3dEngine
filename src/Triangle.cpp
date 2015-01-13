@@ -5,6 +5,13 @@ Triangle3D::Triangle3D(const unsigned int& p1, const unsigned  int& p2,
 {
 }
 
+void Triangle3D::SetTextureCoordinates(const Vector& t1, const Vector& t2, const Vector& t3)
+{
+    p1TextureCordinates_ = t1;
+    p2TextureCordinates_ = t2;
+    p3TextureCordinates_ = t3;
+}
+
 bool Triangle3D::operator==(const Triangle3D& right) const
 {
     return p1_ == right.p1_ && p2_ == right.p2_ && p3_ == right.p3_;

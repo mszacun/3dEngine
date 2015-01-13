@@ -23,6 +23,12 @@ int main(int argc, char** argv)
         scene.RecalculateNormals();
         scene.SetLightColor(QColor("white"));
 
+        QImage image;
+        image.load("texture.jpg");
+        MaterialPtr material = std::make_shared<ImageTextureMaterial>(image);
+        scene.SetMaterial(material);
+        scene.SetAmbientLightColor(QColor(50, 50, 50));
+
         QWidget window;
         window.resize(1200, 700);
         window.show();

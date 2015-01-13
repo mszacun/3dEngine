@@ -13,7 +13,12 @@ class Triangle3D
         unsigned int GetP2() const { return p2_; }
         unsigned int GetP3() const { return p3_; }
 
+        const Vector& GetP1TextureCoordinates() const { return p1TextureCordinates_; }
+        const Vector& GetP2TextureCoordinates() const  { return p2TextureCordinates_; }
+        const Vector& GetP3TextureCoordinates() const { return p3TextureCordinates_; }
+
         void SetNormal(const Vector& normal) { normal_ = normal; }
+        void SetTextureCoordinates(const Vector& t1, const Vector& t2, const Vector& t3);
         const Vector& GetNormal() const { return normal_; }
 
         bool operator==(const Triangle3D& right) const;
@@ -24,6 +29,10 @@ class Triangle3D
         unsigned int p3_;
 
         Vector normal_;
+
+        Vector p1TextureCordinates_;
+        Vector p2TextureCordinates_;
+        Vector p3TextureCordinates_;
 };
 
 struct Triangle2D

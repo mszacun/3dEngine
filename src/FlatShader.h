@@ -21,13 +21,17 @@ struct TriangleShadingInfo
     Vector p2Normal;
     Vector p3Normal;
 
+    Vector p1TextureCoordinates;
+    Vector p2TextureCoordinates;
+    Vector p3TextureCoordinates;
+
     Vector triangleNormal;
 
     Vector observatorPosition;
     Vector lightPosition;
     QColor lightColor;
     QColor ambientLightColor;
-    Material material;
+    MaterialPtr material;
 };
 
 class Shader
@@ -42,6 +46,8 @@ class Shader
         Vector lightVector_;
         int lightRgb[4];
         int ambientLightRgb[4];
+
+        Triangle3DInterpolator<Vector> textureCoordinatesInterpolator_;
 
         QColor CalculatePhongModel(const Vector& point, const Vector& lightVector,
             const Vector& normal) const;

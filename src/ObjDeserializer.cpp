@@ -6,6 +6,7 @@ ObjFile ObjDeserializer::ParseFile(const std::string& filename) const
     std::ifstream file(filename);
     std::string line;
     Vector cameraPosition(0, 0, -10);
+    int textureTriangleNumber = 0;
 
     while (std::getline(file, line))
     {
@@ -18,6 +19,8 @@ ObjFile ObjDeserializer::ParseFile(const std::string& filename) const
         }
         if (line[0] == 'c')
             cameraPosition = ParseVertex(line);
+        if (line[0] == 't')
+            ParseTextureCoordinates(line, result,  textureTriangleNumber++);
     }
 
     file.close();
@@ -35,6 +38,17 @@ Vector ObjDeserializer::ParseVertex(const std::string& vertexInfo) const
     stream >> v >> x >> y >> z;
 
     return Vector(x, y, z);
+}
+
+void ObjDeserializer::ParseTextureCoordinates(const std::string& textureInfo, Scene3D& scene, int n) const
+{
+    std::stringstream stream(textureInfo);
+    std::string t;
+    double x1, y1, x2, y2, x3, y3;
+
+    stream >> t >> x1 >> y1 >> x2 >> y2 >> x3 >> y3;
+
+    scene.AddTexture(n, Vector(x1, y1, 0), Vector(x2, y2, 0), Vector(x3, y3, 0));
 }
 
 Triangle3D ObjDeserializer::ParseTriangle(const std::string& triangleInfo) const

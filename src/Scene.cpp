@@ -46,6 +46,12 @@ void Scene3D::AddTriangle(Triangle3D& triangle)
     triangles_.push_back(triangle);
 }
 
+void Scene3D::AddTexture(int triangleNumber, const Vector& t1, const Vector& t2,
+        const Vector& t3)
+{
+    triangles_[triangleNumber].SetTextureCoordinates(t1, t2, t3);
+}
+
 Vector Scene3D::CalculateNormal(const Triangle3D& triangle) const
 {
     Vector v1 = points_[triangle.GetP2()] - points_[triangle.GetP1()];
@@ -200,12 +206,17 @@ void Scene3D::DrawProjectedTriangle(QPainter& painter, const Triangle3D& t,
     shadingInfo.p2Normal = pointsNormals_[t.GetP2()];
     shadingInfo.p3Normal = pointsNormals_[t.GetP3()];
 
+    shadingInfo.p1TextureCoordinates = t.GetP1TextureCoordinates();
+    shadingInfo.p2TextureCoordinates = t.GetP2TextureCoordinates();
+    shadingInfo.p3TextureCoordinates = t.GetP3TextureCoordinates();
+
     shadingInfo.triangleNormal = t.GetNormal();
 
     shadingInfo.observatorPosition = camera.position;
     shadingInfo.lightPosition = lightPosition_;
     shadingInfo.lightColor = lightColor_;
     shadingInfo.ambientLightColor = ambientLightColor_;
+    shadingInfo.material = material_;
 
     shader.InitShader(shadingInfo);
     DrawTriangle(t2.p1_, t2.p2_, t2.p3_, painter, shader, zinterpolator);

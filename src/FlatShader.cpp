@@ -1,7 +1,6 @@
 #include "FlatShader.h"
 #include <iostream>
 
-int ClipRGB(int color) { return std::max(std::min(color, 255),0); }
 
 QColor operator*(const QColor& left, double right)
 {
@@ -23,12 +22,20 @@ void Shader::InitShader(const TriangleShadingInfo& shadingInfo)
     shadingInfo_.lightColor.getRgb(lightRgb, lightRgb +1, lightRgb + 2, lightRgb + 3);
     shadingInfo_.ambientLightColor.getRgb(ambientLightRgb, ambientLightRgb +1,
             ambientLightRgb + 2, ambientLightRgb + 3);
+
+    textureCoordinatesInterpolator_.SetVector1(Vector((int) shadingInfo_.projectedP1.GetX(),
+                (int) shadingInfo_.projectedP1.GetY(), 1), shadingInfo_.p1TextureCoordinates);
+    textureCoordinatesInterpolator_.SetVector2(Vector((int) shadingInfo_.projectedP2.GetX(),
+                (int) shadingInfo_.projectedP2.GetY(), 1), shadingInfo_.p2TextureCoordinates);
+    textureCoordinatesInterpolator_.SetVector3(Vector((int) shadingInfo_.projectedP3.GetX(),
+                (int) shadingInfo_.projectedP3.GetY(), 1), shadingInfo_.p3TextureCoordinates);
 }
 
 QColor Shader::CalculatePhongModel(const Vector& point, const Vector& lightVector,
        const Vector& normal) const
 {
     int result[4];
+    Vector textureCoordinates = textureCoordinatesInterpolator_.Interpolate(point);
 
     // difuse
     double cos = normal.Dot(lightVector);
@@ -39,13 +46,13 @@ QColor Shader::CalculatePhongModel(const Vector& point, const Vector& lightVecto
     Vector toObserverVector = (shadingInfo_.observatorPosition - point).Normalize();
     Vector reflectionVector = (normal * 2 * normal.Dot(toObserverVector) - toObserverVector);
     double dot = std::max(0.0, lightVector.Dot(reflectionVector));
-    double exponent = std::pow(dot, shadingInfo_.material.GetShiness());
+    double exponent = std::pow(dot, shadingInfo_.material->GetShiness());
 
     for (int i = 0; i < 3; i++)
     {
-        double diffuse = lightRgb[i] * cos * shadingInfo_.material.GetDiffuse(i, 0, 0, 0);
-        double specular = shadingInfo_.material.GetSpecular(i, 0, 0, 0) * lightRgb[i] * exponent;
-        double own = shadingInfo_.material.GetOwnLigth(i, 0, 0, 0);
+        double diffuse = lightRgb[i] * cos * shadingInfo_.material->GetDiffuse(i, textureCoordinates);
+        double specular = shadingInfo_.material->GetSpecular(i, textureCoordinates) * lightRgb[i] * exponent;
+        double own = shadingInfo_.material->GetOwnLigth(i, textureCoordinates);
         result[i] = diffuse + specular + own + ambientLightRgb[i];
     }
 
