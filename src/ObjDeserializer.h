@@ -10,6 +10,7 @@ struct ObjFile
 {
     Scene3D scene;
     Vector cameraPosition;
+    MaterialPtr material;
 };
 
 class ObjDeserializer
@@ -31,6 +32,7 @@ class ObjSerializer
 
         void SavePoint(const Vector& vertex, const std::string& prefix);
         void SaveTriangle(const Triangle3D& t);
+        void SaveTexture(const Triangle3D& t);
 
     private:
         std::ofstream file_;

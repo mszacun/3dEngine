@@ -42,6 +42,7 @@ class Scene3D
 
         const std::vector<Vector>& GetPoints() const { return points_; }
         const std::vector<Triangle3D>& GetTriangles() const { return triangles_; }
+        MaterialPtr GetMaterial() const { return material_; }
 
         Vector CalculateNormal(const Triangle3D& triangle) const;
         Vector CalculatePointNormal(unsigned int pointNumber) const;

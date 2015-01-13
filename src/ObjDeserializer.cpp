@@ -85,7 +85,12 @@ void ObjSerializer::SaveToFile(const std::string& path, const ObjFile& objFile)
         SavePoint(v, "v");
 
     for (const Triangle3D& t : objFile.scene.GetTriangles())
+    {
         SaveTriangle(t);
+        if (!objFile.scene.GetMaterial()->IsConstant())
+            SaveTexture(t);
+    }
+
 
     SavePoint(objFile.cameraPosition, "c");
 
@@ -100,4 +105,11 @@ void ObjSerializer::SavePoint(const Vector& vertex, const std::string& prefix)
 void ObjSerializer::SaveTriangle(const Triangle3D& t)
 {
     file_ << "f " << t.GetP1() + 1 << " " << t.GetP2() + 1 << " " << t.GetP3() + 1 << std::endl;
+}
+
+void ObjSerializer::SaveTexture(const Triangle3D& t)
+{
+    file_ << "t " << t.GetP1TextureCoordinates().GetX() << " " <<  t.GetP1TextureCoordinates().GetY() << " " <<
+        t.GetP2TextureCoordinates().GetX() << " " << t.GetP2TextureCoordinates().GetY() << " " <<
+        t.GetP3TextureCoordinates().GetX() << " " << t.GetP3TextureCoordinates().GetY() << std::endl;
 }
