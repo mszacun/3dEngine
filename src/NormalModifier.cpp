@@ -42,8 +42,8 @@ Vector BumpMapNormalModifier::ModifyNormal(const Vector& normal,
     int y = std::max(0, std::min(Bu.height() - 1, (int) (textureCoordinates.GetY() * Bu.height())));
     QColor pixel = Bu.pixel(x, y);
 
-    double t1Factor = (double) (pixel.red()) * 20;
-    double t2Factor = (double) (QColor(Bv.pixel(x, y)).red()) * 20;
+    double t1Factor = (double) (pixel.red()) / 255.0;
+    double t2Factor = (double) (QColor(Bv.pixel(x, y)).red()) / 255.0;
 
     Vector result = (normal + t1 * t1Factor + t2 * t2Factor).Normalize();
     return result;
