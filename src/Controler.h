@@ -36,6 +36,7 @@ class Controler
         void SetFlatShader() { SetShader(new FlatShader); }
         void SetGouroudShader() { SetShader(new GouraudShader); }
         void SetPhongShader() { SetShader(new PhongShader); }
+        void SetNormalModifier(NormalModifier* modifier) { delete normalModifier_; normalModifier_ = modifier; }
 
         void SaveSceneToObjFile(const std::string& path);
         void LoadObjFile(const std::string& path);

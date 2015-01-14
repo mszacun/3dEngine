@@ -9,6 +9,7 @@
 class NormalModifier
 {
     public:
+        virtual ~NormalModifier() {};
         virtual Vector ModifyNormal(const Vector& normal, const Vector& textureCoordinates) const = 0;
         virtual bool IsConstant() const = 0;
 };

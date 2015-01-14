@@ -1,5 +1,8 @@
 #include "NormalModifier.h"
 
+// thanks to
+// http://www.ics.uci.edu/~majumder/VC/classes/BEmap.pdf
+
 QColor SubColors(const QColor& left, const QColor& right)
 {
     return QColor(

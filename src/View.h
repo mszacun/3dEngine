@@ -8,6 +8,7 @@
 #include <QButtonGroup>
 #include <QRadioButton>
 #include <QKeyEvent>
+#include <QCheckBox>
 #include <QGridLayout>
 #include <QLineEdit>
 #include <QDoubleValidator>
@@ -115,6 +116,7 @@ class ConfigurationPanel : public QWidget
         void OnShadowingTypeChanged(bool checked);
         void OnSaveButtonClicked(bool checked);
         void OnOpenButtonClicked(bool checked);
+        void OnBumpmapCheckboxStateChanged(int state);
 
     private:
         QGridLayout mainLayout_;
@@ -137,6 +139,8 @@ class ConfigurationPanel : public QWidget
         QRadioButton flatShadingRadioButton_;
         QRadioButton gouroudShadingRadioButton_;
         QRadioButton phongShadingRadioButton_;
+
+        QCheckBox bumpMapCheckBox_;
 
         QPushButton openFileButton_;
         QPushButton saveFileButton_;

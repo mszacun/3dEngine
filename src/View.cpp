@@ -121,6 +121,7 @@ ConfigurationPanel::ConfigurationPanel(View* view) : xCameraPostitionLabel_("X: 
     cameraViewAngleControls_("View angle: "), cameraViewAngleSlider_(Qt::Horizontal),
     shadowsTypeRadioButtons_("Shader alghorithm: "), flatShadingRadioButton_("Flat Shading"),
     gouroudShadingRadioButton_("Gouraud shading"), phongShadingRadioButton_("Phong shading"),
+    bumpMapCheckBox_("Enable bumpmap"),
     openFileButton_("Open file"), saveFileButton_("Save file"), view_(view)
 {
     coordinatesValidator_.setRange(-20, 20, 10);
@@ -148,8 +149,9 @@ ConfigurationPanel::ConfigurationPanel(View* view) : xCameraPostitionLabel_("X: 
     mainLayout_.addWidget(&zCameraPostitionEdit_, 5, 0);
     mainLayout_.addWidget(&cameraViewAngleControls_, 6, 0);
     mainLayout_.addWidget(&shadowsTypeRadioButtons_, 7, 0);
-    mainLayout_.addWidget(&openFileButton_, 8, 0);
-    mainLayout_.addWidget(&saveFileButton_, 9, 0);
+    mainLayout_.addWidget(&bumpMapCheckBox_, 8, 0);
+    mainLayout_.addWidget(&openFileButton_, 9, 0);
+    mainLayout_.addWidget(&saveFileButton_, 10, 0);
 
     QObject::connect(&xCameraPostitionEdit_, SIGNAL(returnPressed()),
             this, SLOT(OnXCameraPositionEntered()));
@@ -166,6 +168,9 @@ ConfigurationPanel::ConfigurationPanel(View* view) : xCameraPostitionLabel_("X: 
             this, SLOT(OnShadowingTypeChanged(bool)));
     QObject::connect(&phongShadingRadioButton_, SIGNAL(toggled(bool)),
             this, SLOT(OnShadowingTypeChanged(bool)));
+
+    QObject::connect(&bumpMapCheckBox_, SIGNAL(stateChanged(int)),
+            this, SLOT(OnBumpmapCheckboxStateChanged(int)));
 
     QObject::connect(&saveFileButton_, SIGNAL(clicked(bool)),
             this, SLOT(OnSaveButtonClicked(bool)));
@@ -209,20 +214,11 @@ void ConfigurationPanel::OnViewAngleSliderMoved(int value)
 void ConfigurationPanel::OnShadowingTypeChanged(bool checked)
 {
     if (flatShadingRadioButton_.isChecked())
-    {
         controler_->SetFlatShader();
-        std::cout << "Flat" << std::endl;
-    }
     if (gouroudShadingRadioButton_.isChecked())
-    {
         controler_->SetGouroudShader();
-        std::cout << "Gouroud" << std::endl;
-    }
     if (phongShadingRadioButton_.isChecked())
-    {
         controler_->SetPhongShader();
-        std::cout << "Phong" << std::endl;
-    }
     view_->UpdateCameraViews();
 }
 
@@ -240,6 +236,20 @@ void ConfigurationPanel::OnOpenButtonClicked(bool checked)
         "/tmp/", "Obj file (*.obj)");
 
     controler_->LoadObjFile(fileName.toStdString());
+    view_->UpdateCameraViews();
+}
+
+void ConfigurationPanel::OnBumpmapCheckboxStateChanged(int state)
+{
+    if (bumpMapCheckBox_.isChecked())
+    {
+        QImage i;
+        i.load("bumpmap.png");
+        controler_->SetNormalModifier(new BumpMapNormalModifier(i));
+    }
+    else
+        controler_->SetNormalModifier(new NoNormalModifier);
+
     view_->UpdateCameraViews();
 }
 

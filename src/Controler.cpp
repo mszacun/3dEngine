@@ -7,11 +7,9 @@ int ORTHOGONAL_CAMERA_HEIGHT = 5;
 
 Controler::Controler() : scene_(nullptr),
     rotationAngle(0), perspectiveCamera_(Vector(0, 0, -10), Vector(0, 1, 0),
-        Vector(0, 0, 0), 3, 20, 0.78), activeShader_(new PhongShader)
+        Vector(0, 0, 0), 3, 20, 0.78), activeShader_(new PhongShader),
+    normalModifier_(new NoNormalModifier)
 {
-    QImage i;
-    i.load("bumpmap.png");
-    normalModifier_ = new BumpMapNormalModifier(i);
 }
 
 void Controler::SetView(ViewWeakPtr view)
