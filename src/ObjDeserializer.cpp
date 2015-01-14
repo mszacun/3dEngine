@@ -25,23 +25,22 @@ ObjFile ObjDeserializer::ParseFile(const std::string& filename) const
         }
         if (line[0] == 'c')
             cameraPosition = ParseVertex(line);
-        if (line[0] == 't')
-        {
+        if (line[0] == 'p')
             ParseTextureCoordinates(line, result,  textureTriangleNumber++);
+        if (line == "texture on")
             isTexturePresent = true;
-        }
     }
 
     file.close();
 
     MaterialPtr material;
-/*    if (isTexturePresent)
+    if (isTexturePresent)
     {
         QImage image;
         image.load("texture.jpg");
         material = std::make_shared<ImageTextureMaterial>(image);
     }
-    else*/
+    else
         material = std::make_shared<Material>();
     result->SetMaterial(material);
 
