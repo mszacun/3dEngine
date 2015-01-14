@@ -35,13 +35,13 @@ ObjFile ObjDeserializer::ParseFile(const std::string& filename) const
     file.close();
 
     MaterialPtr material;
-    if (isTexturePresent)
+/*    if (isTexturePresent)
     {
         QImage image;
         image.load("texture.jpg");
         material = std::make_shared<ImageTextureMaterial>(image);
     }
-    else
+    else*/
         material = std::make_shared<Material>();
     result->SetMaterial(material);
 

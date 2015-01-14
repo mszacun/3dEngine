@@ -7,8 +7,11 @@ int ORTHOGONAL_CAMERA_HEIGHT = 5;
 
 Controler::Controler() : scene_(nullptr),
     rotationAngle(0), perspectiveCamera_(Vector(0, 0, -10), Vector(0, 1, 0),
-            Vector(0, 0, 0), 3, 20, 0.78), activeShader_(new PhongShader)
+        Vector(0, 0, 0), 3, 20, 0.78), activeShader_(new PhongShader)
 {
+    QImage i;
+    i.load("bumpmap.png");
+    normalModifier_ = new BumpMapNormalModifier(i);
 }
 
 void Controler::SetView(ViewWeakPtr view)
@@ -22,7 +25,7 @@ OrthogonalProjection Controler::GetFrontView()
             Vector(0, 0, 0), 3, 20, ORTHOGONAL_CAMERA_WIDTH, ORTHOGONAL_CAMERA_HEIGHT);
 
     return scene_->RenderProjection(SCREEN_WIDTH, SCREEN_WIDTH, cam,
-            *activeShader_, perspectiveCamera_.CalculateFrustrum());
+            *activeShader_, perspectiveCamera_.CalculateFrustrum(), *normalModifier_);
 }
 
 OrthogonalProjection Controler::GetSideView()
@@ -31,7 +34,7 @@ OrthogonalProjection Controler::GetSideView()
             Vector(0, 0, 0), 3, 20, ORTHOGONAL_CAMERA_WIDTH, ORTHOGONAL_CAMERA_HEIGHT);
 
     return scene_->RenderProjection(SCREEN_WIDTH, SCREEN_WIDTH, cam,
-            *activeShader_, perspectiveCamera_.CalculateFrustrum());
+            *activeShader_, perspectiveCamera_.CalculateFrustrum(), *normalModifier_);
 }
 
 OrthogonalProjection Controler::GetTopView()
@@ -40,13 +43,13 @@ OrthogonalProjection Controler::GetTopView()
             Vector(0, 0, 0), 3, 20, ORTHOGONAL_CAMERA_WIDTH, ORTHOGONAL_CAMERA_HEIGHT);
 
     return scene_->RenderProjection(SCREEN_WIDTH, SCREEN_WIDTH, cam,
-            *activeShader_, perspectiveCamera_.CalculateFrustrum());
+            *activeShader_, perspectiveCamera_.CalculateFrustrum(), *normalModifier_);
 }
 
 QImage Controler::GetRenderedPerspectiveView()
 {
     QImage result = scene_->RenderProjection(SCREEN_WIDTH, SCREEN_WIDTH,
-            perspectiveCamera_, *activeShader_);
+            perspectiveCamera_, *activeShader_, *normalModifier_);
 
     return result;
 }

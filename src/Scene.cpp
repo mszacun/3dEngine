@@ -189,7 +189,7 @@ void Scene3D::DrawTriangle(const Vector& p1, const Vector& p2, const Vector& p3,
 
 void Scene3D::DrawProjectedTriangle(QPainter& painter, const Triangle3D& t,
         const Matrix& transformationMatrix, const Camera& camera,
-        const ZInterpolator& zinterpolator, Shader& shader)
+        const ZInterpolator& zinterpolator, Shader& shader, NormalModifier& normalModifier)
 {
     Triangle2D t2 = ProjectTriangle(t, transformationMatrix);
     TriangleShadingInfo shadingInfo;
@@ -205,6 +205,7 @@ void Scene3D::DrawProjectedTriangle(QPainter& painter, const Triangle3D& t,
     shadingInfo.p1Normal = pointsNormals_[t.GetP1()];
     shadingInfo.p2Normal = pointsNormals_[t.GetP2()];
     shadingInfo.p3Normal = pointsNormals_[t.GetP3()];
+    shadingInfo.normalModifier = &normalModifier;
 
     shadingInfo.p1TextureCoordinates = t.GetP1TextureCoordinates();
     shadingInfo.p2TextureCoordinates = t.GetP2TextureCoordinates();
@@ -231,15 +232,16 @@ void Scene3D::PrintProjectInfo(const Triangle3D& t, const Triangle2D& t2) const
 }
 
 void Scene3D::DrawScene(QPainter& painter, const Matrix& transformationMatrix,
-    const Camera& camera, const ZInterpolator& zinterpolator, Shader& shader)
+    const Camera& camera, const ZInterpolator& zinterpolator, Shader& shader,
+    NormalModifier& normalModifier)
 {
     for (const Triangle3D& t : triangles_)
         DrawProjectedTriangle(painter, t, transformationMatrix, camera,
-                zinterpolator, shader);
+                zinterpolator, shader, normalModifier);
 }
 
 QImage Scene3D::RenderProjection(int width, int height,
-        const PerspectiveCamera& camera, Shader& shader)
+        const PerspectiveCamera& camera, Shader& shader, NormalModifier& normalModifier)
 {
     QImage result(width, height, QImage::Format_ARGB32);
     QPainter painter(&result);
@@ -255,13 +257,13 @@ QImage Scene3D::RenderProjection(int width, int height,
     Matrix transformationMatrix = Matrix::CreatePerspectiveProjectionMatrix(width, height);
 
     observedScene.DrawScene(painter, transformationMatrix, cameraCopy,
-            InterpolateZ, shader);
+            InterpolateZ, shader, normalModifier);
 
     return result;
 }
 
 OrthogonalProjection Scene3D::RenderProjection(int width, int height, const OrthogonalCamera& camera,
-        Shader& shader, PerspectiveCameraFrustrum frustrum)
+        Shader& shader, PerspectiveCameraFrustrum frustrum, NormalModifier& normalModifier)
 {
     QImage renderedProjection(width, height, QImage::Format_ARGB32);
     QPainter painter(&renderedProjection);
@@ -284,7 +286,7 @@ OrthogonalProjection Scene3D::RenderProjection(int width, int height, const Orth
     Matrix transformationMatrix = Matrix::CreateOrthogonalProjectionMatrix(width, height);
 
     observedScene.DrawScene(painter, transformationMatrix, cameraCopy,
-            InterpolateZLinearly, shader);
+            InterpolateZLinearly, shader, normalModifier);
 
     frustrum.cameraPosition = observedScene.points_[observedScene.points_.size() - 1];
     frustrum.rightBottom = observedScene.points_[observedScene.points_.size() - 2];

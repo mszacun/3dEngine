@@ -49,6 +49,7 @@ class Controler
         double rotationAngle;
         PerspectiveCamera perspectiveCamera_;
         Shader* activeShader_;
+        NormalModifier* normalModifier_;
 };
 
 #endif

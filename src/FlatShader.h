@@ -1,11 +1,13 @@
 #ifndef FLAT_SHADING_H
 #define FLAT_SHADING_H
 
+#include <functional>
 #include <QColor>
 
 #include "Vector.h"
 #include "Material.h"
 #include "Interpolator.h"
+#include "NormalModifier.h"
 
 struct TriangleShadingInfo
 {
@@ -20,6 +22,7 @@ struct TriangleShadingInfo
     Vector p1Normal;
     Vector p2Normal;
     Vector p3Normal;
+    NormalModifier* normalModifier;
 
     Vector p1TextureCoordinates;
     Vector p2TextureCoordinates;

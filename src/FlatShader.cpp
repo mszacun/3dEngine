@@ -32,11 +32,12 @@ void Shader::InitShader(const TriangleShadingInfo& shadingInfo)
 }
 
 QColor Shader::CalculatePhongModel(const Vector& point, const Vector& lightVector,
-       const Vector& normal) const
+       const Vector& orgNormal) const
 {
     int result[4];
-    Vector textureCoordinates = shadingInfo_.material->IsConstant() ? Vector(0, 0, 0) :
-        textureCoordinatesInterpolator_.Interpolate(point);
+    Vector textureCoordinates = shadingInfo_.material->IsConstant() && shadingInfo_.normalModifier->IsConstant() ?
+        Vector(0, 0, 0) : textureCoordinatesInterpolator_.Interpolate(point);
+    Vector normal = shadingInfo_.normalModifier->ModifyNormal(orgNormal, textureCoordinates);
 
     // difuse
     double cos = normal.Dot(lightVector);

@@ -10,6 +10,7 @@
 #include "Vector.h"
 #include "Triangle.h"
 #include "FlatShader.h"
+#include "NormalModifier.h"
 #include "Camera.h"
 
 struct OrthogonalProjection
@@ -55,9 +56,11 @@ class Scene3D
         void SetMaterial(MaterialPtr material) { material_ = material; }
 
         QImage RenderProjection(int width, int height,
-                const PerspectiveCamera& camera, Shader& shader);
+                const PerspectiveCamera& camera, Shader& shader,
+                NormalModifier& normalModifier);
         OrthogonalProjection RenderProjection(int width, int height, const OrthogonalCamera& camera,
-            Shader& shader, PerspectiveCameraFrustrum frustrum);
+            Shader& shader, PerspectiveCameraFrustrum frustrum,
+            NormalModifier& normalModifier);
 
         void DrawTriangleWithXParellGround(const Vector& p1, Vector p2,
             Vector p3, QPainter& painter, Shader& shader, const ZInterpolator& zinterpolator);
@@ -92,10 +95,11 @@ class Scene3D
 
         void DrawScene(QPainter& painter, const Matrix& transformationMatrix,
                 const Camera& camera, const ZInterpolator& zinterpolator,
-                Shader& shader);
+                Shader& shader, NormalModifier& normalModifier);
         void DrawProjectedTriangle(QPainter& painter, const Triangle3D& t,
             const Matrix& transformationMatrix, const Camera& camera,
-            const ZInterpolator& zinterpolator, Shader& shader);
+            const ZInterpolator& zinterpolator, Shader& shader,
+            NormalModifier& normalModifier);
 
         void SortTriangles();
 
